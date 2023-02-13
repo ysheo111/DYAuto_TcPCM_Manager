@@ -1,0 +1,413 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D8DF2409-E72B-4A42-8101-7FFAD07A4DCB}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>TcPCM_Connect</RootNamespace>
+    <AssemblyName>TcPCM_Connect</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>PerfectProCalc.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TcPCM_Connect_Global">
+      <HintPath>..\..\TcPCM_Connect_Global\TcPCM_Connect_Global\bin\Debug\TcPCM_Connect_Global.dll</HintPath>
+    </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Component\ConfigSetting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Component\ConfigSetting.Designer.cs">
+      <DependentUpon>ConfigSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Component\FormMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Component\FormMessageBox.designer.cs">
+      <DependentUpon>FormMessageBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Component\LoadingScreen.cs" />
+    <Compile Include="Component\RJMessageBox.cs" />
+    <Compile Include="Controller\CalendarColumn.cs" />
+    <Compile Include="Controller\CustomDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controller\FlatCombo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Component\Loading.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Component\Loading.Designer.cs">
+      <DependentUpon>Loading.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controller\RJButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controller\RJComboBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controller\RJDatePicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controller\RJTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controller\RJTextBox.designer.cs">
+      <DependentUpon>RJTextBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controller\RoundBorderPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controller\SideButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Dashboard\frmEstimate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dashboard\frmEstimate.Designer.cs">
+      <DependentUpon>frmEstimate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dashboard\frmDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dashboard\frmDashboard.Designer.cs">
+      <DependentUpon>frmDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dashboard\frmCBD.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dashboard\frmCBD.designer.cs">
+      <DependentUpon>frmCBD.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dashboard\frmCalc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dashboard\frmCalc.Designer.cs">
+      <DependentUpon>frmCalc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMain.designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Master\frmOverheads.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Master\frmOverheads.Designer.cs">
+      <DependentUpon>frmOverheads.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Master\frmMachine.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Master\frmMachine.Designer.cs">
+      <DependentUpon>frmMachine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Master\frmCategory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Master\frmCategory.Designer.cs">
+      <DependentUpon>frmCategory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Master\frmMaterial.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Master\frmMaterial.Designer.cs">
+      <DependentUpon>frmMaterial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Master\frmExchange.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Master\frmExchange.Designer.cs">
+      <DependentUpon>frmExchange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UserManagment\frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserManagment\frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserManagment\frmUserManagment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserManagment\frmUserManagment.Designer.cs">
+      <DependentUpon>frmUserManagment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\FontManager.cs" />
+    <Compile Include="UserManagment\subFrameUserEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserManagment\subFrameUserEdit.Designer.cs">
+      <DependentUpon>subFrameUserEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserManagment\subfrmSignUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserManagment\subfrmSignUp.Designer.cs">
+      <DependentUpon>subfrmSignUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="xaml\TreeGrid.xaml.cs">
+      <DependentUpon>TreeGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="xaml\UserControl2.xaml.cs">
+      <DependentUpon>UserControl2.xaml</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Component\ConfigSetting.resx">
+      <DependentUpon>ConfigSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Component\FormMessageBox.resx">
+      <DependentUpon>FormMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Component\Loading.resx">
+      <DependentUpon>Loading.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controller\RJComboBox.resx">
+      <DependentUpon>RJComboBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controller\RJTextBox.resx">
+      <DependentUpon>RJTextBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dashboard\frmEstimate.resx">
+      <DependentUpon>frmEstimate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dashboard\frmDashboard.resx">
+      <DependentUpon>frmDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dashboard\frmCBD.resx">
+      <DependentUpon>frmCBD.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dashboard\frmCalc.resx">
+      <DependentUpon>frmCalc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Master\frmOverheads.resx">
+      <DependentUpon>frmOverheads.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Master\frmMachine.resx">
+      <DependentUpon>frmMachine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Master\frmCategory.resx">
+      <DependentUpon>frmCategory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Master\frmMaterial.resx">
+      <DependentUpon>frmMaterial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Master\frmExchange.resx">
+      <DependentUpon>frmExchange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserManagment\frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserManagment\frmUserManagment.resx">
+      <DependentUpon>frmUserManagment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserManagment\subFrameUserEdit.resx">
+      <DependentUpon>subFrameUserEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserManagment\subfrmSignUp.resx">
+      <DependentUpon>subfrmSignUp.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="xaml\TreeGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="xaml\UserControl2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PerfectProCalc.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="아이콘.ico" />
+    <None Include="Images\8664917_window_minimize_icon %283%29.png" />
+    <None Include="Images\8664908_window_restore_application_icon.png" />
+    <None Include="Images\8664917_window_minimize_icon %281%29.png" />
+    <None Include="Images\8530587_window_restore_icon %283%29.png" />
+    <None Include="Images\1564505_close_delete_exit_remove_icon.png" />
+    <None Include="Images\icon.png" />
+    <None Include="Images\icon1.png" />
+    <Content Include="Images\logo.png" />
+    <None Include="Resources\question.png" />
+    <None Include="Resources\information.png" />
+    <None Include="Resources\exclamation.png" />
+    <None Include="Resources\error.png" />
+    <None Include="Resources\chat.png" />
+    <None Include="Resources\aps.png" />
+    <None Include="Resources\close.png" />
+    <None Include="Resources\dashboard.png" />
+    <None Include="Resources\icono-cliente.png" />
+    <None Include="Resources\logoui.png" />
+    <None Include="Resources\logoui2.png" />
+    <None Include="Resources\maximize.png" />
+    <None Include="Resources\maximize2.png" />
+    <None Include="Resources\maximize3.png" />
+    <None Include="Resources\membresia.png" />
+    <None Include="Resources\menu.png" />
+    <None Include="Resources\menu2.png" />
+    <None Include="Resources\minimize.png" />
+    <None Include="Resources\minimize1.png" />
+    <None Include="Resources\new logo.png" />
+    <None Include="Resources\new logo1.png" />
+    <None Include="Resources\new logo2.png" />
+    <None Include="Resources\new logo3.png" />
+    <None Include="Resources\new logo4.png" />
+    <None Include="Resources\new logo5.png" />
+    <None Include="Resources\normal.png" />
+    <None Include="Resources\perfil.png" />
+    <None Include="Resources\planes.png" />
+    <None Include="Resources\satellite-dish %281%29.png" />
+    <None Include="Resources\satellite-dish.png" />
+    <None Include="Resources\shut-down.png" />
+    <None Include="Resources\8530693_window_maximize_icon.png" />
+    <None Include="Resources\calendarWhite.png" />
+    <None Include="Resources\calendarWhite1.png" />
+    <None Include="Resources\calendarDark.png" />
+    <None Include="Resources\3209360_annual_blackboard_data_report_summary_icon %285%29.png" />
+    <None Include="Resources\4115237_add_plus_icon.png" />
+    <None Include="Resources\4115236_delete_min_minus_icon.png" />
+    <Resource Include="Resources\minus.png" />
+    <Resource Include="Resources\plus.png" />
+    <None Include="Resources\9118377_three_line_horizontal_icon.png" />
+    <None Include="Resources\9118377_three_line_horizontal_icon %281%29.png" />
+    <None Include="Resources\8685968_ic_fluent_line_horizontal_3_icon.png" />
+    <None Include="Resources\icon2.png" />
+    <None Include="Resources\icon1.png" />
+    <None Include="Resources\352439_refresh_icon.png" />
+    <None Include="Resources\icon3.png" />
+    <None Include="Resources\icon4.png" />
+    <None Include="Resources\150x150.gif" />
+    <Content Include="PerfectProCalc.ico" />
+    <None Include="Resources\icon5.png" />
+    <None Include="Resources\icon6.png" />
+    <None Include="Resources\4092564_profile_about_mobile ui_user_icon.png" />
+    <None Include="Resources\4092564_profile_about_mobile ui_user_icon %281%29.png" />
+    <None Include="Resources\8679235_exchange_dollar_icon.png" />
+    <None Include="Resources\8679235_exchange_dollar_icon %281%29.png" />
+    <None Include="Resources\8684026_folder_file_document_storage_office_icon.png" />
+    <None Include="Resources\326565_blank_check_circle_icon.png" />
+    <None Include="Resources\103433_category_add_icon.png" />
+    <None Include="Resources\103433_category_add_icon %281%29.png" />
+    <None Include="Resources\6714778_business_calculate_calculator_cost_fee_icon.png" />
+    <None Include="Resources\6714778_business_calculate_calculator_cost_fee_icon %281%29.png" />
+    <None Include="Resources\4488787_fee_label_price_tag_icon.png" />
+    <None Include="Resources\4488787_fee_label_price_tag_icon %281%29.png" />
+    <None Include="Resources\8665455_industry_factory_icon.png" />
+    <None Include="Resources\상세3.bmp" />
+    <None Include="Resources\간략.bmp" />
+    <None Include="Resources\간략24.bmp" />
+    <None Include="Resources\상세.bmp" />
+    <None Include="Resources\상세1.bmp" />
+    <None Include="Resources\9056874_calculator_icon.png" />
+    <None Include="Resources\4544807_business_calculator_comerce_delivery_shop_icon.png" />
+    <None Include="Resources\4544807_business_calculator_comerce_delivery_shop_icon %281%29.png" />
+    <None Include="Resources\4544807_business_calculator_comerce_delivery_shop_icon %282%29.png" />
+    <None Include="Resources\4544807_business_calculator_comerce_delivery_shop_icon %283%29.png" />
+    <None Include="Resources\4544807_business_calculator_comerce_delivery_shop_icon %284%29.png" />
+    <None Include="Resources\4544807_business_calculator_comerce_delivery_shop_icon %285%29.png" />
+    <None Include="Resources\상세.png" />
+    <None Include="Resources\간략.png" />
+    <None Include="Resources\TcPCM_Bridge.ico" />
+    <None Include="Resources\TcPCM_Bridge_Icon.ico" />
+    <None Include="Resources\아이콘.bmp" />
+    <Content Include="xaml\minus.png" />
+    <None Include="xaml\PerfectProCalc-2.png" />
+    <None Include="xaml\PerfectProCalc-3.png" />
+    <None Include="xaml\PerfectProCalc-1.png" />
+    <Content Include="xaml\PerfectProCalc.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\back-image.jpg" />
+    <Resource Include="Images\key-icon.png" />
+    <Resource Include="Images\user-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
