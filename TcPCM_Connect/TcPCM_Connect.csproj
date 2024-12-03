@@ -476,12 +476,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\TcPCM_Connect_Global\TcPCM_Connect_Global\TcPCM_Connect_Global.csproj">
-      <Project>{398e857f-33fd-4a70-bcb8-6211f87d102f}</Project>
-      <Name>TcPCM_Connect_Global</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
       <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
       <VersionMajor>2</VersionMajor>
@@ -509,6 +503,12 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TcPCM_Connect_Global\TcPCM_Connect_Global\TcPCM_Connect_Global.csproj">
+      <Project>{398e857f-33fd-4a70-bcb8-6211f87d102f}</Project>
+      <Name>TcPCM_Connect_Global</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
