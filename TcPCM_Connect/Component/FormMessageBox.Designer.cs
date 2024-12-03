@@ -62,11 +62,11 @@ namespace CustomMessageBox.Private
             // labelCaption
             // 
             this.labelCaption.AutoSize = true;
-            this.labelCaption.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 11F);
+            this.labelCaption.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 11F);
             this.labelCaption.ForeColor = System.Drawing.Color.White;
             this.labelCaption.Location = new System.Drawing.Point(11, 9);
             this.labelCaption.Name = "labelCaption";
-            this.labelCaption.Size = new System.Drawing.Size(112, 20);
+            this.labelCaption.Size = new System.Drawing.Size(123, 19);
             this.labelCaption.TabIndex = 4;
             this.labelCaption.Text = "labelCaption";
             // 
@@ -76,7 +76,7 @@ namespace CustomMessageBox.Private
             this.btnClose.FlatAppearance.BorderSize = 0;
             this.btnClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(79)))), ((int)(((byte)(95)))));
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnClose.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClose.ForeColor = System.Drawing.Color.White;
             this.btnClose.Location = new System.Drawing.Point(408, 0);
             this.btnClose.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -105,7 +105,7 @@ namespace CustomMessageBox.Private
             this.button3.BackColor = System.Drawing.Color.SeaGreen;
             this.button3.FlatAppearance.BorderSize = 0;
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 10F);
+            this.button3.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 10F);
             this.button3.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.button3.Location = new System.Drawing.Point(307, 14);
             this.button3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -120,7 +120,7 @@ namespace CustomMessageBox.Private
             this.button2.BackColor = System.Drawing.Color.SeaGreen;
             this.button2.FlatAppearance.BorderSize = 0;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 10F);
+            this.button2.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 10F);
             this.button2.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.button2.Location = new System.Drawing.Point(167, 14);
             this.button2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -135,7 +135,7 @@ namespace CustomMessageBox.Private
             this.button1.BackColor = System.Drawing.Color.SeaGreen;
             this.button1.FlatAppearance.BorderSize = 0;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 10F);
+            this.button1.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 10F);
             this.button1.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.button1.Location = new System.Drawing.Point(25, 14);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -162,13 +162,13 @@ namespace CustomMessageBox.Private
             // 
             this.labelMessage.AutoSize = true;
             this.labelMessage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelMessage.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 10F);
+            this.labelMessage.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 10F);
             this.labelMessage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(85)))), ((int)(((byte)(85)))), ((int)(((byte)(85)))));
             this.labelMessage.Location = new System.Drawing.Point(68, 11);
             this.labelMessage.MaximumSize = new System.Drawing.Size(800, 0);
             this.labelMessage.Name = "labelMessage";
             this.labelMessage.Padding = new System.Windows.Forms.Padding(7, 12, 14, 18);
-            this.labelMessage.Size = new System.Drawing.Size(132, 49);
+            this.labelMessage.Size = new System.Drawing.Size(139, 47);
             this.labelMessage.TabIndex = 1;
             this.labelMessage.Text = "labelMessage";
             this.labelMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;

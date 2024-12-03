@@ -86,23 +86,27 @@ namespace TcPCM_Connect
             string columnName = cb_Classification.SelectedItem == null ? "재료관리비" : cb_Classification.SelectedItem.ToString();
             if (columnName == "재료관리비")
             {
-                dgv_Overheads.Columns.Add("지역", "지역");
                 ValidFromAdd("Valid From");
+                dgv_Overheads.Columns.Add("지역", "지역");                
+                dgv_Overheads.Columns.Add("업종", "업종");
                 dgv_Overheads.Columns.Add("재료 관리비율", "재료 관리비율");
                 dgv_Overheads.Columns["재료 관리비율"].Tag = "Siemens.TCPCM.CostType.Materialoverheadcosts";
-                dgv_Overheads.Columns.Add("외주 재료 관리비율", "외주 재료 관리비율");
-                dgv_Overheads.Columns["외주 재료 관리비율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC";
+                //dgv_Overheads.Columns.Add("외주 재료 관리비율", "외주 재료 관리비율");
+                //dgv_Overheads.Columns["외주 재료 관리비율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC";
             }
             else
             {
+                ValidFromAdd("Valid From");
                 dgv_Overheads.Columns.Add("지역", "지역");
                 //dgv_Overheads.Columns.Add("구분4", "구분4");
                 dgv_Overheads.Columns.Add("업종", "업종");
-                ValidFromAdd("Valid From");
+                dgv_Overheads.Columns.Add("수량", "수량");
                 dgv_Overheads.Columns.Add("간접 경비율", "간접 경비율");
-                dgv_Overheads.Columns["간접 경비율"].Tag = "Siemens.TCPCM.CostType.Othermanufacturingstepcosts";
-                dgv_Overheads.Columns.Add("Manufacturing and set-up scrap", "Manufacturing and set-up scrap");
-                dgv_Overheads.Columns["Manufacturing and set-up scrap"].Tag = "Siemens.TCPCM.CostType.ManufacturingScrapCostOnCalculationLevel";
+                dgv_Overheads.Columns["간접 경비율"].Tag = "Siemens.TCPCM.CostType.Residualmanufacturingoverheadcosts";
+                dgv_Overheads.Columns.Add("회수율", "회수율");
+                dgv_Overheads.Columns["회수율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsbeforeMOC";
+                //dgv_Overheads.Columns.Add("수선비율", "수선비율");
+                //dgv_Overheads.Columns["수선비율"].Tag = "Siemens.TCPCM.CostType.Residualmanufacturingoverheadcosts";
                 dgv_Overheads.Columns.Add("일반 관리비율", "일반 관리비율");
                 dgv_Overheads.Columns["일반 관리비율"].Tag = "Siemens.TCPCM.CostType.Salesandgeneraladministrationcosts";
                 dgv_Overheads.Columns.Add("이윤율", "이윤율");

@@ -38,11 +38,11 @@ namespace TcPCM_Connect
             }
         }
 
-        public static void UdpateStatusTextWithStatus(string Text, TypeOfMessage tom)
+        public static void UdpateStatusTextWithStatus(string Text, string Detail)
         {
 
             if (sf != null)
-                sf.UdpateStatusTextWithStatus(Text, tom);
+                sf.UdpateStatusTextWithStatus(Text, Detail);
         }
     }
 }

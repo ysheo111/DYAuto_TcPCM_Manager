@@ -22,7 +22,7 @@ namespace TcPCM_Connect.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace TcPCM_Connect.Properties {
         ///   이 클래스에서 사용하는 캐시된 ResourceManager 인스턴스를 반환합니다.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TcPCM_Connect.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace TcPCM_Connect.Properties {
         ///   재정의합니다.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,17 +63,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _103433_category_add_icon__1_ {
-            get {
-                object obj = ResourceManager.GetObject("_103433_category_add_icon__1_", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap _150x150 {
+        public static System.Drawing.Bitmap _150x150 {
             get {
                 object obj = ResourceManager.GetObject("_150x150", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -83,7 +73,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _1564505_close_delete_exit_remove_icon {
+        public static System.Drawing.Bitmap _1564505_close_delete_exit_remove_icon {
             get {
                 object obj = ResourceManager.GetObject("_1564505_close_delete_exit_remove_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -93,27 +83,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _3209360_annual_blackboard_data_report_summary_icon__5_ {
-            get {
-                object obj = ResourceManager.GetObject("_3209360_annual_blackboard_data_report_summary_icon__5_", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap _326565_blank_check_circle_icon {
-            get {
-                object obj = ResourceManager.GetObject("_326565_blank_check_circle_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap _352439_refresh_icon {
+        public static System.Drawing.Bitmap _352439_refresh_icon {
             get {
                 object obj = ResourceManager.GetObject("_352439_refresh_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -123,9 +93,9 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _4092564_profile_about_mobile_ui_user_icon__1_ {
+        public static System.Drawing.Bitmap _3671698_filter_icon {
             get {
-                object obj = ResourceManager.GetObject("_4092564_profile_about_mobile_ui_user_icon__1_", resourceCulture);
+                object obj = ResourceManager.GetObject("_3671698_filter_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -133,9 +103,9 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _4488787_fee_label_price_tag_icon {
+        public static System.Drawing.Bitmap _3844432_magnifier_search_zoom_icon {
             get {
-                object obj = ResourceManager.GetObject("_4488787_fee_label_price_tag_icon", resourceCulture);
+                object obj = ResourceManager.GetObject("_3844432_magnifier_search_zoom_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -143,17 +113,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _4544807_business_calculator_comerce_delivery_shop_icon {
-            get {
-                object obj = ResourceManager.GetObject("_4544807_business_calculator_comerce_delivery_shop_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap _4544807_business_calculator_comerce_delivery_shop_icon__5_ {
+        public static System.Drawing.Bitmap _4544807_business_calculator_comerce_delivery_shop_icon__5_ {
             get {
                 object obj = ResourceManager.GetObject("_4544807_business_calculator_comerce_delivery_shop_icon__5_", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -163,17 +123,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _6714778_business_calculate_calculator_cost_fee_icon {
-            get {
-                object obj = ResourceManager.GetObject("_6714778_business_calculate_calculator_cost_fee_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap _8530587_window_restore_icon__3_ {
+        public static System.Drawing.Bitmap _8530587_window_restore_icon__3_ {
             get {
                 object obj = ResourceManager.GetObject("_8530587_window_restore_icon__3_", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -183,7 +133,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _8530693_window_maximize_icon {
+        public static System.Drawing.Bitmap _8530693_window_maximize_icon {
             get {
                 object obj = ResourceManager.GetObject("_8530693_window_maximize_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -193,7 +143,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _8664917_window_minimize_icon__1_ {
+        public static System.Drawing.Bitmap _8664917_window_minimize_icon__1_ {
             get {
                 object obj = ResourceManager.GetObject("_8664917_window_minimize_icon__1_", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -203,37 +153,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _8665455_industry_factory_icon {
-            get {
-                object obj = ResourceManager.GetObject("_8665455_industry_factory_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap _8679235_exchange_dollar_icon {
-            get {
-                object obj = ResourceManager.GetObject("_8679235_exchange_dollar_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap _8684026_folder_file_document_storage_office_icon {
-            get {
-                object obj = ResourceManager.GetObject("_8684026_folder_file_document_storage_office_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap _9056874_calculator_icon {
+        public static System.Drawing.Bitmap _9056874_calculator_icon {
             get {
                 object obj = ResourceManager.GetObject("_9056874_calculator_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -243,17 +163,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap _9118377_three_line_horizontal_icon {
-            get {
-                object obj = ResourceManager.GetObject("_9118377_three_line_horizontal_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap APs {
+        public static System.Drawing.Bitmap APs {
             get {
                 object obj = ResourceManager.GetObject("APs", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -263,7 +173,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap calendarDark {
+        public static System.Drawing.Bitmap calendarDark {
             get {
                 object obj = ResourceManager.GetObject("calendarDark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -273,7 +183,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap calendarWhite {
+        public static System.Drawing.Bitmap calendarWhite {
             get {
                 object obj = ResourceManager.GetObject("calendarWhite", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -283,7 +193,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap chat {
+        public static System.Drawing.Bitmap chat {
             get {
                 object obj = ResourceManager.GetObject("chat", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -293,7 +203,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap Close {
+        public static System.Drawing.Bitmap Close {
             get {
                 object obj = ResourceManager.GetObject("Close", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -303,7 +213,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap Dashboard {
+        public static System.Drawing.Bitmap Dashboard {
             get {
                 object obj = ResourceManager.GetObject("Dashboard", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -313,7 +223,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap error {
+        public static System.Drawing.Bitmap error {
             get {
                 object obj = ResourceManager.GetObject("error", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -323,7 +233,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap exclamation {
+        public static System.Drawing.Bitmap exclamation {
             get {
                 object obj = ResourceManager.GetObject("exclamation", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -333,27 +243,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap icon {
-            get {
-                object obj = ResourceManager.GetObject("icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap icon1 {
-            get {
-                object obj = ResourceManager.GetObject("icon1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap icon3 {
+        public static System.Drawing.Bitmap icon3 {
             get {
                 object obj = ResourceManager.GetObject("icon3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -363,7 +253,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap icon4 {
+        public static System.Drawing.Bitmap icon4 {
             get {
                 object obj = ResourceManager.GetObject("icon4", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -373,7 +263,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap icon5 {
+        public static System.Drawing.Bitmap icon5 {
             get {
                 object obj = ResourceManager.GetObject("icon5", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -383,7 +273,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap icon6 {
+        public static System.Drawing.Bitmap icon6 {
             get {
                 object obj = ResourceManager.GetObject("icon6", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -393,17 +283,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap icono_cliente {
-            get {
-                object obj = ResourceManager.GetObject("icono_cliente", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap information {
+        public static System.Drawing.Bitmap information {
             get {
                 object obj = ResourceManager.GetObject("information", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -413,9 +293,9 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap logoUI {
+        public static System.Drawing.Bitmap loading2 {
             get {
-                object obj = ResourceManager.GetObject("logoUI", resourceCulture);
+                object obj = ResourceManager.GetObject("loading2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -423,9 +303,9 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap logoUI2 {
+        public static System.Drawing.Bitmap logo {
             get {
-                object obj = ResourceManager.GetObject("logoUI2", resourceCulture);
+                object obj = ResourceManager.GetObject("logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -433,9 +313,9 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap Membresia {
+        public static System.Drawing.Bitmap logout {
             get {
-                object obj = ResourceManager.GetObject("Membresia", resourceCulture);
+                object obj = ResourceManager.GetObject("logout", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -443,7 +323,77 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap menu {
+        public static System.Drawing.Bitmap master {
+            get {
+                object obj = ResourceManager.GetObject("master", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        public static System.Drawing.Bitmap master_exchange {
+            get {
+                object obj = ResourceManager.GetObject("master_exchange", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        public static System.Drawing.Bitmap master_factor {
+            get {
+                object obj = ResourceManager.GetObject("master_factor", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        public static System.Drawing.Bitmap master_material {
+            get {
+                object obj = ResourceManager.GetObject("master_material", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        public static System.Drawing.Bitmap master_overheads {
+            get {
+                object obj = ResourceManager.GetObject("master_overheads", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        public static System.Drawing.Bitmap master_plant {
+            get {
+                object obj = ResourceManager.GetObject("master_plant", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        public static System.Drawing.Bitmap master_user {
+            get {
+                object obj = ResourceManager.GetObject("master_user", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        public static System.Drawing.Bitmap menu {
             get {
                 object obj = ResourceManager.GetObject("menu", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -453,17 +403,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap menu2 {
-            get {
-                object obj = ResourceManager.GetObject("menu2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap minus {
+        public static System.Drawing.Bitmap minus {
             get {
                 object obj = ResourceManager.GetObject("minus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -471,79 +411,9 @@ namespace TcPCM_Connect.Properties {
         }
         
         /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap new_logo {
-            get {
-                object obj = ResourceManager.GetObject("new_logo", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap new_logo1 {
-            get {
-                object obj = ResourceManager.GetObject("new_logo1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap new_logo2 {
-            get {
-                object obj = ResourceManager.GetObject("new_logo2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap new_logo3 {
-            get {
-                object obj = ResourceManager.GetObject("new_logo3", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap new_logo4 {
-            get {
-                object obj = ResourceManager.GetObject("new_logo4", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap new_logo5 {
-            get {
-                object obj = ResourceManager.GetObject("new_logo5", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap Normal {
-            get {
-                object obj = ResourceManager.GetObject("Normal", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   (아이콘)과(와) 유사한 System.Drawing.Icon 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Icon PerfectProCalc {
+        public static System.Drawing.Icon PerfectProCalc {
             get {
                 object obj = ResourceManager.GetObject("PerfectProCalc", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -553,7 +423,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap PerfectProCalc_1 {
+        public static System.Drawing.Bitmap PerfectProCalc_1 {
             get {
                 object obj = ResourceManager.GetObject("PerfectProCalc_1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -563,7 +433,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap PerfectProCalc_2 {
+        public static System.Drawing.Bitmap PerfectProCalc_2 {
             get {
                 object obj = ResourceManager.GetObject("PerfectProCalc_2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -573,7 +443,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap PerfectProCalc_3 {
+        public static System.Drawing.Bitmap PerfectProCalc_3 {
             get {
                 object obj = ResourceManager.GetObject("PerfectProCalc_3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -583,17 +453,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap perfil {
-            get {
-                object obj = ResourceManager.GetObject("perfil", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap Planes {
+        public static System.Drawing.Bitmap Planes {
             get {
                 object obj = ResourceManager.GetObject("Planes", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -603,7 +463,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap plus {
+        public static System.Drawing.Bitmap plus {
             get {
                 object obj = ResourceManager.GetObject("plus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -613,7 +473,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap question {
+        public static System.Drawing.Bitmap question {
             get {
                 object obj = ResourceManager.GetObject("question", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -623,9 +483,9 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap satellite_dish {
+        public static System.Drawing.Bitmap tool {
             get {
-                object obj = ResourceManager.GetObject("satellite_dish", resourceCulture);
+                object obj = ResourceManager.GetObject("tool", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -633,37 +493,7 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap satellite_dish__1_ {
-            get {
-                object obj = ResourceManager.GetObject("satellite_dish__1_", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap shut_down {
-            get {
-                object obj = ResourceManager.GetObject("shut_down", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap 간략 {
-            get {
-                object obj = ResourceManager.GetObject("간략", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap 간략1 {
+        public static System.Drawing.Bitmap 간략1 {
             get {
                 object obj = ResourceManager.GetObject("간략1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -673,9 +503,9 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap 간략24 {
+        public static System.Drawing.Bitmap 마그나최종_1 {
             get {
-                object obj = ResourceManager.GetObject("간략24", resourceCulture);
+                object obj = ResourceManager.GetObject("마그나최종_1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -683,49 +513,9 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
-        internal static System.Drawing.Bitmap 상세 {
-            get {
-                object obj = ResourceManager.GetObject("상세", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap 상세1 {
+        public static System.Drawing.Bitmap 상세1 {
             get {
                 object obj = ResourceManager.GetObject("상세1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap 상세11 {
-            get {
-                object obj = ResourceManager.GetObject("상세11", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap 상세3 {
-            get {
-                object obj = ResourceManager.GetObject("상세3", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap 아이콘 {
-            get {
-                object obj = ResourceManager.GetObject("아이콘", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

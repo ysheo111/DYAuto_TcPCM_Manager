@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="600" Height="550">
     <Border CornerRadius="12">
         <Border.Background>
-            <ImageBrush ImageSource="../Images/back-image.jpg"
+            <ImageBrush ImageSource="/TcPCM_Connect;component/Images/bg_hero_contents_3.png"
                         Stretch="None"/>
         </Border.Background>
 
@@ -24,7 +24,7 @@
             </Border.BorderBrush>
 
             <Border.Background>
-                <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                <LinearGradientBrush StartPoint="0,1" EndPoint="1,0" Opacity="0.7">
                     <GradientStop Color="#40454c" Offset="0"/>
                     <GradientStop Color="#262d35" Offset="1"/>
                 </LinearGradientBrush>
@@ -123,18 +123,14 @@
                             Grid.Row="1"
                             Orientation="Vertical"
                             Margin="0,35,0,0">
-
-                    <Image Source="pack://siteoforigin:,,,/xaml/PerfectProCalc-1.png"
-                           Width="40" Height="100"/>
-
-                    <TextBlock Text="TcPCM Bridge"
+                    <Image Source="마그나최종 1.png" Height="78"/>
+                    <TextBlock Text="TcPCM Manager"
                                Foreground="White"
                                FontSize="23"
                                FontWeight="Medium"
                                FontFamily="Montserrat"
-                               HorizontalAlignment="Center"/>
-
-                    <TextBlock Text="Login to Product Cost Managment Interworking Program"
+                               HorizontalAlignment="Center" Margin="25,0"/>
+                    <TextBlock Text="Login to Product Cost Managment Manager Program"
                                Foreground="LightGray"
                                FontSize="12"
                                FontWeight="Medium"
@@ -239,7 +235,7 @@
                                FontWeight="Medium"
                                FontFamily="Montserrat"/>
 
-                        <TextBlock Name="signUp"
+                        <TextBlock x:Name="signUp"
                                Text="회원가입"
                                Foreground="White"
                                FontSize="12"

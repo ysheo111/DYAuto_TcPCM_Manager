@@ -55,7 +55,9 @@ namespace TcPCM_Connect
 
             global_DB.ScalarExecute(comboQuery, (int)global_DB.connDB.selfDB);
 
+            if (txt_ID.Texts == global.loginID)  frmLogin.auth = cb_Auth.Texts;
             CustomMessageBox.RJMessageBox.Show("수정이 완료 되었습니다.", "회원 정보 수정" , MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Close();
         }
     }
 }

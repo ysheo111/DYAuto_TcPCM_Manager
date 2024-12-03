@@ -84,18 +84,22 @@ namespace TcPCM_Connect
         {
             dgv_Category.Columns.Clear();
             string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+
             if (columnName == "작업일수")
             {
                 dgv_Category.Columns.Add("지역", "지역");
                 ValidFromAdd("Valid From");
+                dgv_Category.Columns.Add("업종", "업종");
                 dgv_Category.Columns.Add("연간 작업 일수", "연간 작업 일수");
-                dgv_Category.Columns.Add("일간 작업 시간", "일간 작업 시간");
+                dgv_Category.Columns.Add("Shift", "Shift");
+                dgv_Category.Columns.Add("Shift 당 작업 시간", "Shift 당 작업 시간");
             }
             else if (columnName == "공간 생산 비용")
             {
                 dgv_Category.Columns.Add("지역", "지역");
                 CurrencyAdd("통화");
                 ValidFromAdd("Valid From");
+                dgv_Category.Columns.Add("업종", "업종");
                 dgv_Category.Columns.Add("건물상각년수", "건물상각년수");
                 dgv_Category.Columns.Add("건물점유비율", "건물점유비율");
                 dgv_Category.Columns.Add("건축비", "건축비");
@@ -103,6 +107,7 @@ namespace TcPCM_Connect
             else if (columnName == "전력단가")
             {
                 dgv_Category.Columns.Add("지역", "지역");
+                dgv_Category.Columns.Add("업종", "업종");
                 CurrencyAdd("통화");
                 ValidFromAdd("Valid From");
                 dgv_Category.Columns.Add("전력단가", "전력단가");
@@ -163,7 +168,7 @@ namespace TcPCM_Connect
             
            if(dgv_Category.Columns.Contains("구분 1")&& dgv_Category.Columns[e.ColumnIndex].Name != "구분 1")
            {
-                dgv_Category.Rows[e.RowIndex].Cells["구분 1"].Value = $"[LGIT]{dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
+                dgv_Category.Rows[e.RowIndex].Cells["구분 1"].Value = $"[LGMagna]{dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
            }
             global.MasterDataValiding((DataGridView)sender, e);
         }
@@ -171,6 +176,18 @@ namespace TcPCM_Connect
         private void dgv_Category_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             CustomMessageBox.RJMessageBox.Show(global.dgv_Category_DataError((DataGridView)sender, e), "DataError", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+
+        private void searchButton1_SearchButtonClick(object sender, EventArgs e)
+        {
+            CustomMessageBox.RJMessageBox.Show("검색 버튼이 클릭되었습니다.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void searchButton1_DetailSearchButtonClick_1(object sender, EventArgs e)
+        {
+            Select select = new Select();
+            select.ShowDialog();
         }
     }
 }

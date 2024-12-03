@@ -31,21 +31,28 @@ namespace TcPCM_Connect
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmDashboard));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.작업지지서ImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.내보내기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.basicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.injectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.coreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.diecastingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.roundBorderPanel2 = new TcPCM_Connect.RoundBorderPanel();
+            this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.btn_Export = new CustomControls.RJControls.RJButton();
             this.pb_Refresh = new System.Windows.Forms.PictureBox();
             this.cb_Mode = new System.Windows.Forms.CheckBox();
             this.btn_Configuration = new CustomControls.RJControls.RJButton();
             this.dgv_BaicInfo = new System.Windows.Forms.DataGridView();
             this.tv_Bom = new System.Windows.Forms.TreeView();
-            this.contextMenuStrip1.SuspendLayout();
             this.roundBorderPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_Refresh)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_BaicInfo)).BeginInit();
@@ -53,18 +60,48 @@ namespace TcPCM_Connect
             // 
             // contextMenuStrip1
             // 
-            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.내보내기ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(139, 28);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // 작업지지서ImportToolStripMenuItem
+            // 
+            this.작업지지서ImportToolStripMenuItem.Name = "작업지지서ImportToolStripMenuItem";
+            this.작업지지서ImportToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // 내보내기ToolStripMenuItem
             // 
             this.내보내기ToolStripMenuItem.Name = "내보내기ToolStripMenuItem";
-            this.내보내기ToolStripMenuItem.Size = new System.Drawing.Size(138, 24);
-            this.내보내기ToolStripMenuItem.Text = "Import";
-            this.내보내기ToolStripMenuItem.Click += new System.EventHandler(this.내보내기ToolStripMenuItem_Click);
+            this.내보내기ToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
+            // 
+            // eToolStripMenuItem
+            // 
+            this.eToolStripMenuItem.Name = "eToolStripMenuItem";
+            this.eToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
+            // 
+            // basicToolStripMenuItem
+            // 
+            this.basicToolStripMenuItem.Name = "basicToolStripMenuItem";
+            this.basicToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
+            // 
+            // injectionToolStripMenuItem
+            // 
+            this.injectionToolStripMenuItem.Name = "injectionToolStripMenuItem";
+            this.injectionToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
+            // 
+            // pressToolStripMenuItem
+            // 
+            this.pressToolStripMenuItem.Name = "pressToolStripMenuItem";
+            this.pressToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
+            // 
+            // coreToolStripMenuItem
+            // 
+            this.coreToolStripMenuItem.Name = "coreToolStripMenuItem";
+            this.coreToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
+            // 
+            // diecastingToolStripMenuItem
+            // 
+            this.diecastingToolStripMenuItem.Name = "diecastingToolStripMenuItem";
+            this.diecastingToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // roundBorderPanel2
             // 
@@ -75,6 +112,7 @@ namespace TcPCM_Connect
             this.roundBorderPanel2.BorderColor = System.Drawing.Color.Gainsboro;
             this.roundBorderPanel2.BorderRadius = 10;
             this.roundBorderPanel2.BorderSize = 1;
+            this.roundBorderPanel2.Controls.Add(this.searchButton1);
             this.roundBorderPanel2.Controls.Add(this.btn_Export);
             this.roundBorderPanel2.Controls.Add(this.pb_Refresh);
             this.roundBorderPanel2.Controls.Add(this.cb_Mode);
@@ -82,15 +120,28 @@ namespace TcPCM_Connect
             this.roundBorderPanel2.Controls.Add(this.dgv_BaicInfo);
             this.roundBorderPanel2.Controls.Add(this.tv_Bom);
             this.roundBorderPanel2.IsFill = true;
-            this.roundBorderPanel2.Location = new System.Drawing.Point(14, 13);
-            this.roundBorderPanel2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.roundBorderPanel2.Location = new System.Drawing.Point(12, 10);
             this.roundBorderPanel2.Name = "roundBorderPanel2";
-            this.roundBorderPanel2.Size = new System.Drawing.Size(1032, 596);
+            this.roundBorderPanel2.Size = new System.Drawing.Size(903, 477);
             this.roundBorderPanel2.TabIndex = 60;
+            // 
+            // searchButton1
+            // 
+            this.searchButton1.BackColor = System.Drawing.Color.Transparent;
+            this.searchButton1.DetailSearchButtonBackColor = System.Drawing.Color.White;
+            this.searchButton1.Location = new System.Drawing.Point(245, 19);
+            this.searchButton1.Name = "searchButton1";
+            this.searchButton1.PanelBackColor = System.Drawing.Color.Transparent;
+            this.searchButton1.Size = new System.Drawing.Size(373, 30);
+            this.searchButton1.TabIndex = 66;
+            this.searchButton1.text = "";
+            this.searchButton1.TextBoxBackColor = System.Drawing.Color.WhiteSmoke;
+            this.searchButton1.SearchButtonClick += new System.EventHandler(this.searchButton1_SearchButtonClick);
             // 
             // btn_Export
             // 
             this.btn_Export.AllowDrop = true;
+            this.btn_Export.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Export.BackColor = System.Drawing.Color.White;
             this.btn_Export.BackgroundColor = System.Drawing.Color.White;
             this.btn_Export.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
@@ -98,12 +149,11 @@ namespace TcPCM_Connect
             this.btn_Export.BorderSize = 1;
             this.btn_Export.FlatAppearance.BorderSize = 0;
             this.btn_Export.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Export.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.btn_Export.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_Export.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Export.Location = new System.Drawing.Point(268, 42);
-            this.btn_Export.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_Export.Location = new System.Drawing.Point(624, 18);
             this.btn_Export.Name = "btn_Export";
-            this.btn_Export.Size = new System.Drawing.Size(114, 25);
+            this.btn_Export.Size = new System.Drawing.Size(95, 31);
             this.btn_Export.TabIndex = 65;
             this.btn_Export.Text = "엑셀 Export";
             this.btn_Export.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
@@ -114,9 +164,10 @@ namespace TcPCM_Connect
             // 
             this.pb_Refresh.BackColor = System.Drawing.Color.Transparent;
             this.pb_Refresh.Image = ((System.Drawing.Image)(resources.GetObject("pb_Refresh.Image")));
-            this.pb_Refresh.Location = new System.Drawing.Point(39, 41);
+            this.pb_Refresh.Location = new System.Drawing.Point(34, 29);
+            this.pb_Refresh.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pb_Refresh.Name = "pb_Refresh";
-            this.pb_Refresh.Size = new System.Drawing.Size(28, 24);
+            this.pb_Refresh.Size = new System.Drawing.Size(24, 24);
             this.pb_Refresh.TabIndex = 62;
             this.pb_Refresh.TabStop = false;
             this.pb_Refresh.Click += new System.EventHandler(this.pb_Refresh_Click);
@@ -132,7 +183,8 @@ namespace TcPCM_Connect
             this.cb_Mode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cb_Mode.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.cb_Mode.Image = global::TcPCM_Connect.Properties.Resources.상세1;
-            this.cb_Mode.Location = new System.Drawing.Point(62, 38);
+            this.cb_Mode.Location = new System.Drawing.Point(59, 24);
+            this.cb_Mode.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cb_Mode.Name = "cb_Mode";
             this.cb_Mode.Size = new System.Drawing.Size(56, 31);
             this.cb_Mode.TabIndex = 64;
@@ -149,12 +201,11 @@ namespace TcPCM_Connect
             this.btn_Configuration.BorderSize = 1;
             this.btn_Configuration.FlatAppearance.BorderSize = 0;
             this.btn_Configuration.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Configuration.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.btn_Configuration.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_Configuration.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.btn_Configuration.Location = new System.Drawing.Point(825, 19);
-            this.btn_Configuration.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_Configuration.Location = new System.Drawing.Point(725, 18);
             this.btn_Configuration.Name = "btn_Configuration";
-            this.btn_Configuration.Size = new System.Drawing.Size(177, 39);
+            this.btn_Configuration.Size = new System.Drawing.Size(157, 31);
             this.btn_Configuration.TabIndex = 63;
             this.btn_Configuration.Text = "Configuration 설정 변경";
             this.btn_Configuration.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -164,94 +215,88 @@ namespace TcPCM_Connect
             // dgv_BaicInfo
             // 
             this.dgv_BaicInfo.AllowUserToAddRows = false;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Menu;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.DimGray;
-            this.dgv_BaicInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.dgv_BaicInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            dataGridViewCellStyle16.SelectionBackColor = System.Drawing.SystemColors.Menu;
+            dataGridViewCellStyle16.SelectionForeColor = System.Drawing.Color.DimGray;
+            this.dgv_BaicInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle16;
+            this.dgv_BaicInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgv_BaicInfo.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgv_BaicInfo.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
             this.dgv_BaicInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgv_BaicInfo.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgv_BaicInfo.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 9F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Menu;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_BaicInfo.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle17.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle17.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Menu;
+            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_BaicInfo.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle17;
             this.dgv_BaicInfo.ColumnHeadersHeight = 40;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_BaicInfo.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            dataGridViewCellStyle18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle18.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
+            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_BaicInfo.DefaultCellStyle = dataGridViewCellStyle18;
             this.dgv_BaicInfo.EnableHeadersVisualStyles = false;
             this.dgv_BaicInfo.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            this.dgv_BaicInfo.Location = new System.Drawing.Point(268, 75);
-            this.dgv_BaicInfo.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.dgv_BaicInfo.Location = new System.Drawing.Point(250, 60);
             this.dgv_BaicInfo.Name = "dgv_BaicInfo";
-            this.dgv_BaicInfo.ReadOnly = true;
             this.dgv_BaicInfo.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.PaleVioletRed;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_BaicInfo.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle19.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+            dataGridViewCellStyle19.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle19.ForeColor = System.Drawing.Color.PaleVioletRed;
+            dataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_BaicInfo.RowHeadersDefaultCellStyle = dataGridViewCellStyle19;
             this.dgv_BaicInfo.RowHeadersVisible = false;
             this.dgv_BaicInfo.RowHeadersWidth = 51;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.White;
-            this.dgv_BaicInfo.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle20.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle20.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            dataGridViewCellStyle20.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            dataGridViewCellStyle20.SelectionForeColor = System.Drawing.Color.White;
+            this.dgv_BaicInfo.RowsDefaultCellStyle = dataGridViewCellStyle20;
             this.dgv_BaicInfo.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.White;
-            this.dgv_BaicInfo.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.dgv_BaicInfo.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dgv_BaicInfo.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.dgv_BaicInfo.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.dgv_BaicInfo.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
             this.dgv_BaicInfo.RowTemplate.Height = 35;
-            this.dgv_BaicInfo.Size = new System.Drawing.Size(734, 506);
+            this.dgv_BaicInfo.Size = new System.Drawing.Size(626, 405);
             this.dgv_BaicInfo.TabIndex = 61;
-            this.dgv_BaicInfo.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_BaicInfo_CellClick);
-            this.dgv_BaicInfo.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_UserInfo_CellDoubleClick);
-            this.dgv_BaicInfo.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_UserInfo_CellFormatting);
             // 
             // tv_Bom
             // 
-            this.tv_Bom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.tv_Bom.Font = new System.Drawing.Font("LG스마트체2.0 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.tv_Bom.Location = new System.Drawing.Point(39, 75);
+            this.tv_Bom.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tv_Bom.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.tv_Bom.Location = new System.Drawing.Point(34, 60);
+            this.tv_Bom.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tv_Bom.Name = "tv_Bom";
-            this.tv_Bom.Size = new System.Drawing.Size(223, 506);
+            this.tv_Bom.Size = new System.Drawing.Size(196, 406);
             this.tv_Bom.TabIndex = 60;
-            this.tv_Bom.DoubleClick += new System.EventHandler(this.tv_Bom_DoubleClick);
+            this.tv_Bom.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.tv_Bom_AfterExpand);
             this.tv_Bom.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tv_Bom_MouseDown);
             // 
             // frmDashboard
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(1059, 624);
+            this.ClientSize = new System.Drawing.Size(927, 499);
             this.Controls.Add(this.roundBorderPanel2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "frmDashboard";
             this.Text = "frmDashboard";
             this.Load += new System.EventHandler(this.frmDashboard_Load);
-            this.contextMenuStrip1.ResumeLayout(false);
             this.roundBorderPanel2.ResumeLayout(false);
             this.roundBorderPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_Refresh)).EndInit();
@@ -270,5 +315,13 @@ namespace TcPCM_Connect
         private System.Windows.Forms.CheckBox cb_Mode;
         private CustomControls.RJControls.RJButton btn_Export;
         private System.Windows.Forms.PictureBox pb_Refresh;
+        private System.Windows.Forms.ToolStripMenuItem eToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 작업지지서ImportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem basicToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem injectionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pressToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem coreToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem diecastingToolStripMenuItem;
+        private Controller.SearchButton searchButton1;
     }
 }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TcPCM_Connect_Global;
 using System.Threading;
+using System.IO;
 
 namespace TcPCM_Connect
 {
@@ -24,209 +25,170 @@ namespace TcPCM_Connect
             this.SetStyle(ControlStyles.ResizeRedraw, true);
             this.DoubleBuffered = true;
         }
-        public frmCBD Clone() { return (frmCBD)this.MemberwiseClone(); }
 
-        public Dictionary<string, Dictionary<string, object>> part;
+        //public Dictionary<string, Dictionary<string, object>> part;
         public Dictionary<string, string> validFrom;
         
-        public string mode, currentNode, fileLocation;
+        public string mode, currentNode;
         public Bom.ExportLang exportMode=Bom.ExportLang.Kor;
 
         ExportCBD export = new ExportCBD();
         ImportCBD import = new ImportCBD();
 
-        Dictionary<string, double> reference = null;
-        Dictionary<string, List<double>> masterData;
-
-        Dictionary<string, DataGridView> assySorting = new Dictionary<string, DataGridView>();
+        public Dictionary<string, DataGridView> assySorting = new Dictionary<string, DataGridView>();
 
         public Dictionary<string, DataGridView> ReturnValue1 { get; private set; }
         public Dictionary<string, List<Dictionary<string, object>>> ReturnValue2 { get; private set; }
         private void frmCBD_Load(object sender, EventArgs e)
         {
-            //double overheadsRate = global.ConvertDoule(part["종합"][Report.Cost.materialOverheads]) / 100;
-            assySorting.Clear();
             BasicInfoColumn();
             SubPartColumn();
             MaterialColumn();
-            ExternalMaterialColumn();
             ManufacturingColumn();
             EtcColumn();
 
-            assySorting.Add("소재", dgv_Material);
-            assySorting.Add("외주", dgv_External);
-            assySorting.Add("하위파트", dgv_SubPart);
-            assySorting.Add("종합", dgv_BaicInfo);
-            assySorting.Add("기타", dgv_Etc);
-            assySorting.Add("요약", dgv_Summary);
-            assySorting.Add("공정", dgv_Manufacturing);
-
-            if (exportMode == Bom.ExportLang.Eng)
-            {
-                cb_Mode.Image = Properties.Resources.간략1;
-                cb_Mode.Checked = true;
-
-            }
-            else
-            {
-                cb_Mode.Image = Properties.Resources.상세1;
-                cb_Mode.Checked = false;
-            }
+            cb_Mode.Image = exportMode == Bom.ExportLang.Eng ? Properties.Resources.간략1 : Properties.Resources.상세1;
+            cb_Mode.Checked = exportMode == Bom.ExportLang.Eng;
 
             dgv_Summary.Rows.Clear();
 
-            dgv_Summary.Rows.Add();
-            dgv_Summary.Rows[0].Cells["구분"].Value = "금액";
-            dgv_Summary.Rows.Add();
-            dgv_Summary.Rows[1].Cells["구분"].Value = "비율";
-
             if (mode.Contains("Export"))
             {
+                dgv_Summary.Rows.Add();
+                dgv_Summary.Rows[0].Cells["구분"].Value = "금액";
+                dgv_Summary.Rows.Add();
+                dgv_Summary.Rows[1].Cells["구분"].Value = "비율";
+
+                if (this.Parent is frmCBD) this.Parent.Visible = false;
+
                 btn_Import.Visible = false;
                 btn_ExportPCM.Visible = false;
-                Export();
-            }
-            else if (mode.Contains("Import"))
-            {
-                if (part != null)
+
+                //var test = assySorting["요약"].Rows[0];
+                foreach (DataGridViewColumn col in dgv_Summary.Columns)
                 {
-                    if(part.ContainsKey("종합")) reference = part["종합"].ToDictionary(pair => pair.Key, pair => global.ConvertDoule(pair.Value));
-                    Import(part);
+                    if (assySorting["요약"].Columns.Contains(col.Name)) dgv_Summary.Rows[0].Cells[col.Name].Value = assySorting["요약"].Rows[0].Cells[col.Name].Value;
                 }
 
-                btn_Export.Visible = false;
-                this.ReturnValue2 = TcPCMExportFormatMatching();
+                MappingDataGridView(dgv_Material, assySorting["재료"]);
+                MappingDataGridView(dgv_Manufacturing , assySorting["공정"]);
+                MappingDataGridView(dgv_SubPart , assySorting["하위파트"]);
+                MappingDataGridView(dgv_BaicInfo , assySorting["종합"]);
+                MappingDataGridView(dgv_Etc , assySorting["기타"]);
             }
+            else
+            {
 
-            this.ReturnValue1 = assySorting;
+            }
+            //else
+            //{
+            //    assySorting.Add("재료", dgv_Material);
+            //    assySorting.Add("하위파트", dgv_SubPart);
+            //    assySorting.Add("종합", dgv_BaicInfo);
+            //    assySorting.Add("기타", dgv_Etc);
+            //    assySorting.Add("요약", dgv_Summary);
+            //    assySorting.Add("공정", dgv_Manufacturing);
+            //}
+            //if (mode.Contains("Export"))
+            //{
+            //    btn_Import.Visible = false;
+            //    btn_ExportPCM.Visible = false;
+            //    port();
+            //}
+            //else if (mode.Contains("Import"))
+            //{
+            //    if (part != null)Import(part);
+            //    btn_Export.Visible = false;
+            //    this.ReturnValue2 = TcPCMExportFormatMatching();
+            //}
 
-            if (mode == "ExcelExportAll") btn_Export.PerformClick();
-            if (mode.Contains("Excel")) this.Close();
+            //this.ReturnValue1 = assySorting;
+
+            //if (mode == "ExcelExportAll") btn_Export.PerformClick();
+            //if (mode.Contains("Excel")) this.Close();
         }
-        private void Import(Dictionary<string, Dictionary<string, object>> importPart)
+        private void MappingImportDataGridView(DataGridView dgv, DataGridView sortedData)
         {
-            dgv_BaicInfo.Rows.Clear();
-            dgv_Etc.Rows.Clear();
-            dgv_SubPart.Rows.Clear();
-            dgv_Manufacturing.Rows.Clear();
-            dgv_Material.Rows.Clear();
-            dgv_External.Rows.Clear();
-
-            dgv_BaicInfo.Rows.Add();
-            export.SummaryExport(dgv_BaicInfo, part["종합"]);
-
-            dgv_Etc.Rows.Add();
-            export.SummaryExport(dgv_Etc, part["종합"]);
-
-            foreach (var item in importPart)
+            dgv.Rows.Clear();
+            foreach (DataGridViewRow row in sortedData.Rows)
             {
-                if (item.Key.Contains("종합") || item.Value == null) continue;
-                else if (item.Key.Contains("하위"))
+                int index = 0;
+                dgv.Rows.Add();
+                foreach (DataGridViewColumn col in dgv.Columns)
                 {
-                    dgv_SubPart.Rows.Add();
-                    export.SubPart(dgv_SubPart, item);
-                    dgv_SubPart.Rows[dgv_SubPart.Rows.Count-1].Cells["PartNumber"].Value = item.Key;
+                    if (!col.Visible) continue;
+                    if (sortedData.Columns.Count < col.Index) break;
+                    dgv.Rows[dgv.Rows.Count - 1].Cells[col.Index].Value = row.Cells[index].Value;
+                    index++;
                 }
-                else if (item.Key.Contains("공정")) import.DGVImport(dgv_Manufacturing, item.Value);
-                else if (item.Key.Contains("소재")) import.DGVImport(dgv_Material, item.Value);
-                else if (item.Key.Contains("외주")) import.DGVImport(dgv_External, item.Value);
             }
-
-            //MaterialSummary();
-            //ManufacturingSummary();
         }
-        private void Export()
+
+        private void MappingDataGridView(DataGridView dgv, DataGridView sortedData)
         {
-            dgv_BaicInfo.Rows.Add();
-            export.SummaryExport(dgv_BaicInfo, part["종합"]);
-
-            dgv_Etc.Rows.Add();
-            export.SummaryExport(dgv_Etc, part["종합"]);            
-
-            masterData = new Dictionary<string, List<double>>()
+            foreach (DataGridViewRow row in sortedData.Rows)
             {
-                { Report.Cost.manufacturingOverheads, new List<double>() },
-                { Report.Cost.materialOverheads, new List<double>() { global.ConvertDoule(part["종합"][Report.Cost.materialOverheads])}},
-                { Report.Cost.externalmaterialOverheads, new List<double>() { global.ConvertDoule(part["종합"][Report.Cost.externalmaterialOverheads])}},
-                { Report.Cost.overheadsPer, new List<double>() { global.ConvertDoule(part["종합"][Report.Cost.overheadsPer])}},
-                { Report.Cost.profitPer, new List<double>() { global.ConvertDoule(part["종합"][Report.Cost.profitPer])}},
-                { Report.Cost.workhour, new List<double>() },
-                { "1Shift", new List<double>() },
-                { "2Shift", new List<double>() },
-                { Report.Cost.marginRate, new List<double>() },
-                { Report.Cost.spaceMachine, new List<double>() },
-                { "범용", new List<double>() },
-                { "전용", new List<double>() },
-                { "", new List<double>() },
-                { Report.Cost.energyMachine, new List<double>() },
-                { Report.Cost.maintance+"_1Shift", new List<double>() },
-                { Report.Cost.maintance+"_2Shift", new List<double>() },
-                { Report.Cost.utilizationPower, new List<double>() },
-            };
-
-            foreach (var item in part)
-            {
-                if (item.Key.Contains("종합") || item.Value == null) continue;
-                else if (item.Key.Contains("하위"))
+                dgv.Rows.Add();
+                foreach (DataGridViewColumn col in dgv.Columns)
                 {
-                    dgv_SubPart.Rows.Add();
-                    export.SubPart(dgv_SubPart, item);
-                }
-                else if (item.Key.Contains("공정"))
-                {
-                    dgv_Manufacturing.Rows.Add();
-                    export.Manufacturing(dgv_Manufacturing, item, ref masterData);
-                }
-                else if (!item.Value.ContainsKey(Report.Designation.basic)) continue;
-                else if (item.Value[Report.Designation.basic]?.ToString().Contains("소재") == true)
-                {
-                    dgv_Material.Rows.Add();
-                    masterData[Report.Cost.materialOverheads].Add(export.Material(dgv_Material, item));
-                }
-                else if (item.Value[Report.Designation.basic]?.ToString().Contains("외주") == true)
-                {
-                    dgv_External.Rows.Add();
-                    masterData[Report.Cost.externalmaterialOverheads].Add(export.External(dgv_External, item));
+                    if (col.Name == "No") continue;
+                    else if (sortedData.Columns.Contains(col.Name)) dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = row.Cells[col.Name].Value;
                 }
             }
-
-            MaterialSummary();
-            ManufacturingSummary();
-
-            assySorting["소재"] = dgv_Material;
-            assySorting["공정"] = dgv_Manufacturing;
-            assySorting["외주"] = dgv_External;
-            assySorting["하위파트"] = dgv_SubPart;
-            assySorting["종합"] = dgv_BaicInfo;
-            assySorting["기타"] = dgv_Etc;
-            assySorting["요약"] = dgv_Summary;
         }
+
+        //private void MappingDataGridView(DataGridView dgv, DataGridView sortedData)
+        //{
+        //    foreach (DataGridViewRow row in sortedData.Rows)
+        //    {
+        //        dgv.Rows.Add();
+        //        foreach (DataGridViewColumn col in dgv.Columns)
+        //        {
+        //            if (col.Name == "No") continue;
+        //            else if (sortedData.Columns.Contains(col.Name)) dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = row.Cells[col.Name].Value;
+        //        }
+        //    }
+        //}
 
         private void btn_Export_Click(object sender, EventArgs e)
         {
             ExcelExport export = new ExcelExport();
-
-            string fileName =$"{fileLocation}\\표준원가분석.xlsx";
-
-            if (mode != "ExcelExportAll")
-            {
-                SaveFileDialog dlg = new SaveFileDialog();
-                dlg.Filter = ".xlsx|";
-                dlg.FileName = $"{ assySorting["종합"].Rows[0].Cells[Report.Designation.basic].Value}_표준원가분석.xlsx";
-
-                if (dlg.ShowDialog() != DialogResult.OK)
-                {
-                    CustomMessageBox.RJMessageBox.Show($"Error : 저장위치가 올바르게 선택되지 않았습니다.", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                fileName = dlg.FileName;
-            }
-            else fileName = fileName.Replace("표준원가분석", $"{assySorting["종합"].Rows[0].Cells[Report.Designation.basic].Value}_표준원가분석");
-
-            string err = export.Export($"{dgv_BaicInfo.Rows[0].Cells[Report.Designation.basic].Value}", exportMode, new frmCBD(), fileName, part, assySorting, masterData);
+            string err = export.SingleFileExport(exportMode, $"{dgv_BaicInfo.Rows[0].Cells[Report.Designation.basic].Value}", assySorting);
             if (err != null) CustomMessageBox.RJMessageBox.Show($"Error : {err}", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            else if(mode != "ExcelExportAll") CustomMessageBox.RJMessageBox.Show($"CBD 출력이 완료되었습니다.", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else CustomMessageBox.RJMessageBox.Show($"CBD 출력이 완료되었습니다.", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+
+        private void Import(Dictionary<string, Dictionary<string, object>> importPart)
+        {
+            //dgv_BaicInfo.Rows.Clear();
+            //dgv_Etc.Rows.Clear();
+            //dgv_SubPart.Rows.Clear();
+            //dgv_Manufacturing.Rows.Clear();
+            //dgv_Material.Rows.Clear();
+
+            //dgv_BaicInfo.Rows.Add();
+            //export.DataGridViewAdd(dgv_BaicInfo, part["기본"]);
+
+            //dgv_Etc.Rows.Add();
+            //export.DataGridViewAdd(dgv_Etc, part["기타"]);
+
+            //foreach (var item in importPart)
+            //{
+            //    if (item.Key.Contains("종합") || item.Value == null) continue;
+            //    else if (item.Key.Contains("하위"))
+            //    {
+            //        dgv_SubPart.Rows.Add();
+            //        //export.SubPart(dgv_SubPart, item);
+            //        export.DataGridViewAdd(dgv_SubPart, item.Value);
+            //        dgv_SubPart.Rows[dgv_SubPart.Rows.Count - 1].Cells["PartNumber"].Value = item.Key;
+            //    }
+            //    else if (item.Key.Contains("공정")) import.DGVImport(dgv_Manufacturing, item.Value);
+            //    else if (item.Key.Contains("소재")) import.DGVImport(dgv_Material, item.Value);
+            //}
+
+            //MaterialSummary();
+            //ManufacturingSummary();
         }
 
         private void btn_Import_Click(object sender, EventArgs e)
@@ -240,14 +202,20 @@ namespace TcPCM_Connect
 
             if (result.Item2 != null)
             {
-                part = result.Item2;
-                if (part.ContainsKey("종합")) reference = part["종합"].ToDictionary(pair => pair.Key, pair => global.ConvertDoule(pair.Value));
-                Import(result.Item2);
+                 assySorting = result.Item2;
+
+                MappingImportDataGridView(dgv_Material, assySorting["재료"]);
+                MappingImportDataGridView(dgv_Manufacturing, assySorting["공정"]);
+                MappingImportDataGridView(dgv_SubPart, assySorting["하위파트"]);
+                MappingImportDataGridView(dgv_BaicInfo, assySorting["종합"]);
+                MappingImportDataGridView(dgv_Summary, assySorting["요약"]);
+                MappingImportDataGridView(dgv_Etc, assySorting["기타"]);
+                //Import(result.Item2);
             }
 
             if (result.Item1 != null) CustomMessageBox.RJMessageBox.Show($"Error : {result}", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show($"엑셀 Import가 완료되었습니다.", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
+
             Thread.Sleep(100);
             LoadingScreen.CloseSplashScreen();
 
@@ -262,8 +230,6 @@ namespace TcPCM_Connect
                 {
                     item.Add(col.Name, row.Cells[col.Name].Value);
                 }
-
-                item.Add("MasterData", reference);
 
                 string colName = row.Cells[Report.Designation.basic].Value?.ToString() ?? "new Parts";
                 if (!exportData.ContainsKey(colName))
@@ -289,11 +255,6 @@ namespace TcPCM_Connect
                 item.Add(Report.Cost.setUpLabor, "");
 
                 foreach (DataGridViewColumn col in dgv_Material.Columns)
-                {
-                    if (!item.ContainsKey(col.Name)) item.Add(col.Name, "");
-                }
-
-                foreach (DataGridViewColumn col in dgv_External.Columns)
                 {
                     if (!item.ContainsKey(col.Name)) item.Add(col.Name, "");
                 }
@@ -326,34 +287,34 @@ namespace TcPCM_Connect
         }
         private void SubPartDataFormatChange(DataGridView dgv, ref Dictionary<string, List<Dictionary<string, object>>> exportData)
         {
-            foreach (DataGridViewRow row in dgv.Rows)
-            {
-                frmCBD frm = new frmCBD();
+            //foreach (DataGridViewRow row in dgv.Rows)
+            //{
+            //    frmCBD frm = new frmCBD();
 
-                var delivery =
-                    part[row.Cells["PartNumber"].Value?.ToString()].ToDictionary(pair => pair.Key, pair => pair.Value as Dictionary<string, object>);
+            //    var delivery =
+            //        part[row.Cells["PartNumber"].Value?.ToString()].ToDictionary(pair => pair.Key, pair => pair.Value as Dictionary<string, object>);
 
-                frm.part = delivery;
-                frm.mode = "ExcelImport";
-                frm.exportMode = exportMode;
-                frm.ShowDialog();
+            //    frm.part = delivery;
+            //    frm.mode = "ExcelImport";
+            //    frm.exportMode = exportMode;
+            //    frm.ShowDialog();
 
-                var subPart = frm.ReturnValue2;
-                string colName = dgv_BaicInfo.Rows[0].Cells[Report.Designation.basic].Value?.ToString() ?? "new Parts";
+            //    var subPart = frm.ReturnValue2;
+            //    string colName = dgv_BaicInfo.Rows[0].Cells[Report.Designation.basic].Value?.ToString() ?? "new Parts";
 
-                Dictionary<string, object> item = new Dictionary<string, object>();
-                item.Add("Category", dgv.Name);
-                bool nullRowCheck = false;
-                foreach (DataGridViewColumn col in dgv.Columns)
-                {
-                    if (row.Cells[col.Name].Value != null) nullRowCheck = true;
-                    item.Add(col.Name, row.Cells[col.Name].Value);
-                }
-                item.Add("value", subPart);
+            //    Dictionary<string, object> item = new Dictionary<string, object>();
+            //    item.Add("Category", dgv.Name);
+            //    bool nullRowCheck = false;
+            //    foreach (DataGridViewColumn col in dgv.Columns)
+            //    {
+            //        if (row.Cells[col.Name].Value != null) nullRowCheck = true;
+            //        item.Add(col.Name, row.Cells[col.Name].Value);
+            //    }
+            //    item.Add("value", subPart);
 
-                if (!exportData.ContainsKey(colName)) exportData.Add(colName, new List<Dictionary<string, object>>());               
-                if (nullRowCheck) exportData[colName].Add(item);
-            }            
+            //    if (!exportData.ContainsKey(colName)) exportData.Add(colName, new List<Dictionary<string, object>>());    Manufacturing           
+            //    if (nullRowCheck) exportData[colName].Add(item);
+            //}            
         }
 
         private Dictionary<string, List<Dictionary<string, object>>> TcPCMExportFormatMatching()
@@ -363,8 +324,7 @@ namespace TcPCM_Connect
             DataFormatChange(dgv_Manufacturing, ref exportData);
             DataFormatChange(dgv_Material, ref exportData);
             SubPartDataFormatChange(dgv_SubPart, ref exportData);
-            DataFormatChange(dgv_External, ref exportData);
-
+ 
             return exportData;
         }
 
@@ -384,16 +344,8 @@ namespace TcPCM_Connect
 
         private void dgv_SubPart_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            frmCBD frm = new frmCBD();
-
-            var delivery =
-                part[dgv_SubPart.Rows[e.RowIndex].Cells["PartNumber"].Value?.ToString()].ToDictionary(pair => pair.Key,
-                pair => pair.Value is JObject ? ((JObject)pair.Value).ToObject<Dictionary<string, object>>() : pair.Value as Dictionary<string, object>);
-
-            frm.part = delivery;
-            frm.mode = mode;
-            frm.exportMode = exportMode;
-            frm.ShowDialog();
+            frmDashboard frm = new frmDashboard();
+            frm.LoadCBDForm(((Dictionary<string, object>)dgv_SubPart.Rows[e.RowIndex].Cells["PartNumber"].Value).ToDictionary(pair => pair.Key, pair => pair.Value as Dictionary<string, object>)); 
         }
 
         private void cb_Mode_CheckedChanged(object sender, EventArgs e)
@@ -408,6 +360,63 @@ namespace TcPCM_Connect
                 cb_Mode.Image = Properties.Resources.상세1;
                 exportMode = Bom.ExportLang.Kor;
             }
+        }
+
+        private void dgv_BaicInfo_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            //if (!btn_Import.Visible && dgv_BaicInfo.Columns[e.ColumnIndex].Name != Report.Designation.dateOfCalc) return;
+            //dgv_BaicInfo.Rows[0].Cells[Report.Designation.dateOfCalc].Value
+            //    = DateTime.TryParse(dgv_BaicInfo.Rows[0].Cells[Report.Designation.dateOfCalc].Value?.ToString(), out DateTime date) 
+            //        ? date: DateTime.Now;
+
+            //assySorting["종합"] = dgv_BaicInfo;
+        }
+
+        private void dgv_Summary_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            //if (e.RowIndex != 0 || e.ColumnIndex == 0 || dgv_Summary.Rows.Count < 2) return;
+
+            //dgv_Summary.Rows[0].Cells["부품가"].Value
+            //     = global.ConvertDouble(dgv_Summary.Rows[0].Cells["계"].Value)
+            //      + global.ConvertDouble(dgv_Summary.Rows[0].Cells["관리비"].Value)
+            //      + global.ConvertDouble(dgv_Summary.Rows[0].Cells["이윤"].Value)
+            //      + global.ConvertDouble(dgv_Summary.Rows[0].Cells["기타"].Value);
+
+            //foreach (DataGridViewColumn col in dgv_Summary.Columns)
+            //{
+            //    if (col.Index == 0) continue;
+            //    dgv_Summary.Rows[1].Cells[col.Index].Value
+            //        = global.ConvertDouble(dgv_Summary.Rows[0].Cells[col.Index].Value) / global.ConvertDouble(dgv_Summary.Rows[0].Cells["부품가"].Value) * 100;
+            //}
+
+            //assySorting["요약"] = dgv_Summary;
+        }
+
+        private void dgv_Material_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            //if (!btn_Import.Visible) return;
+            //import.Material((DataGridView)sender, e);
+            //export.MaterialSummary();
+
+            //assySorting["재료"] = dgv_Material;
+        }
+
+        private void dgv_Manufacturing_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            //if (!btn_Import.Visible) return;
+            //import.Manufacturing((DataGridView)sender, e);
+
+            //export.ManufacturingSummary();
+
+            //assySorting["공정"] = dgv_Manufacturing;
+        }
+
+        private void dgv_Etc_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            //dgv_Summary.Rows[0].Cells["기타"].Value
+            //   = dgv_Etc.Rows[0].Cells[Report.Cost.transport].Value;
+
+            //assySorting["기타"] = dgv_Etc;
         }
 
         private void dgv_Manufacturing_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
@@ -429,126 +438,10 @@ namespace TcPCM_Connect
         {
             global.CommaAdd(e, 1);
         }
+
         private void dgv_SubPart_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             global.CommaAdd(e, 2);
-        }
-
-        private void dgv_ETC_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            DataGridView dgv = (DataGridView)sender;
-            if (dgv.Columns[e.ColumnIndex].Name == "Value" || dgv.Columns[e.ColumnIndex].Name == "TotalValue"
-                || dgv.Columns[e.ColumnIndex].Name == "overheads")
-            {
-                global.CommaAdd(e, 1);
-            }
-            else global.CommaAdd(e, 4);
-        }
-
-        private void dgv_BaicInfo_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (!btn_Import.Visible && dgv_BaicInfo.Columns[e.ColumnIndex].Name != Report.Designation.dateOfCalc) return;
-            dgv_BaicInfo.Rows[0].Cells[Report.Designation.dateOfCalc].Value
-                = DateTime.TryParse(dgv_BaicInfo.Rows[0].Cells[Report.Designation.dateOfCalc].Value?.ToString(), out DateTime date) 
-                    ? date: DateTime.Now;
-
-            assySorting["종합"] = dgv_BaicInfo;
-        }
-
-        private void dgv_Summary_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (dgv_Summary.Columns[e.ColumnIndex].Name != "계" && dgv_Summary.Columns[e.ColumnIndex].Name != "기타") return;
-
-            dgv_Summary.Rows[0].Cells["부품가"].Value
-                 = global.ConvertDoule(dgv_Summary.Rows[0].Cells["계"].Value) + global.ConvertDoule(dgv_Summary.Rows[0].Cells["재료관리비"].Value)
-                  + global.ConvertDoule(dgv_Summary.Rows[0].Cells["관리비"].Value) + global.ConvertDoule(dgv_Summary.Rows[0].Cells["이윤"].Value)
-                  + global.ConvertDoule(dgv_Summary.Rows[0].Cells["기타"].Value);
-
-            foreach (DataGridViewColumn col in dgv_Summary.Columns)
-            {
-                if (col.Index == 0) continue;
-                dgv_Summary.Rows[1].Cells[col.Index].Value 
-                    = global.ConvertDoule(dgv_Summary.Rows[0].Cells[col.Index].Value) / global.ConvertDoule(dgv_Summary.Rows[0].Cells["부품가"].Value)*100;
-            }
-
-            assySorting["요약"] = dgv_Summary;
-        }
-
-        private void dgv_Material_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (!btn_Import.Visible || reference==null) return;
-            import.Material((DataGridView)sender, e, reference);
-            MaterialSummary();
-
-            assySorting["소재"] = dgv_Material;
-        }
-
-        private void dgv_External_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (!btn_Import.Visible || reference == null) return;
-            import.External((DataGridView)sender, e, reference);
-            MaterialSummary();
-
-            assySorting["외주"] = dgv_External;
-        }
-
-        private void dgv_Manufacturing_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (!btn_Import.Visible || reference == null) return;
-            import.Manufacturing((DataGridView)sender, e, reference);
-
-            ManufacturingSummary();
-
-            assySorting["공정"] = dgv_Manufacturing;
-        }
-
-        private void dgv_Etc_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            dgv_Summary.Rows[0].Cells["기타"].Value
-               = dgv_Etc.Columns.Cast<DataGridViewColumn>().Sum(t => Convert.ToDouble(dgv_Etc.Rows[0].Cells[t.Index].Value));
-
-            assySorting["기타"] = dgv_Etc;
-        }
-
-        private void ManufacturingSummary()
-        {
-            dgv_Summary.Rows[0].Cells["노무비"].Value
-                = dgv_Manufacturing.Rows.Cast<DataGridViewRow>().Sum(t => Convert.ToDouble(t.Cells["totalLabor"].Value));
-
-            dgv_Summary.Rows[0].Cells["경비"].Value
-                = dgv_Manufacturing.Rows.Cast<DataGridViewRow>().Sum(t => Convert.ToDouble(t.Cells["totalMachine"].Value));
-
-            dgv_Summary.Rows[0].Cells["공정"].Value
-                = global.ConvertDoule(dgv_Summary.Rows[0].Cells["노무비"].Value) + global.ConvertDoule(dgv_Summary.Rows[0].Cells["경비"].Value);
-
-            ExcelExport excelExport = new ExcelExport();
-            double overheads = reference != null ? reference[Report.Cost.overheadsPer] : excelExport.Average(masterData[Report.Cost.overheadsPer]) / 100; ;
-            double profit = reference != null ? reference[Report.Cost.profitPer] : excelExport.Average(masterData[Report.Cost.profitPer]) / 100; ;
-
-            dgv_Summary.Rows[0].Cells["관리비"].Value
-                = global.ConvertDoule(dgv_Summary.Rows[0].Cells["공정"].Value) * overheads;
-
-            dgv_Summary.Rows[0].Cells["이윤"].Value
-                = (global.ConvertDoule(dgv_Summary.Rows[0].Cells["공정"].Value) + global.ConvertDoule(dgv_Summary.Rows[0].Cells["관리비"].Value))
-                * profit;
-
-            dgv_Summary.Rows[0].Cells["계"].Value
-               = global.ConvertDoule(dgv_Summary.Rows[0].Cells["공정"].Value) + global.ConvertDoule(dgv_Summary.Rows[0].Cells["재료비"].Value);
-        }
-
-        private void MaterialSummary()
-        {
-            dgv_Summary.Rows[0].Cells["재료비"].Value 
-                = dgv_SubPart.Rows.Cast<DataGridViewRow>().Sum(t => Convert.ToDouble(t.Cells["TotalValue"].Value))
-                + dgv_Material.Rows.Cast<DataGridViewRow>().Sum(t => Convert.ToDouble(t.Cells["TotalValue"].Value))
-                + dgv_External.Rows.Cast<DataGridViewRow>().Sum(t => Convert.ToDouble(t.Cells["TotalValue"].Value));
-
-            dgv_Summary.Rows[0].Cells["재료관리비"].Value 
-                = dgv_Material.Rows.Cast<DataGridViewRow>().Sum(t => Convert.ToDouble(t.Cells["overheads"].Value))
-                + dgv_External.Rows.Cast<DataGridViewRow>().Sum(t => Convert.ToDouble(t.Cells["overheads"].Value));
-
-            dgv_Summary.Rows[0].Cells["계"].Value
-                = global.ConvertDoule(dgv_Summary.Rows[0].Cells["공정"].Value) + global.ConvertDoule(dgv_Summary.Rows[0].Cells["재료비"].Value);
         }
 
         private void dgv_Manufacturing_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -556,6 +449,7 @@ namespace TcPCM_Connect
             dgv_Manufacturing.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "";
         }
 
+        #region column 생성
         private void BasicInfoColumn()
         {
             dgv_BaicInfo.Columns.Clear();
@@ -563,36 +457,22 @@ namespace TcPCM_Connect
 
             if (btn_Import.Visible) dgv_BaicInfo.ReadOnly = false;
 
-            dgv_BaicInfo.Columns.Add(Report.Designation.kindOfCar, "차종/제품");
-            dgv_BaicInfo.Columns.Add(Report.Designation.status, "상태");
-            dgv_BaicInfo.Columns.Add(Report.Designation.customer, "고객사");
-            dgv_BaicInfo.Columns.Add(Report.Designation.basic, "부품명");
-            dgv_BaicInfo.Columns.Add(Report.Designation.itemNumber, "도번");
-            dgv_BaicInfo.Columns.Add(Report.Designation.supplier, "협력사");
-
-            dgv_BaicInfo.Columns.Add(Report.Designation.modified, "작성자");
-
-            CalendarColumn calendarDate = new CalendarColumn();
-            calendarDate.Name = Report.Designation.modifiedDate;
-            calendarDate.HeaderText = "작성일";
-            calendarDate.DefaultCellStyle.Format = "yyyy-MM-dd";
-            dgv_BaicInfo.Columns.Add(calendarDate);
-
-            CalendarColumn calendar = new CalendarColumn();
-            calendar.Name = Report.Designation.dateOfCalc;
-            calendar.HeaderText = "기준정보적용일";
-            calendar.DefaultCellStyle.Format = "yyyy-MM-dd";
-            dgv_BaicInfo.Columns.Add(calendar);
-
-            dgv_BaicInfo.Columns.Add(Report.Cost.assyShift, "Shift Model");
-            dgv_BaicInfo.Columns.Add(Report.Designation.productionHourPerYear, "Shift Model (h/year)");
-
-            dgv_BaicInfo.Columns.Add(Report.Designation.region, "생산지");
-            dgv_BaicInfo.Columns.Add(Report.Designation.productionStart, "생산 시작일");
-            dgv_BaicInfo.Columns.Add(Report.Designation.lifeTime, "Life Time");
-            dgv_BaicInfo.Columns.Add(Report.Designation.forcast, "Forecast(년평균)");
-            dgv_BaicInfo.Columns.Add(Report.Designation.numberOfLot, "제조 Lot 수");
+            DGVColumns columns = new DGVColumns();
+            foreach (KeyValuePair<string, string> pair in columns.Basic())
+            {
+                if (pair.Key== Report.Designation.modifiedDate || pair.Key == Report.Designation.dateOfCalc)
+                {
+                    CalendarColumn calendarDate = new CalendarColumn();
+                    calendarDate.Name = pair.Key;
+                    calendarDate.HeaderText = pair.Value;
+                    calendarDate.DefaultCellStyle.Format = "yyyy-MM-dd";
+                    dgv_BaicInfo.Columns.Add(calendarDate);
+                }
+                else dgv_BaicInfo.Columns.Add(pair.Key, pair.Value);
+            }
+            dgv_BaicInfo.Columns["PartNumber"].Visible = false;
         }
+
         private void SubPartColumn()
         {
             dgv_SubPart.Columns.Clear();
@@ -600,17 +480,15 @@ namespace TcPCM_Connect
 
             if (btn_Import.Visible) dgv_SubPart.ReadOnly = false;
 
-            dgv_SubPart.Columns.Add("No", "No");
-            dgv_SubPart.Columns.Add(Report.Designation.basic, "구성품명");
-            dgv_SubPart.Columns.Add(Report.Designation.substance, "재질/규격");
-            dgv_SubPart.Columns.Add(Report.Cost.materialQuantityUnit, "단위");
-            dgv_SubPart.Columns.Add(Report.Cost.materialCosts, "단가");
-            dgv_SubPart.Columns.Add(Report.Cost.quantity, "소요량");
-            dgv_SubPart.Columns.Add("PartNumber", "PartNumber");
+            DGVColumns columns = new DGVColumns();
+            foreach (KeyValuePair<string, string> pair in columns.SubPart())
+            {
+                dgv_SubPart.Columns.Add(pair.Key, pair.Value);
+            }
             dgv_SubPart.Columns["PartNumber"].Visible = false;
-            dgv_SubPart.Columns.Add("TotalValue", "계");
             dgv_SubPart.Columns["TotalValue"].ReadOnly = true;
         }
+
         private void MaterialColumn()
         {
             dgv_Material.Columns.Clear();
@@ -618,54 +496,14 @@ namespace TcPCM_Connect
 
             if (btn_Import.Visible) dgv_Material.ReadOnly = false;
 
-            dgv_Material.Columns.Add("No", "No");
-            dgv_Material.Columns.Add(Report.Designation.basic, "구성품명");
-            dgv_Material.Columns.Add(Report.Designation.substance, "재질/규격");
-            dgv_Material.Columns.Add(Report.Cost.density, "비중");
-            dgv_Material.Columns.Add(Report.Cost.materialPriceUnit, "단위");
-            dgv_Material.Columns.Add(Report.Cost.materialCosts, "재료단가");
-            dgv_Material.Columns.Add(Report.Cost.valid, "재료단가 적용일");
-            dgv_Material.Columns.Add(Report.Cost.length, "가로");
-            dgv_Material.Columns.Add(Report.Cost.width, "세로");
-            dgv_Material.Columns.Add(Report.Cost.thickness, "높이");
-            dgv_Material.Columns.Add(Report.Cost.cavity, "Cavity");
-            dgv_Material.Columns.Add(Report.Cost.quantity, "투입량");
-            dgv_Material.Columns.Add(Report.Cost.netWeight, "Net");
-            dgv_Material.Columns.Add(Report.Cost.loss, "Loss율");
-            dgv_Material.Columns.Add(Report.Cost.scrapQuantity, "Scrap");
+            DGVColumns columns = new DGVColumns();
+            foreach (KeyValuePair<string, string> pair in columns.Material())
+            {
+                dgv_Material.Columns.Add(pair.Key, pair.Value);
+            }
             dgv_Material.Columns[Report.Cost.scrapQuantity].ReadOnly = true;
-            dgv_Material.Columns.Add(Report.Cost.scrapPrice, "Scrap단가");
-            dgv_Material.Columns.Add(Report.Cost.lossPrice, Report.Cost.lossPrice);
             dgv_Material.Columns[Report.Cost.lossPrice].Visible = false;
-            //dgv_Material.Columns.Add(Report.Cost.recycle, "회수율");
-            dgv_Material.Columns.Add("Value", "소계");
-            dgv_Material.Columns["Value"].ReadOnly = true;
-            dgv_Material.Columns.Add("소요량", "소요량");
-             dgv_Material.Columns["소요량"].Visible = false;
-            dgv_Material.Columns.Add("TotalValue", "Total");
-            dgv_Material.Columns["TotalValue"].ReadOnly = true;
-            dgv_Material.Columns["TotalValue"].Visible = false;
-            dgv_Material.Columns.Add("overheads", "재료 관리비");
-            dgv_Material.Columns["overheads"].ReadOnly = true;
-        }
-
-        private void ExternalMaterialColumn()
-        {
-            dgv_External.Columns.Clear();
-            dgv_External.Rows.Clear();
-
-            if (btn_Import.Visible) dgv_External.ReadOnly = false;
-
-            dgv_External.Columns.Add("No", "No");
-            dgv_External.Columns.Add(Report.Designation.basic, "구성품명");
-            dgv_External.Columns.Add(Report.Designation.substance, "재질/규격");
-            dgv_External.Columns.Add(Report.Cost.materialQuantityUnit, "단위");
-            dgv_External.Columns.Add(Report.Cost.materialCosts, "단가");
-            dgv_External.Columns.Add(Report.Cost.quantity, "소요량");
-            dgv_External.Columns.Add("TotalValue", "계");
-            dgv_External.Columns["TotalValue"].ReadOnly = true;
-            dgv_External.Columns.Add("overheads", "외주 재료 관리비");
-            dgv_External.Columns["overheads"].ReadOnly = true;
+            dgv_Material.Columns[Report.Cost.totalMaterial].ReadOnly = true;
         }
 
         private void ManufacturingColumn()
@@ -675,70 +513,35 @@ namespace TcPCM_Connect
 
             if (btn_Import.Visible) dgv_Manufacturing.ReadOnly = false;
 
-            dgv_Manufacturing.Columns.Add(Report.Cost.manufacturingCategory, "구분");
-            dgv_Manufacturing.Columns.Add(Report.Designation.basic, "공정명");
-            dgv_Manufacturing.Columns.Add(Report.Designation.machine, "설비명");
-            dgv_Manufacturing.Columns.Add("소요량", "소요량");
-            dgv_Manufacturing.Columns["소요량"].Visible = false;
-            dgv_Manufacturing.Columns.Add(Report.Cost.cycleTime, "Net C/T");
-            dgv_Manufacturing.Columns.Add(Report.Cost.maunCavity, "Cavity");
-            dgv_Manufacturing.Columns.Add(Report.Cost.setupTime, "준비시간");
-            dgv_Manufacturing.Columns.Add(Report.Cost.lot, "Lot수량");
-            dgv_Manufacturing.Columns[Report.Cost.lot].ReadOnly = true;
-            dgv_Manufacturing.Columns.Add("CycleTime", "C/T");
-            dgv_Manufacturing.Columns["CycleTime"].ReadOnly = true;
-            dgv_Manufacturing.Columns.Add(Report.Cost.laborNum, "투입인원");
-            dgv_Manufacturing.Columns.Add(Report.Cost.laborCosts, "임율");
-            dgv_Manufacturing.Columns.Add("totalLabor", "노무비 계");
-            dgv_Manufacturing.Columns["totalLabor"].ReadOnly = true;
-            dgv_Manufacturing.Columns.Add(Report.Cost.acquisition, "설비가");
-            dgv_Manufacturing.Columns.Add(Report.Cost.auxiliaryArea, "설치면적");
-            dgv_Manufacturing.Columns.Add(Report.Cost.ratePower, "전력량");
-            dgv_Manufacturing.Columns.Add(Report.Cost.utilizationPower, "전력소비율");
-            dgv_Manufacturing.Columns.Add(Report.Cost.imputed, "기계상각비");
+            DGVColumns columns = new DGVColumns();
+            foreach (KeyValuePair<string, string> pair in columns.Manufacturing())
+            {
+                dgv_Manufacturing.Columns.Add(pair.Key, pair.Value);
+            }
+
             dgv_Manufacturing.Columns[Report.Cost.imputed].ReadOnly = true;
-            dgv_Manufacturing.Columns.Add(Report.Cost.space, "건물상각비");
             dgv_Manufacturing.Columns[Report.Cost.space].ReadOnly = true;
-            dgv_Manufacturing.Columns.Add(Report.Cost.energyCostRate, "전력비");
             dgv_Manufacturing.Columns[Report.Cost.energyCostRate].ReadOnly = true;
-            dgv_Manufacturing.Columns.Add(Report.Cost.maintance, "수선비");
             dgv_Manufacturing.Columns[Report.Cost.maintance].ReadOnly = true;
-
-            DataGridViewComboBoxColumn comboBoxColumn = new DataGridViewComboBoxColumn();
-            comboBoxColumn.FlatStyle = FlatStyle.Flat;
-            comboBoxColumn.Name = Report.Designation.machineCategory;
-            comboBoxColumn.HeaderText = "설비구분";
-            comboBoxColumn.Items.Add("범용");
-            comboBoxColumn.Items.Add("전용");
-            comboBoxColumn.Items.Add("");
-            dgv_Manufacturing.Columns.Add(comboBoxColumn);
-
-            comboBoxColumn = new DataGridViewComboBoxColumn();
-            comboBoxColumn.FlatStyle = FlatStyle.Flat;
-            comboBoxColumn.Name = Report.Designation.shift;
-            comboBoxColumn.HeaderText = "작업시간";
-            comboBoxColumn.Items.Add("1Shift");
-            comboBoxColumn.Items.Add("2Shift");
-            dgv_Manufacturing.Columns.Add(comboBoxColumn);
-
-            dgv_Manufacturing.Columns.Add(Report.Cost.machineCosts, "시간당경비 계");
-            dgv_Manufacturing.Columns[Report.Cost.machineCosts].ReadOnly = true;
-            dgv_Manufacturing.Columns.Add("totalMachine", "경비 계");
-            dgv_Manufacturing.Columns["totalMachine"].ReadOnly = true;
+            //dgv_Manufacturing.Columns[Report.Cost.totalMachinePerCycleTime].Visible = false;
+            dgv_Manufacturing.Columns[Report.Cost.totalLabor].Visible = false;
+            dgv_Manufacturing.Columns[Report.Cost.manufacturingCosts].ReadOnly = true;
         }
 
-        private void EtcColumn()
+        public void EtcColumn()
         {
             dgv_Etc.Columns.Clear();
             dgv_Etc.Rows.Clear();
 
             if (btn_Import.Visible) dgv_Etc.ReadOnly = false;
 
-            dgv_Etc.Columns.Add(Report.Cost.mold, "금형비");
-            dgv_Etc.Columns.Add(Report.Cost.jig, "치공구비");
-            dgv_Etc.Columns.Add(Report.Cost.transport, "물류비");
-            dgv_Etc.Columns.Add(Report.Cost.package, "포장비");
+            DGVColumns columns = new DGVColumns();
+            foreach (KeyValuePair<string, string> pair in columns.Etc())
+            {
+                dgv_Etc.Columns.Add(pair.Key, pair.Value);
+            }
         }
+        #endregion
 
         #region 화면 이동 가능
         //METODO PARA REDIMENCIONAR/CAMBIAR TAMAÑO A FORMULARIO  TIEMPO DE EJECUCION ----------------------------------------------------------

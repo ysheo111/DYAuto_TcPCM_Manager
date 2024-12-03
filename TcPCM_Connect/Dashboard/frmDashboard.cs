@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 using System.Windows.Forms;
@@ -15,7 +17,7 @@ namespace TcPCM_Connect
     {
         public string privateFolder;
         ExportCBD export = new ExportCBD();
-        Dictionary<string, Dictionary<string, Dictionary<string, object>>> partData;
+        Dictionary<string, Dictionary<string, Part>> partData;
         Bom.ExportLang mode = Bom.ExportLang.Kor;
 
         public frmDashboard()
@@ -33,135 +35,11 @@ namespace TcPCM_Connect
             myimageList.Images.Add(Properties.Resources.icon3); //열린 폴더 아이콘
             myimageList.Images.Add(Properties.Resources.icon6); //닫힌 프로젝트 아이콘
             myimageList.Images.Add(Properties.Resources.icon5); //열린 프로젝트 아이콘
+            myimageList.Images.Add(Properties.Resources.tool); //툴아이콘
             tv_Bom.ImageList = myimageList;
 
             pb_Refresh_Click(this.pb_Refresh, null);
             BasicInfoColumn();
-        }
-
-        private void SelectNode()
-        {
-            if (tv_Bom.SelectedNode == null) return;
-
-            Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
-            splashthread.IsBackground = true;
-            splashthread.Start();
-
-            try
-            {
-                dgv_BaicInfo.Rows.Clear();
-
-                List<string> selectList = FindChild(tv_Bom.SelectedNode);
-                partData = export.PartDataExport(dgv_BaicInfo, selectList);
-
-                if (partData == null) CustomMessageBox.RJMessageBox.Show($"Error : 데이터가 존재하지 않습니다.", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else if (partData.ContainsKey("Error")) CustomMessageBox.RJMessageBox.Show($"Error : {partData["Error"].Keys.ToList()[0]}", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-            }
-            catch
-            {
-                CustomMessageBox.RJMessageBox.Show($"Error : 작업중 오류가 발생하였습니다. 다시 시도해주세요.", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-            LoadingScreen.CloseSplashScreen();
-        }
-
-        private void tv_Bom_DoubleClick(object sender, EventArgs e)
-        {
-            SelectNode();
-        }
-
-        private List<string> FindChild(TreeNode node)
-        {
-            List<string> childList = new List<string> {node.Name};
-            foreach (TreeNode child in node.Nodes)
-            {
-                if (child.Nodes.Count != 0) childList = childList.Concat(FindChild(child)).ToList();
-                else  childList.Add(child.Name);
-            }
-            return childList;
-        }
-
-        private void btn_Create_Click(object sender, EventArgs e)
-        {
-            frmCBD frm = new frmCBD();
-            frm.ShowDialog();
-        }
-
-        private void pb_Refresh_Click(object sender, EventArgs e)
-        {
-            tv_Bom.Nodes.Clear();
-            List<string> folders = export.FindFolder(privateFolder);
-            export.FolderList(tv_Bom, folders);
-        }
-
-        private void dgv_UserInfo_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            global.CommaAdd(e,2);
-        }
-
-        private void btn_Configuration_Click(object sender, EventArgs e)
-        {
-            ConfigSetting config = new ConfigSetting();
-            config.className = "CBD";
-            config.Show();
-        }
-
-        private void dgv_UserInfo_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            frmCBD frm = new frmCBD();            
-            frm.part = partData[dgv_BaicInfo.Rows[e.RowIndex].Cells["PartNumber"].Value?.ToString()];
-            frm.mode = "Export";
-            frm.exportMode = mode;
-            frm.ShowDialog();
-        }
-
-        private void tv_Bom_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                // Display context menu for eg:
-                tv_Bom.SelectedNode = tv_Bom.GetNodeAt(new Point(e.X, e.Y));
-                contextMenuStrip1.Show(MousePosition.X, MousePosition.Y);
-            }
-        }
-
-        private void 내보내기ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (tv_Bom.SelectedNode == null) return;
-            if (tv_Bom.SelectedNode.FullPath.Contains("Public folder") && !frmLogin.auth.Contains("admin"))
-            {
-                CustomMessageBox.RJMessageBox.Show("작업자에게 권한이 없습니다. 다시 시도해주세요.", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else
-            {
-                frmCBD frm = new frmCBD();
-                frm.mode = "Import";
-                frm.exportMode = mode;
-                frm.currentNode = tv_Bom.SelectedNode.Name;
-                frm.ShowDialog();
-            }
-        }
-        private void BasicInfoColumn()
-        {
-            DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn = new DataGridViewCheckBoxColumn();
-            dataGridViewCheckBoxColumn.Name = dataGridViewCheckBoxColumn.HeaderText = "Check";
-            dgv_BaicInfo.Columns.Add(dataGridViewCheckBoxColumn);
-            dgv_BaicInfo.Columns.Add("PartNumber", "PartNumber");
-            dgv_BaicInfo.Columns["PartNumber"].Visible=false;
-            dgv_BaicInfo.Columns.Add(Report.Designation.status, "상태");
-            dgv_BaicInfo.Columns.Add(Report.Designation.itemNumber, "도번");
-            dgv_BaicInfo.Columns.Add(Report.Designation.basic, "부품명");
-            //dgv_BaicInfo.Columns.Add(Report.Designation.customer, "고객사");
-            dgv_BaicInfo.Columns.Add(Report.Designation.supplier, "협력사");
-            CalendarColumn calendar = new CalendarColumn();
-            calendar.Name = Report.Designation.dateOfCalc;
-            calendar.HeaderText = "작성일";
-            calendar.DefaultCellStyle.Format = "yyyy-MM-dd";
-            dgv_BaicInfo.Columns.Add(calendar);
-            dgv_BaicInfo.Columns.Add(Report.Designation.modified, "작성자");
-            //dgv_BaicInfo.Columns.Add(Report.Designation.forcast, "Forcast(year)");
-            //dgv_BaicInfo.Columns.Add(Report.Designation.productionDayPerYear, "일생산량");
         }
 
         private void cb_Mode_CheckedChanged(object sender, EventArgs e)
@@ -178,35 +56,117 @@ namespace TcPCM_Connect
             }
         }
 
-        private void btn_Export_Click(object sender, EventArgs e)
+        private void pb_Refresh_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog dlg = new FolderBrowserDialog();
-            if (dlg.ShowDialog() != DialogResult.OK)
-            {
-                CustomMessageBox.RJMessageBox.Show($"Error : 저장위치가 올바르게 선택되지 않았습니다.", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            foreach (DataGridViewRow row in dgv_BaicInfo.Rows)
-            {
-                if (!(bool)(row.Cells["Check"].Value??false)) continue;
-
-                frmCBD frm = new frmCBD();
-
-                frm.part = partData[row.Cells["PartNumber"].Value?.ToString()];
-                frm.mode = "ExcelExportAll";
-                frm.fileLocation = dlg.SelectedPath;
-                frm.exportMode = mode;
-                frm.Hide();
-                frm.ShowDialog();
-            }
-
-            CustomMessageBox.RJMessageBox.Show($"CBD 출력이 완료되었습니다.", "Cost Break Down", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            tv_Bom.Nodes.Clear();
+            string query = $@"select CONCAT('f&',Id, '&',STRING_AGG(CONCAT(m.c.value('@lang', 'varchar(max)'), ':', m.c.value('.', 'nvarchar(max)')), '|'))  as name
+            from Folders
+            OUTER APPLY Folders.Name_LOC.nodes('/translations/value') as m(c)
+            where m.c.value('.', 'nvarchar(max)')  like '%Private folder%' or m.c.value('.', 'nvarchar(max)')  like '%Public folder%'
+            GROUP BY Id";
+            List<string> init = global_DB.ListSelect(query, (int)global_DB.connDB.PCMDB);
+            export.ExploreNodeAdd(tv_Bom.Nodes, init);
+            //tv_Bom.TreeViewNodeSorter = new NodeSorter();
+            //tv_Bom.Sort();
         }
 
-        private void dgv_BaicInfo_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void btn_Configuration_Click(object sender, EventArgs e)
         {
-            dgv_BaicInfo.Rows[e.RowIndex].Cells["Check"].Value = !(bool)(dgv_BaicInfo.Rows[e.RowIndex].Cells["Check"].Value??false);
+            ConfigSetting config = new ConfigSetting();
+            config.className = "CBD";
+            config.Show();
+        }
+        private void btn_Export_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void tv_Bom_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            e.Node.Nodes.RemoveByKey("expand");
+            List<string> add = export.HierarchicalExplore((TagType)e.Node.Tag, e.Node.Name.Remove(0, 1));
+            export.ExploreNodeAdd(e.Node.Nodes, add); 
+        }
+
+        private void tv_Bom_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                // Display context menu for eg:
+                tv_Bom.SelectedNode = tv_Bom.GetNodeAt(new Point(e.X, e.Y));
+                contextMenuStrip1.Show(MousePosition.X, MousePosition.Y);
+            }
+        }       
+
+        private void searchButton1_SearchButtonClick(object sender, EventArgs e)
+        {
+            dgv_BaicInfo.Rows.Clear();
+            // 'a'를 포함한 모든 노드 찾기
+            //List<object> nodesWithA = FindNodesByName(tv_Bom, searchButton1.text);
+            FindNodesByName(tv_Bom, searchButton1.text);
+        }
+
+        public List<object> FindNodesByName(TreeView treeView, string keyword)
+        {
+            List<object> result = new List<object>();
+
+            // 트리뷰의 모든 노드에 대해 재귀적으로 검색
+            foreach (TreeNode node in treeView.Nodes)
+            {
+                SearchNode(node, keyword, result, "","");
+            }
+
+            return result;
+        }
+
+        private void SearchNode(TreeNode node, string keyword, List<object> result, string path,string icon)
+        {
+            // 현재 노드의 이름에 'a'가 포함되어 있으면 결과에 추가
+            if (node.Text.Contains(keyword))
+            {
+                dgv_BaicInfo.Rows.Add("", tv_Bom.ImageList.Images[node.ImageIndex],$"{node.Text}", $"{ path.Remove(path.Length - 1)}");
+            }
+
+            // 자식 노드가 있으면 재귀적으로 검색
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                SearchNode(childNode, keyword, result, path + node.Text + "\\", icon);
+            }
+        }
+
+
+        private void dgv_UserInfo_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            global.CommaAdd(e, 2);
+        }
+
+        private void BasicInfoColumn()
+        {
+            //DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn = new DataGridViewCheckBoxColumn();
+            //dataGridViewCheckBoxColumn.Name = dataGridViewCheckBoxColumn.HeaderText = "Check";
+            //dgv_BaicInfo.Columns.Add(dataGridViewCheckBoxColumn);            
+
+            dgv_BaicInfo.Columns.Add("PartNumber", "PartNumber");
+            dgv_BaicInfo.Columns["PartNumber"].Visible = false;
+
+            DataGridViewImageColumn dataGridViewCheckBoxColumn = new DataGridViewImageColumn();
+            dataGridViewCheckBoxColumn.HeaderText = "아이콘";
+            dataGridViewCheckBoxColumn.Name = "img";
+            dgv_BaicInfo.Columns.Add(dataGridViewCheckBoxColumn);
+
+            dgv_BaicInfo.Columns.Add(Report.Header.partName, "구성품명");
+            dgv_BaicInfo.Columns[Report.Header.partName].ReadOnly = true;
+            dgv_BaicInfo.Columns.Add("위치", "위치");
+            dgv_BaicInfo.Columns["위치"].ReadOnly = true;
+            dgv_BaicInfo.Columns.Add(Report.Header.author, "작성자");
+            dgv_BaicInfo.Columns[Report.Header.author].ReadOnly = true;
+            CalendarColumn calendar = new CalendarColumn();
+            calendar.Name = Report.Header.dateOfCreation;
+            calendar.HeaderText = "작성일";
+            calendar.DefaultCellStyle.Format = "yyyy-MM-dd";
+            dgv_BaicInfo.Columns.Add(calendar);
+            dgv_BaicInfo.Columns.Add(Report.Header.partName, "차종명");
+            dgv_BaicInfo.Columns[Report.Header.partName].ReadOnly = true;
+            dgv_BaicInfo.Columns[Report.Header.dateOfCreation].ReadOnly = true;
         }
     }
 }

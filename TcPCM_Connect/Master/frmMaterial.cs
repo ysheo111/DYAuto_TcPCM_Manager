@@ -82,7 +82,7 @@ namespace TcPCM_Connect
             Material();
             if (combo.SelectedItem?.ToString()== "다이캐스팅") DieCastingColumn();
             else if(combo.SelectedItem?.ToString()== "사출") InjectionColumn();
-            else if(combo.SelectedItem?.ToString()== "프레스" || combo.SelectedItem?.ToString() == "코일") PlateColumn();
+            else if(combo.SelectedItem?.ToString()== "프레스" || combo.SelectedItem?.ToString() == "코어") PlateColumn();
 
             dgv_Material.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;            
         }
@@ -114,6 +114,8 @@ namespace TcPCM_Connect
 
         private void DieCastingColumn()
         {
+            dgv_Material.Columns.Add("DROSS 비용", "DROSS 비용");
+            dgv_Material.Columns.Add("DROSS 비용 단위", "DROSS 비용 단위");
             dgv_Material.Columns.Add("주조 온도 최소(℃)", "주조 온도 최소(℃)");
             dgv_Material.Columns.Add("주조 온도 최대(℃)", "주조 온도 최대(℃)");
             dgv_Material.Columns.Add("T-factor", "T-factor");
@@ -121,16 +123,19 @@ namespace TcPCM_Connect
 
         private void InjectionColumn()
         {
+            dgv_Material.Columns.Add("계열", "계열");
             dgv_Material.Columns.Add("탈형 온도(℃)", "탈형 온도(℃)");
             dgv_Material.Columns.Add("사출 온도(℃)", "사출 온도(℃)");
             dgv_Material.Columns.Add("금형 온도(℃)", "금형 온도(℃)");
-            dgv_Material.Columns.Add("열확산도(mm²)", "열확산도(mm²)");
+            dgv_Material.Columns.Add("내부 탈형 압력 계수", "내부 탈형 압력 계수");
+            dgv_Material.Columns.Add("열확산도(mm²/s)", "열확산도(mm²/s)");
         }
 
         private void PlateColumn()
         {
             dgv_Material.Columns.Add("인장 강도(N/mm²)", "인장 강도(N/mm²)");
             dgv_Material.Columns.Add("전단 강도(N/mm²)", "전단 강도(N/mm²)");
+            dgv_Material.Columns.Add("생산 계수", "생산 계수");
         }
 
         private void dgv_Material_CellValueChanged(object sender, DataGridViewCellEventArgs e)

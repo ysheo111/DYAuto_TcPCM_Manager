@@ -13,7 +13,7 @@ using System.Drawing.Design;
 namespace CustomControls.RJControls
 {
     [DefaultEvent("OnSelectedIndexChanged")]
-    public class RJComboBox : UserControl
+    class RJComboBox : UserControl
     {
         //Fields
         private Color backColor = Color.WhiteSmoke;
@@ -44,15 +44,14 @@ namespace CustomControls.RJControls
             cmbList.Font = new Font(this.Font.Name, 10F);
             cmbList.ForeColor = listTextColor;
             cmbList.SelectedIndexChanged += new EventHandler(ComboBox_SelectedIndexChanged);//Default event
-            cmbList.TextChanged += new EventHandler(ComboBox_TextChanged);//Refresh text
+            cmbList.TextChanged += new EventHandler(ComboBox_TextChanged);//Refresh text            
 
             //Button: Icon
-            //btnIcon.Dock = DockStyle.Right;
-            btnIcon.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            btnIcon.Dock = DockStyle.Right;
             btnIcon.FlatStyle = FlatStyle.Flat;
             btnIcon.FlatAppearance.BorderSize = 0;
             btnIcon.BackColor = backColor;
-            btnIcon.Size = new Size(20, 10);
+            btnIcon.Size = new Size(30, 30);
             btnIcon.Cursor = Cursors.Hand;
             btnIcon.Click += new EventHandler(Icon_Click);//Open dropdown list
             btnIcon.Paint += new PaintEventHandler(Icon_Paint);//Draw icon
@@ -62,28 +61,24 @@ namespace CustomControls.RJControls
             lblText.AutoSize = false;
             lblText.BackColor = backColor;
             lblText.TextAlign = ContentAlignment.MiddleLeft;
-            lblText.Padding = new Padding(0, 0, 0, 0);
+            lblText.Padding = new Padding(8, 0, 0, 0);
             lblText.Font = new Font(this.Font.Name, 10F);
             //->Attach label events to user control event
             lblText.Click += new EventHandler(Surface_Click);//Select combo box
             lblText.MouseEnter += new EventHandler(Surface_MouseEnter);
             lblText.MouseLeave += new EventHandler(Surface_MouseLeave);
-            lblText.AutoSize = false;
-            lblText.BackColor = Color.Violet;
-            //lblText.Size = new Size(50,20);
 
             //User Control
+            this.Controls.Add(lblText);//2
             this.Controls.Add(btnIcon);//1
-            this.Controls.Add(lblText);//2            
             this.Controls.Add(cmbList);//0
-            this.MinimumSize = new Size(0, 0);
-            //this.Size = new Size(200, 30);
+            //this.MinimumSize = new Size(200, 30);
+            this.Size = new Size(200, 30);
             this.ForeColor = Color.DimGray;
             this.Padding = new Padding(borderSize);//Border Size
             this.Font = new Font(this.Font.Name, 10F);
             base.BackColor = borderColor; //Border Color
             this.ResumeLayout();
-            //this.Size = new Size(50, 50);
             AdjustComboBoxDimensions();
         }
 
@@ -291,18 +286,10 @@ namespace CustomControls.RJControls
         //Private methods
         private void AdjustComboBoxDimensions()
         {
-            cmbList.Width = lblText.Width;
-            //btnIcon.Height = lblText.Width;
-
-            btnIcon.Location = new Point()
-            {
-                X = lblText.Width-btnIcon.Width,
-                Y = (lblText.Bottom - btnIcon.Height) / 2
-            };
-
+            cmbList.Width = this.Width-this.borderSize-1;
             cmbList.Location = new Point()
             {
-                X =  0,
+                X = this.Width - this.Padding.Right - cmbList.Width,
                 Y = lblText.Bottom - cmbList.Height
             };
         }
@@ -322,8 +309,8 @@ namespace CustomControls.RJControls
         private void Icon_Paint(object sender, PaintEventArgs e)
         {
             //Fields
-            int iconWidht = 8;
-            int iconHeight = 4;
+            int iconWidht = 14;
+            int iconHeight = 6;
             var rectIcon = new Rectangle((btnIcon.Width - iconWidht) / 2, (btnIcon.Height - iconHeight) / 2, iconWidht, iconHeight);
             Graphics graph = e.Graphics;
 
@@ -353,8 +340,6 @@ namespace CustomControls.RJControls
             cmbList.Select();
             if (cmbList.DropDownStyle == ComboBoxStyle.DropDownList)
                 cmbList.DroppedDown = true;//Open dropdown list
-
-            btnIcon.PerformClick();
         }
         private void ComboBox_TextChanged(object sender, EventArgs e)
         {
@@ -379,18 +364,6 @@ namespace CustomControls.RJControls
         {
             base.OnResize(e);
             AdjustComboBoxDimensions();
-        }
-
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // RJComboBox
-            // 
-            this.Name = "RJComboBox";
-            this.Size = new System.Drawing.Size(50, 50);
-            this.ResumeLayout(false);
-
         }
 
 

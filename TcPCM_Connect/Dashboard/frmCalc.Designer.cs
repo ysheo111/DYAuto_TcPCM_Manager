@@ -92,7 +92,7 @@ namespace TcPCM_Connect
             this.btn_Calc.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(48)))), ((int)(((byte)(213)))));
             this.btn_Calc.FlatAppearance.BorderSize = 0;
             this.btn_Calc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Calc.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_Calc.Font = new System.Drawing.Font("Microsoft PhagsPa", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Calc.ForeColor = System.Drawing.Color.White;
             this.btn_Calc.Location = new System.Drawing.Point(36, 454);
             this.btn_Calc.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -421,7 +421,7 @@ namespace TcPCM_Connect
             this.btn_CalcMaintance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(48)))), ((int)(((byte)(213)))));
             this.btn_CalcMaintance.FlatAppearance.BorderSize = 0;
             this.btn_CalcMaintance.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_CalcMaintance.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_CalcMaintance.Font = new System.Drawing.Font("Microsoft PhagsPa", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_CalcMaintance.ForeColor = System.Drawing.Color.White;
             this.btn_CalcMaintance.Location = new System.Drawing.Point(471, 305);
             this.btn_CalcMaintance.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);

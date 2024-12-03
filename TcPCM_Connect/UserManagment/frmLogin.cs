@@ -82,8 +82,8 @@ namespace TcPCM_Connect
 
 #if DEBUG
             global_iniLoad.loadDBInfo(false);
-            uc.txtUser.Text = "Admin";
-            uc.txtPass.Password = "costadmin";
+            uc.txtUser.Text = "admin";
+            uc.txtPass.Password = "admin";
 #else
              global_iniLoad.loadDBInfo(true);
 #endif
@@ -146,6 +146,7 @@ namespace TcPCM_Connect
                 frmMain frmmain = new frmMain();
                 frmmain.lastLogin = info.Split('\\')[0];
                 frmmain.connectName = info.Split('\\')[1];
+                global.loginID = uc.txtUser.Text;
                 auth = info.Split('\\')[2];
 
                 frmmain.Show(this);

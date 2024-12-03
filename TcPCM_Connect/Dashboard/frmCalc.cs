@@ -21,8 +21,8 @@ namespace TcPCM_Connect
         private void btn_Calc_Click(object sender, EventArgs e)
         {
             txt_lot.Texts =
-                    Math.Truncate((global.ConvertDoule(txt_workday.Texts) * global.ConvertDoule(txt_shift.Texts) * 3600 - global.ConvertDoule(txt_setup.Texts) * 60)
-                    / global.ConvertDoule(txt_ct.Texts) * global.ConvertDoule(txt_cavity.Texts)).ToString();
+                    Math.Truncate((global.ConvertDouble(txt_workday.Texts) * global.ConvertDouble(txt_shift.Texts) * 3600 - global.ConvertDouble(txt_setup.Texts) * 60)
+                    / global.ConvertDouble(txt_ct.Texts) * global.ConvertDouble(txt_cavity.Texts)).ToString();
         }
 
         private void frmLotCalc_Load(object sender, EventArgs e)
@@ -55,8 +55,8 @@ namespace TcPCM_Connect
         private void btn_CalcMaintance_Click(object sender, EventArgs e)
         {
             txt_Maintance.Texts =
-                   Math.Round((global.ConvertDoule(txt_Imputed.Texts) + global.ConvertDoule(txt_SpaceCost.Texts))
-                   * global.ConvertDoule(txt_MaintainRate.Texts) / 100 ,2).ToString();
+                   Math.Round((global.ConvertDouble(txt_Imputed.Texts) + global.ConvertDouble(txt_SpaceCost.Texts))
+                   * global.ConvertDouble(txt_MaintainRate.Texts) / 100 ,2).ToString();
 
         }
     }

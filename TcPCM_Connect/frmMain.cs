@@ -10,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TcPCM_Connect_Global;
+using System.Threading;
+using System.IO;
+using Point = System.Drawing.Point;
 
 namespace TcPCM_Connect
 {
@@ -28,18 +31,16 @@ namespace TcPCM_Connect
         private void FormMenuPrincipal_Load(object sender, EventArgs e)
         {
             lb_name.Text = connectName;
-            lb_lasthistory.Text = lastLogin;
 
-            if (!frmLogin.auth.Contains("admin"))
+            if (!frmLogin.auth.ToLower().Contains("admin"))
             {
                 btn_Master.Visible = false;
                 p_Master.Visible = false;
                 btn_UserManage.Visible = false;
             }
             global_iniLoad.loadDBInfo(true);
-
-            string query = $"Select PrivateFolderId From UserSettings as a Inner Join Users as b on a.UserId = b.Id Where LogonName = '{frmLogin.auth}'";
-            privateFolder = global_DB.ScalarExecute(query, (int)global_DB.connDB.PCMDB);
+            //btn_Dashboard.PerformClick();   
+            btn_Dashboard.PerformClick();
         }
 
         private void btnSalir_Click(object sender, EventArgs e)
@@ -58,22 +59,35 @@ namespace TcPCM_Connect
             this.tip_logout.SetToolTip(this.btnSalir, "로그아웃 버튼 입니다.");
         }
 
-        private void btn_CBD_Click(object sender, EventArgs e)
+        private void sideButton2_Click(object sender, EventArgs e)
+        {
+            ChangeButtonColor(((Button)sender).Name, p_Manu);
+
+            frmCalculator calculator = new frmCalculator();
+            frmApply(calculator, ref panelContenedorForm);
+        }
+
+
+        private void sideButton2_Click_1(object sender, EventArgs e)
+        {
+            ChangeButtonColor(((Button)sender).Name, p_Manu);
+
+            frmCoreCalculator calculator = new frmCoreCalculator();
+            frmApply(calculator, ref panelContenedorForm);
+        }
+        private void btn_CBD_Click(object sender, EventArgs e )
         {
             ChangeButtonColor(((Button)sender).Name, p_Manu);
 
             frmDashboard frm = new frmDashboard();
+
+            string query = $"Select PrivateFolderId From UserSettings as a Inner Join Users as b on a.UserId = b.Id Where LogonName = '{frmLogin.auth}'";
+            privateFolder = global_DB.ScalarExecute(query, (int)global_DB.connDB.PCMDB);
+
             frm.privateFolder = privateFolder;
             frmApply(frm, ref panelContenedorForm);
         }
 
-        private void btn_lotClca_Click(object sender, EventArgs e)
-        {
-            ChangeButtonColor(((Button)sender).Name, p_Manu);
-
-            frmLotCalc frm = new frmLotCalc();
-            frmApply(frm, ref panelContenedorForm);
-        }
         private void btn_Category_Click(object sender, EventArgs e)
         {
             ChangeButtonColor("btn_Master", p_Manu);
