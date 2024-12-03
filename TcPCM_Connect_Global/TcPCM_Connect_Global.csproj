@@ -82,9 +82,7 @@
     </Compile>
     <Compile Include="Excel\DiecastingExport.cs" />
     <Compile Include="Global\Part.cs" />
-    <Compile Include="JT\DocumentHelper.cs" />
     <Compile Include="Dashboard\ExportCBD.cs" />
-    <Compile Include="JT\SoildEdge.cs" />
     <Compile Include="Excel\ExcelCommon.cs" />
     <Compile Include="Excel\ExcelExport.cs" />
     <Compile Include="Excel\ExcelImport.cs" />
