@@ -387,6 +387,8 @@
     <None Include="Resources\logo.png" />
     <None Include="Resources\3844432_magnifier_search_zoom_icon.png" />
     <None Include="Resources\3671698_filter_icon.png" />
+    <None Include="Resources\DY AUTO  로고.png" />
+    <Resource Include="Resources\dya1.jpg" />
     <Content Include="xaml\bg_hero_contents_3.png" />
     <Resource Include="xaml\LG_MAGNA_LOGO_3D.jpg" />
     <Resource Include="xaml\마그나최종 1.png" />

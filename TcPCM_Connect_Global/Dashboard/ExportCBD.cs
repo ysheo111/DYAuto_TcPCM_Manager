@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data;
+using System.Drawing;
+using System.Xml.Linq;
 
 namespace TcPCM_Connect_Global
 {
@@ -135,6 +137,226 @@ namespace TcPCM_Connect_Global
             }
         }
 
+        public void FindDashboard(string searchString, ImageList image, DataGridView dgv)
+        {
+            string query =   $@"WITH RecursiveParents AS (
+                SELECT 
+                    cs.CurrentCalcId,
+		            cs.ParentCalcId,  
+                    p.Name_LOC_Extracted AS Path,
+                    cs.CurrentCalcId AS Init,  -- Init 컬럼에 해당 레코드의 id를 초기값으로 설정
+		            p.Name_LOC_Extracted  as name,
+		            p.id as partID
+		            FROM CalculationStructureView cs
+		            INNER JOIN Parts p ON p.Id = (select PartId from Calculations as c where cs.CurrentCalcId=c.id)
+		            WHERE p.Name_LOC_Extracted LIKE '%{searchString}%' 
+
+                UNION ALL
+
+                SELECT 
+                     cs.CurrentCalcId,
+                     cs.ParentCalcId,  
+                     p.Name_LOC_Extracted + '</split>' + fh.Path,
+                    fh.Init,  -- 상위 레코드의 Init 값을 그대로 사용
+		            fh.name,  -- 상위 레코드의 Init 값을 그대로 사용
+		            p.id as partID
+	            FROM CalculationStructureView cs
+                INNER JOIN RecursiveParents fh ON cs.CurrentCalcId = fh.ParentCalcId
+	            INNER JOIN Parts p ON p.Id = (select PartId from Calculations as c where cs.CurrentCalcId=c.id)
+	            where p.PartType = 1 and p.Deleted is null
+            ),
+            RankedResults AS (
+              SELECT *,
+                     ROW_NUMBER() OVER (PARTITION BY Init ORDER BY LEN(Path) DESC) AS rn
+              FROM RecursiveParents
+            ),
+            PartResult as (
+	            SELECT
+	              rr.Path, rr.init, rr.name, rr.partID,
+	              pe.ProjectId as projectID,
+	              fe.FolderId as folderID
+	            FROM RankedResults rr
+	            LEFT JOIN ProjectPartEntries pe ON rr.rn = 1 AND rr.partID = pe.partID
+	            LEFT JOIN FolderEntries fe ON rr.rn = 1 AND rr.partID = fe.partID
+	            WHERE rr.rn = 1 and (projectid is not null or folderid is not null)
+            ),
+            ProjectHierarchy AS (
+                SELECT 
+                    f.id, 
+                    f.parentId, 
+                    CAST(ISNULL(f.Name_LOC, '') AS NVARCHAR(MAX)) AS Path,
+                    p.id AS ProjectId,
+                    p.Name_LOC_Extracted AS ProjectName,
+                    CAST(CONCAT(p.Name_LOC_Extracted, '</split>', CAST(f.Name_LOC AS NVARCHAR(MAX))) AS NVARCHAR(MAX)) AS FullPath,
+		            p.id as init,
+		            partPath, partInit, partName, datarow.partID
+                FROM 
+                (
+		            select id as projectID, null as partPath, null as partInit, null as partName, null as partID from Projects 
+                    where Name_LOC_Extracted LIKE '%{searchString}%' and Deleted is null
+		            union all select projectID as projectID, Path as partPath, init as partInit, name as partName, partID as partID from PartResult
+	            ) as dataRow
+                left JOIN Projects p ON dataRow.projectID = p.Id  -- folderID와 ProjectId를 연결
+	            left join Folders f on p.FolderId = f.id
+	            where p.id is not null
+            ),
+            ProjectInterface as 
+            (
+	            SELECT 
+                init,
+                Max(len(FullPath)) as ProjectPath
+                FROM ProjectHierarchy fh
+                GROUP BY init
+            ),
+             ProjectFinalResult AS (
+                SELECT 
+	            fh.id as FolderID,
+                ProjectId, ProjectName,ProjectPath,
+	            partInit, partName, partPath, partID
+    
+                FROM ProjectHierarchy fh
+	            right join ProjectInterface as p on fh.init = p.init
+            ),
+            FolderHierarchy AS (
+	            SELECT 
+		            id, 
+		            parentId, 
+		            CAST(Name_LOC AS NVARCHAR(MAX)) AS Path,
+		            id AS Init,  -- Init 컬럼에 해당 레코드의 id를 초기값으로 설정
+		            CAST(Name_LOC AS NVARCHAR(MAX))  as name,
+
+		            dataRow.ProjectId,
+		            dataRow.ProjectName,
+		            dataRow.ProjectPath,
+		            dataRow.Path as partPath, dataRow.init as partInit, dataRow.name as partName, dataRow.partID as partID
+		
+	            FROM 
+	                (
+		            select id as folderid, null as ProjectId,null as ProjectName,null as ProjectPath, null as init, null as name, null as Path,null as  partID  from Folders 
+                    where CAST(Name_LOC AS NVARCHAR(MAX)) like '%{searchString}%' and Deleted is null
+		            union all select folderID, null as ProjectId,null as ProjectName,null as ProjectPath, init, name, Path, partID from PartResult where projectID is null
+		            union all select * from ProjectFinalResult
+	            ) as dataRow
+	
+	            left join Folders on Folders.id = dataRow.folderid
+	            UNION ALL
+
+	            SELECT 
+		            f.id, 
+		            f.parentId, 
+		             CAST(Name_LOC AS NVARCHAR(MAX))+'</split>' + fh.Path ,
+		            fh.Init,  -- 상위 레코드의 Init 값을 그대로 사용
+		            fh.name,  -- 상위 레코드의 Init 값을 그대로 사용
+
+		            fh.ProjectId,
+		            fh.ProjectName,
+		            fh.ProjectPath,
+		            fh.partPath,
+		            fh.partInit,
+		            fh.partName,
+		            fh.partID		
+	            FROM 
+		            Folders f
+	            INNER JOIN FolderHierarchy fh ON f.id = fh.parentId
+	            where f.ParentId is not null
+	            ),
+            FolderInterface AS (
+                SELECT 
+                    *,
+                    ROW_NUMBER() OVER (PARTITION BY partInit, ProjectId, init ORDER BY LEN(path) DESC) AS rn
+                FROM FolderHierarchy
+            )
+            SELECT 
+                partID,
+                partName,
+                partInit,
+                partPath,
+                ProjectId,
+                ProjectName,
+                ProjectPath,
+                Init as folderid,
+                name as folderName,
+                p.Path as folderPath
+            FROM 
+                FolderInterface as p
+            where rn = 1";
+
+            System.Data.DataTable dt = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
+            //List<string> list = new List<string>();
+            var imageMap = new Dictionary<string, int>
+                {
+                    {"part", 3},
+                    {"project", 2},
+                    {"folder", 0}
+                };
+            // 원하는 언어 순서
+            List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR",  "ru-RU", "ja-JP", "pt-BR", "de-DE" };
+
+            foreach (DataRow row in dt.Rows)
+            {
+                string id="",name = "",path = "";
+                int imageIndex = 0;
+
+                if (row["partInit"] != DBNull.Value)
+                {
+                    id = $"&{row["partInit"]}";
+                    path = $@"{row["folderPath"]}</split>{(row["ProjectId"] != DBNull.Value ? $" {row["ProjectName"]}</split>" : "")} {row["partPath"]}";
+                    imageIndex = imageMap["part"];
+                }
+                else if (row["ProjectId"] != DBNull.Value)
+                {
+                    id = $@"p&{row["ProjectId"]}";
+                    path = $@"{row["folderPath"]}</split> {row["ProjectName"]}";
+                    imageIndex = imageMap["project"];
+                }
+                else
+                {
+                    id = $@"f&{row["folderid"]}";
+                    path = $@"{row["folderPath"]}";
+                    imageIndex = imageMap["folder"];
+                }
+
+                string delimiter = "</split>";
+                string[] xmlFiles = path.Split(new string[] { delimiter }, StringSplitOptions.None); ;
+                string newPath = "";
+
+                for(int i=0; i< xmlFiles.Length; i++)
+                {
+                    string xmlString = xmlFiles[i];
+                    try
+                    {
+                        XDocument doc = XDocument.Parse(xmlString);
+
+                        var translations = doc.Descendants("value")
+                                           .OrderBy(v =>
+                                           {
+                                               string lang = (string)v.Attribute("lang");
+                                               return lang == null ? int.MaxValue : desiredLanguages.IndexOf(lang);
+                                           })
+                                           .ToDictionary(v => (string)v.Attribute("lang") ?? string.Empty, v => (string)v);
+
+                        foreach (var lang in desiredLanguages)
+                        {
+                            if (translations.ContainsKey(lang))
+                            {
+                                newPath += $"{translations[lang]}\\";
+                                if(i== xmlFiles.Length-1) name = $"{translations[lang]}";
+                                break;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        newPath += $"{xmlString}\\";
+                        if (i == xmlFiles.Length - 1) name = $"{xmlString}";
+                    }
+                }
+
+                Image icon = image.Images[imageIndex];
+
+                dgv.Rows.Add(id, icon, name, newPath.Remove(newPath.Length-1));
+            }
+        }
 
         /// <summary>
         /// 

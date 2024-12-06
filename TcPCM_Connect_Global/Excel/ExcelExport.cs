@@ -202,10 +202,7 @@ namespace TcPCM_Connect_Global
                 //excelCol += 3;
                 //excelOrder++;
                 DataTable material = new DataTable();
-                if (type == Bom.ManufacturingType.주조)
-                {
-                    material = DieCastingExport.Additional_ETC(worksheet, part);
-                }
+  
                 //원/부재료
                 MemberInfo[] materialMembers = typeof(Part.Material).GetMembers(BindingFlags.Public);
                 row = marker[excelOrder] + 5;
@@ -253,10 +250,6 @@ namespace TcPCM_Connect_Global
                     worksheet.Cells[row, excelCol++].Value = part.material[i].scrapUnitPrice;
                     worksheet.Cells[row, excelCol++].Value = part.material[i].scrap;
 
-                    if (type == Bom.ManufacturingType.주조) DieCastingExport.Additional_Material(row, worksheet, part, part.material[i], material);                    
-                    else if (type == Bom.ManufacturingType.코어) CoreExport.Additional_Material(row, worksheet, part, part.material[i]);
-                    else if (type == Bom.ManufacturingType.프레스) PressExport.Additional_Material(row, worksheet, part, part.material[i]);
-                    else if (type == Bom.ManufacturingType.사출) InjectionExport.Additional_Material(row, worksheet, part, part.material[i]);
                 }
 
                 excelOrder++;
@@ -276,12 +269,6 @@ namespace TcPCM_Connect_Global
                 }
 
                 DataTable cycleTime = new DataTable();
-                if (type == Bom.ManufacturingType.주조)
-                {
-                    cycleTime = DieCastingExport.Additional_CycleTime(worksheet, part);
-                    worksheet.Range["AS29"].Formula = part.manufacturing[0].et;
-                }
-
                 double etRow = marker[excelOrder] + 1;
                 worksheet.Cells[marker[excelOrder] + 1, 16].Value = part.manufacturing[0].et/100;                
                 worksheet.Cells[marker[excelOrder] + 1, 18].Value = part.header.plc==0 ? 0 : part.header.plcVolume / part.header.plc;
@@ -308,7 +295,6 @@ namespace TcPCM_Connect_Global
 
                         part.manufacturing[i].machinaryCost = part.manufacturing[i].laborCosts + part.manufacturing[i].workingTime * part.manufacturing[i].machineCostRate / 3600;
 
-                        DieCastingExport.Additional_Manufacturing(row,worksheet, part.manufacturing[i], cycleTime);
                     }
                     else
                     {
@@ -319,10 +305,7 @@ namespace TcPCM_Connect_Global
                         part.manufacturing[i].machinaryCost = part.manufacturing[i].laborCosts + part.manufacturing[i].workingTime * part.manufacturing[i].machineCostRate / 3600;
                     }
 
-                    if (type == Bom.ManufacturingType.코어) CoreExport.Additional_Manufacturing(row, worksheet, part.manufacturing[i]);
-                    else if (type == Bom.ManufacturingType.프레스) PressExport.Additional_Manufacturing(row, worksheet, part.manufacturing[i]);
-                    else if (type == Bom.ManufacturingType.사출) InjectionExport.Additional_Manufacturing(row, worksheet, part.manufacturing[i]);
-
+                  
                     excelCol = 2;
                     Excel.Range cell = worksheet.Cells[row, excelCol] as Excel.Range;
                     cell.Select();

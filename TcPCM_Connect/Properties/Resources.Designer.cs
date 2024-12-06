@@ -223,6 +223,36 @@ namespace TcPCM_Connect.Properties {
         /// <summary>
         ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
+        public static System.Drawing.Bitmap DY_AUTO__로고 {
+            get {
+                object obj = ResourceManager.GetObject("DY_AUTO__로고", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        public static System.Drawing.Bitmap dya1 {
+            get {
+                object obj = ResourceManager.GetObject("dya1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        public static System.Drawing.Bitmap dya11 {
+            get {
+                object obj = ResourceManager.GetObject("dya11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
         public static System.Drawing.Bitmap error {
             get {
                 object obj = ResourceManager.GetObject("error", resourceCulture);
@@ -296,16 +326,6 @@ namespace TcPCM_Connect.Properties {
         public static System.Drawing.Bitmap loading2 {
             get {
                 object obj = ResourceManager.GetObject("loading2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        public static System.Drawing.Bitmap logo {
-            get {
-                object obj = ResourceManager.GetObject("logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -496,16 +516,6 @@ namespace TcPCM_Connect.Properties {
         public static System.Drawing.Bitmap 간략1 {
             get {
                 object obj = ResourceManager.GetObject("간략1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        public static System.Drawing.Bitmap 마그나최종_1 {
-            get {
-                object obj = ResourceManager.GetObject("마그나최종_1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

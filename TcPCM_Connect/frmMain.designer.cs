@@ -136,10 +136,10 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::TcPCM_Connect.Properties.Resources.logo;
-            this.pictureBox1.Location = new System.Drawing.Point(4, 6);
+            this.pictureBox1.Image = global::TcPCM_Connect.Properties.Resources.DY_AUTO__로고;
+            this.pictureBox1.Location = new System.Drawing.Point(26, 6);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(195, 43);
+            this.pictureBox1.Size = new System.Drawing.Size(157, 44);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 6;
             this.pictureBox1.TabStop = false;

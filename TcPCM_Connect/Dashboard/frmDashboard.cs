@@ -87,52 +87,13 @@ namespace TcPCM_Connect
             export.ExploreNodeAdd(e.Node.Nodes, add); 
         }
 
-        private void tv_Bom_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                // Display context menu for eg:
-                tv_Bom.SelectedNode = tv_Bom.GetNodeAt(new Point(e.X, e.Y));
-                contextMenuStrip1.Show(MousePosition.X, MousePosition.Y);
-            }
-        }       
 
         private void searchButton1_SearchButtonClick(object sender, EventArgs e)
         {
             dgv_BaicInfo.Rows.Clear();
             // 'a'를 포함한 모든 노드 찾기
-            //List<object> nodesWithA = FindNodesByName(tv_Bom, searchButton1.text);
-            FindNodesByName(tv_Bom, searchButton1.text);
+            export.FindDashboard(searchButton1.text, tv_Bom.ImageList, dgv_BaicInfo);
         }
-
-        public List<object> FindNodesByName(TreeView treeView, string keyword)
-        {
-            List<object> result = new List<object>();
-
-            // 트리뷰의 모든 노드에 대해 재귀적으로 검색
-            foreach (TreeNode node in treeView.Nodes)
-            {
-                SearchNode(node, keyword, result, "","");
-            }
-
-            return result;
-        }
-
-        private void SearchNode(TreeNode node, string keyword, List<object> result, string path,string icon)
-        {
-            // 현재 노드의 이름에 'a'가 포함되어 있으면 결과에 추가
-            if (node.Text.Contains(keyword))
-            {
-                dgv_BaicInfo.Rows.Add("", tv_Bom.ImageList.Images[node.ImageIndex],$"{node.Text}", $"{ path.Remove(path.Length - 1)}");
-            }
-
-            // 자식 노드가 있으면 재귀적으로 검색
-            foreach (TreeNode childNode in node.Nodes)
-            {
-                SearchNode(childNode, keyword, result, path + node.Text + "\\", icon);
-            }
-        }
-
 
         private void dgv_UserInfo_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
@@ -141,32 +102,96 @@ namespace TcPCM_Connect
 
         private void BasicInfoColumn()
         {
-            //DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn = new DataGridViewCheckBoxColumn();
-            //dataGridViewCheckBoxColumn.Name = dataGridViewCheckBoxColumn.HeaderText = "Check";
-            //dgv_BaicInfo.Columns.Add(dataGridViewCheckBoxColumn);            
-
             dgv_BaicInfo.Columns.Add("PartNumber", "PartNumber");
             dgv_BaicInfo.Columns["PartNumber"].Visible = false;
 
             DataGridViewImageColumn dataGridViewCheckBoxColumn = new DataGridViewImageColumn();
-            dataGridViewCheckBoxColumn.HeaderText = "아이콘";
+            dataGridViewCheckBoxColumn.HeaderText = "";
             dataGridViewCheckBoxColumn.Name = "img";
             dgv_BaicInfo.Columns.Add(dataGridViewCheckBoxColumn);
+            
 
             dgv_BaicInfo.Columns.Add(Report.Header.partName, "구성품명");
             dgv_BaicInfo.Columns[Report.Header.partName].ReadOnly = true;
             dgv_BaicInfo.Columns.Add("위치", "위치");
             dgv_BaicInfo.Columns["위치"].ReadOnly = true;
-            dgv_BaicInfo.Columns.Add(Report.Header.author, "작성자");
-            dgv_BaicInfo.Columns[Report.Header.author].ReadOnly = true;
-            CalendarColumn calendar = new CalendarColumn();
-            calendar.Name = Report.Header.dateOfCreation;
-            calendar.HeaderText = "작성일";
-            calendar.DefaultCellStyle.Format = "yyyy-MM-dd";
-            dgv_BaicInfo.Columns.Add(calendar);
-            dgv_BaicInfo.Columns.Add(Report.Header.partName, "차종명");
-            dgv_BaicInfo.Columns[Report.Header.partName].ReadOnly = true;
-            dgv_BaicInfo.Columns[Report.Header.dateOfCreation].ReadOnly = true;
+
+            dgv_BaicInfo.Columns["위치"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCheckBoxColumn.Width = 50;
+            dgv_BaicInfo.Columns[Report.Header.partName].Width = (int)(dgv_BaicInfo.Width * 0.30);
+
+        }
+        List<string> selectItem = new List<string>();
+        List<TreeNode> selectedNode = new List<TreeNode>();
+        private void tv_Bom_MouseDown(object sender, MouseEventArgs e)
+        {
+            TreeView treeView = sender as TreeView;
+            TreeNode clickedNode = treeView.GetNodeAt(e.X, e.Y);
+
+            if (clickedNode != null)
+            {
+                if (Control.ModifierKeys == Keys.Control && e.Button==MouseButtons.Left)
+                {
+                    // Ctrl 키를 누르고 클릭한 경우: 선택 토글
+                    clickedNode.BackColor = clickedNode.BackColor == Color.LightSkyBlue ? Color.White : Color.LightSkyBlue;
+                    if (clickedNode.BackColor == Color.LightSkyBlue) selectedNode.Add(clickedNode);
+                    else selectedNode.Remove(clickedNode);
+                }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    // 마우스 오른쪽 버튼 클릭한 경우: 선택된 노드 정보 표시
+                    List<string> selectedNodes = new List<string>();
+                    if(selectedNode.Count == 0)
+                    {
+                        selectedNode.Add(clickedNode);
+                    }
+                    selectedNode = selectedNode.Distinct().ToList();
+                    foreach (TreeNode node in selectedNode) // 여기 수정
+                    {
+                        selectedNodes.Add(node.Text);
+                    }
+                    SelectItems(selectedNodes);
+                }
+                else
+                { 
+                    // 모든 노드 선택 해제
+                    foreach (TreeNode node in selectedNode)
+                    {
+                        node.BackColor = Color.White;
+                    }
+                    selectedNode.Clear();
+                }                
+            }
+        }
+
+        private void dgv_BaicInfo_MouseDown(object sender, MouseEventArgs e)
+        {
+            List<string> item = new List<string>();
+            if (e.Button == MouseButtons.Right)
+            {                
+                foreach (DataGridViewCell cell in dgv_BaicInfo.SelectedCells)
+                {                    
+                    item.Add(dgv_BaicInfo.Rows[cell.RowIndex].Cells["PartNumber"].Value.ToString());
+                }
+
+                SelectItems(item);
+            }            
+        }
+
+        private void SelectItems(List<string> item)
+        {
+            selectItem = item;
+            contextMenuStrip1.Show(MousePosition.X, MousePosition.Y);
+        }
+
+        private void tv_Bom_MouseClick(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void 테스트ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            selectItem
         }
     }
 }

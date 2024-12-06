@@ -71,16 +71,12 @@
     <Compile Include="Dashboard\BomExport.cs" />
     <Compile Include="Dashboard\CustomChart.cs" />
     <Compile Include="Dashboard\DGVColumns.cs" />
-    <Compile Include="Excel\CoreExport.cs" />
-    <Compile Include="Excel\PressExport .cs" />
-    <Compile Include="Excel\InjectionExport.cs" />
     <Compile Include="Excel\frmMachineSelect.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Excel\frmMachineSelect.Designer.cs">
       <DependentUpon>frmMachineSelect.cs</DependentUpon>
     </Compile>
-    <Compile Include="Excel\DiecastingExport.cs" />
     <Compile Include="Global\Part.cs" />
     <Compile Include="Dashboard\ExportCBD.cs" />
     <Compile Include="Excel\ExcelCommon.cs" />
