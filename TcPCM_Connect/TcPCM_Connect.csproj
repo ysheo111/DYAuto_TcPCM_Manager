@@ -118,11 +118,11 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Component\Select.cs">
+    <Compile Include="Dashboard\DatailSearch.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Component\Select.Designer.cs">
-      <DependentUpon>Select.cs</DependentUpon>
+    <Compile Include="Dashboard\DatailSearch.Designer.cs">
+      <DependentUpon>DatailSearch.cs</DependentUpon>
     </Compile>
     <Compile Include="Component\ConfigSetting.cs">
       <SubType>Form</SubType>
@@ -142,6 +142,12 @@
     <Compile Include="Controller\CalendarColumn.cs" />
     <Compile Include="Controller\CustomDataGridView.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controller\DateRangePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controller\DateRangePanel.Designer.cs">
+      <DependentUpon>DateRangePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Controller\FlatCombo.cs">
       <SubType>Component</SubType>
@@ -277,8 +283,8 @@
     <Compile Include="xaml\UserControl2.xaml.cs">
       <DependentUpon>UserControl2.xaml</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Component\Select.resx">
-      <DependentUpon>Select.cs</DependentUpon>
+    <EmbeddedResource Include="Dashboard\DatailSearch.resx">
+      <DependentUpon>DatailSearch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Component\ConfigSetting.resx">
       <DependentUpon>ConfigSetting.cs</DependentUpon>

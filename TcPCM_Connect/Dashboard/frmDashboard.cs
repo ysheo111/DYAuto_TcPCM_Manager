@@ -148,7 +148,7 @@ namespace TcPCM_Connect
                     selectedNode = selectedNode.Distinct().ToList();
                     foreach (TreeNode node in selectedNode) // 여기 수정
                     {
-                        selectedNodes.Add(node.Text);
+                        selectedNodes.Add(node.Name);
                     }
                     SelectItems(selectedNodes);
                 }
@@ -189,9 +189,50 @@ namespace TcPCM_Connect
 
         }
 
-        private void 테스트ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void 공정라이브러리ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            selectItem
+            CustomMessageBox.RJMessageBox.Show(string.Join("&", selectItem));
+        }
+
+        private void 견적서ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 견적및표준원가ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 단계별원가비교ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 실적원가비교ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 설계원가ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 부품원가계산서ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 금형ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
+        {
+            DetailSearch select = new DetailSearch();
+            select.ShowDialog();
         }
     }
 }

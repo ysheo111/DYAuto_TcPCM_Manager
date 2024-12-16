@@ -37,6 +37,14 @@ namespace TcPCM_Connect
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.견적및표준원가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.단계별원가비교ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.실적원가비교ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.설계원가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.테스트ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.부품원가계산서ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.견적서ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.금형ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.작업지지서ImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.내보내기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,7 +53,6 @@ namespace TcPCM_Connect
             this.pressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.coreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diecastingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.테스트ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.roundBorderPanel2 = new TcPCM_Connect.RoundBorderPanel();
             this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.pb_Refresh = new System.Windows.Forms.PictureBox();
@@ -62,9 +69,72 @@ namespace TcPCM_Connect
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.테스트ToolStripMenuItem});
+            this.견적및표준원가ToolStripMenuItem,
+            this.단계별원가비교ToolStripMenuItem,
+            this.실적원가비교ToolStripMenuItem,
+            this.설계원가ToolStripMenuItem,
+            this.테스트ToolStripMenuItem,
+            this.부품원가계산서ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(171, 136);
+            // 
+            // 견적및표준원가ToolStripMenuItem
+            // 
+            this.견적및표준원가ToolStripMenuItem.Name = "견적및표준원가ToolStripMenuItem";
+            this.견적및표준원가ToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.견적및표준원가ToolStripMenuItem.Text = "견적 및 표준 원가";
+            this.견적및표준원가ToolStripMenuItem.Click += new System.EventHandler(this.견적및표준원가ToolStripMenuItem_Click);
+            // 
+            // 단계별원가비교ToolStripMenuItem
+            // 
+            this.단계별원가비교ToolStripMenuItem.Name = "단계별원가비교ToolStripMenuItem";
+            this.단계별원가비교ToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.단계별원가비교ToolStripMenuItem.Text = "단계별 원가비교";
+            this.단계별원가비교ToolStripMenuItem.Click += new System.EventHandler(this.단계별원가비교ToolStripMenuItem_Click);
+            // 
+            // 실적원가비교ToolStripMenuItem
+            // 
+            this.실적원가비교ToolStripMenuItem.Name = "실적원가비교ToolStripMenuItem";
+            this.실적원가비교ToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.실적원가비교ToolStripMenuItem.Text = "실적 원가비교";
+            this.실적원가비교ToolStripMenuItem.Click += new System.EventHandler(this.실적원가비교ToolStripMenuItem_Click);
+            // 
+            // 설계원가ToolStripMenuItem
+            // 
+            this.설계원가ToolStripMenuItem.Name = "설계원가ToolStripMenuItem";
+            this.설계원가ToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.설계원가ToolStripMenuItem.Text = "설계 원가";
+            this.설계원가ToolStripMenuItem.Click += new System.EventHandler(this.설계원가ToolStripMenuItem_Click);
+            // 
+            // 테스트ToolStripMenuItem
+            // 
+            this.테스트ToolStripMenuItem.Name = "테스트ToolStripMenuItem";
+            this.테스트ToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.테스트ToolStripMenuItem.Text = "공정 라이브러리";
+            this.테스트ToolStripMenuItem.Click += new System.EventHandler(this.공정라이브러리ToolStripMenuItem_Click);
+            // 
+            // 부품원가계산서ToolStripMenuItem
+            // 
+            this.부품원가계산서ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.견적서ToolStripMenuItem1,
+            this.금형ToolStripMenuItem});
+            this.부품원가계산서ToolStripMenuItem.Name = "부품원가계산서ToolStripMenuItem";
+            this.부품원가계산서ToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.부품원가계산서ToolStripMenuItem.Text = "부품원가계산서";
+            // 
+            // 견적서ToolStripMenuItem1
+            // 
+            this.견적서ToolStripMenuItem1.Name = "견적서ToolStripMenuItem1";
+            this.견적서ToolStripMenuItem1.Size = new System.Drawing.Size(98, 22);
+            this.견적서ToolStripMenuItem1.Text = "일반";
+            this.견적서ToolStripMenuItem1.Click += new System.EventHandler(this.견적서ToolStripMenuItem1_Click);
+            // 
+            // 금형ToolStripMenuItem
+            // 
+            this.금형ToolStripMenuItem.Name = "금형ToolStripMenuItem";
+            this.금형ToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.금형ToolStripMenuItem.Text = "금형";
+            this.금형ToolStripMenuItem.Click += new System.EventHandler(this.금형ToolStripMenuItem_Click);
             // 
             // 작업지지서ImportToolStripMenuItem
             // 
@@ -106,13 +176,6 @@ namespace TcPCM_Connect
             this.diecastingToolStripMenuItem.Name = "diecastingToolStripMenuItem";
             this.diecastingToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
-            // 테스트ToolStripMenuItem
-            // 
-            this.테스트ToolStripMenuItem.Name = "테스트ToolStripMenuItem";
-            this.테스트ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.테스트ToolStripMenuItem.Text = "테스트";
-            this.테스트ToolStripMenuItem.Click += new System.EventHandler(this.테스트ToolStripMenuItem_Click);
-            // 
             // roundBorderPanel2
             // 
             this.roundBorderPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -146,6 +209,7 @@ namespace TcPCM_Connect
             this.searchButton1.text = "";
             this.searchButton1.TextBoxBackColor = System.Drawing.Color.WhiteSmoke;
             this.searchButton1.SearchButtonClick += new System.EventHandler(this.searchButton1_SearchButtonClick);
+            this.searchButton1.DetailSearchButtonClick += new System.EventHandler(this.searchButton1_DetailSearchButtonClick);
             // 
             // pb_Refresh
             // 
@@ -312,5 +376,12 @@ namespace TcPCM_Connect
         private System.Windows.Forms.ToolStripMenuItem diecastingToolStripMenuItem;
         private Controller.SearchButton searchButton1;
         private System.Windows.Forms.ToolStripMenuItem 테스트ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 견적및표준원가ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 단계별원가비교ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 실적원가비교ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 설계원가ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 부품원가계산서ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 견적서ToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem 금형ToolStripMenuItem;
     }
 }
