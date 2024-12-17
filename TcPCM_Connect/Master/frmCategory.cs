@@ -31,6 +31,7 @@ namespace TcPCM_Connect
             dgv_Category.AllowUserToAddRows= true;
             ColumnAdd();
             dgv_Category.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            string test = "?";
         }
 
         private void btn_Create_Click(object sender, EventArgs e)
