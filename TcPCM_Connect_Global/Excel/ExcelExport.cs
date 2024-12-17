@@ -509,52 +509,63 @@ namespace TcPCM_Connect_Global
         {
             Microsoft.Office.Interop.Excel.Application application = null;
             Excel.Workbook workBook = null;
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = ".xlsx|";
+            dlg.FileName = "지역.xlsx";
             try
             {
-                OpenFileDialog dlg = new OpenFileDialog();
-                dlg.Filter = ".xlsx|";
-
                 DialogResult dialog = dlg.ShowDialog();
                 if (dialog == DialogResult.Cancel) return null;
                 else if (dialog != DialogResult.OK) return $"Error : 저장위치가 올바르게 선택되지 않았습니다.";
 
-                //Excel 프로그램 실행
-                application = new Excel.Application();
+                try
+                {
+                    application = (Excel.Application)Marshal.GetActiveObject("Excel.Application");
+                }
+                catch
+                {
+                    application = new Excel.Application();
+                }
+
                 //Excel 화면 띄우기 옵션
                 application.Visible = true;
                 //파일로부터 불러오기
-                workBook = application.Workbooks.Open(dlg.FileName);
+                workBook = application.Workbooks.Add();// application.Workbooks.Open(dlg.FileName);
 
                 Excel.Worksheet worksheet = workBook.Sheets[1];
                 worksheet.Name = "지역";
                 worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible;
 
-                worksheet.Cells[1, 1] = dgv.Columns[0].Name;
+                worksheet.Cells[2, 2] = dgv.Columns[0].Name;
+                worksheet.Cells[2, 2].Interior.Color = Excel.XlRgbColor.rgbLightGray;
+
                 for (int row = 1; row < dgv.RowCount; row++)
                 {
-                    worksheet.Cells[row + 1, 1] = dgv.Rows[row - 1].Cells[0].Value.ToString();
+                    string input = dgv.Rows[row - 1].Cells[0].Value.ToString();
+                    string result = input.Replace("[DYA]","");
+                    worksheet.Cells[row+2, 2] = result;
                 }
+                Excel.Range range = worksheet.Range[$"B2:B{dgv.RowCount + 1}"];
+                range.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                range.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+
+                //변경점 저장
+                if (File.Exists(dlg.FileName))
+                    workBook.Save();
+                else
+                    workBook.SaveAs(dlg.FileName);
             }
             catch (Exception exc)
             {
-                return exc.Message;
-            }
-            finally
-            {
                 if (workBook != null)
                 {
-                    //변경점 저장하면서 닫기
-                    workBook.Save();
-
-                    ////Excel 프로그램 종료
+                    //Excel 프로그램 종료
                     workBook.Close();
                     application.Quit();
-                    ////오브젝트 해제1
-                    //ExcelCommon.ReleaseExcelObject(workBook);
-                    //ExcelCommon.ReleaseExcelObject(application);
                 }
+                return exc.Message;
             }
-
             return null;
         }
     }

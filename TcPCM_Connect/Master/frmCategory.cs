@@ -226,7 +226,10 @@ namespace TcPCM_Connect
             }
 
             foreach (string a in resultList)
-                dgv_Category.Rows.Add(a);
+            {
+                string result = a.Replace("[DYA]", "");
+                dgv_Category.Rows.Add(result);
+            }
         }
         public List<string> NameSplit(List<string> inputList)
         {
