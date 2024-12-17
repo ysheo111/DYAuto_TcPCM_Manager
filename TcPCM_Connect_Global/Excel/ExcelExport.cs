@@ -97,7 +97,6 @@ namespace TcPCM_Connect_Global
 
                     CBDMatching(lang, worksheet, part.Value, type);
                 }
-             
             }
             catch (Exception exc)
             {
@@ -504,6 +503,60 @@ namespace TcPCM_Connect_Global
         public double Average(List<double> values)
         {
             return values.Count() > 0 ? Math.Round(values.ToArray().Average()):0;
+        }
+
+        public string ExportLocationGrid(DataGridView dgv)
+        {
+            Microsoft.Office.Interop.Excel.Application application = null;
+            Excel.Workbook workBook = null;
+            try
+            {
+                SaveFileDialog dlg = new SaveFileDialog();
+                dlg.Filter = ".xlsx|";
+
+                DialogResult dialog = dlg.ShowDialog();
+                if (dialog == DialogResult.Cancel) return null;
+                else if (dialog != DialogResult.OK) return $"Error : 저장위치가 올바르게 선택되지 않았습니다.";
+
+                //Excel 프로그램 실행
+                application = new Excel.Application();
+                //Excel 화면 띄우기 옵션
+                application.Visible = true;
+                //파일로부터 불러오기
+                workBook = application.Workbooks.Open(dlg.FileName);
+
+                Excel.Worksheet worksheet = workBook.Sheets[1];
+                worksheet.Name = "지역";
+                worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible;
+
+                worksheet.Cells[1, 1] = dgv.Columns[0].Name;
+                for (int row = 1; row < dgv.RowCount; row++)
+                {
+                    worksheet.Cells[row + 1,1] = dgv.Rows[0].Cells[row-1].Value.ToString();
+                }
+            }
+            catch (Exception exc)
+            {
+                return exc.Message;
+            }
+            //finally
+            //{
+            //    if (workBook != null)
+            //    {
+            //        //변경점 저장하면서 닫기
+            //        workBook.Save();
+
+            //        ////Excel 프로그램 종료
+            //        //workBook.Close();
+            //        //application.Quit();
+
+            //        ////오브젝트 해제1
+            //        //ExcelCommon.ReleaseExcelObject(workBook);
+            //        //ExcelCommon.ReleaseExcelObject(application);
+            //    }
+            //}
+
+            return null;
         }
     }
 }

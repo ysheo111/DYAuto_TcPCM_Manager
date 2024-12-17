@@ -13,7 +13,7 @@ namespace TcPCM_Connect_Global
         public static string authorisationToken = "";
         public static string refreshTokenId = "";
         public static string serverURL = "https://pcm/tcpcm";
-        public static string serverURLPath = "tcpcm_2312";
+        public static string serverURLPath = "tcpcm";
         public static string port = "";
         public static string userID = "Administrator";
         public static string password = "";

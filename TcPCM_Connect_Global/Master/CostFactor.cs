@@ -30,7 +30,8 @@ namespace TcPCM_Connect_Global
                 {
                     if (row.Cells[col.Name].Value != null && !col.Name.ToLower().Contains("valid")) nullCheck = true;
 
-                    if (col.Name.Contains("연간 작업 일수")) item.Add(col.Name, global.ConvertDouble(row.Cells[col.Name].Value)*global.ConvertDouble(row.Cells["Shift 당 작업 시간"].Value) * global.ConvertDouble(row.Cells["Shift"].Value));
+                    if (col.Name.Contains("연간 작업 일수"))
+                        item.Add(col.Name, global.ConvertDouble(row.Cells[col.Name].Value) * global.ConvertDouble(row.Cells["Shift 당 작업 시간"].Value) * global.ConvertDouble(row.Cells["Shift"].Value));
                     else if (col.Name.Contains("Labor"))
                     {
                         JObject addictionalItem = new JObject(item);
@@ -39,7 +40,10 @@ namespace TcPCM_Connect_Global
                         addictionalItem.Add("구분", categoryName);
                         if (nullCheck) categoryLabor.Add(addictionalItem);
                     }
-                    else item.Add(col.Name, row.Cells[col.Name].Value?.ToString());
+                    else if (col.Name.Contains("지역"))
+                        item.Add("UniqueId", row.Cells[col.Name].Value?.ToString());
+                    else
+                        item.Add(col.Name, row.Cells[col.Name].Value?.ToString());
                 }
                 if (name == "공간 생산 비용")
                 {
