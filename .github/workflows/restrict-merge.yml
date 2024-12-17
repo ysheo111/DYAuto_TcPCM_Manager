@@ -1,0 +1,18 @@
+name: Block Unauthorized Merges
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check_user:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Block PR from restricted user
+        run: |
+          RESTRICTED_USERS=("moonkh-yc") # 제한할 사용자 목록
+          AUTHOR=${{ github.actor }}
+          if [[ " ${RESTRICTED_USERS[@]} " =~ " ${AUTHOR} " ]]; then
+            echo "Merge is restricted for user: $AUTHOR"
+            exit 1
+          fi
