@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using TcPCM_Connect_Global;
+using System.Xml.Linq;
 
 namespace TcPCM_Connect
 {
@@ -34,12 +35,26 @@ namespace TcPCM_Connect
 
         private void btn_Create_Click(object sender, EventArgs e)
         {
-            ExcelImport excel = new ExcelImport();            
+            ExcelImport excel = new ExcelImport();
             string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "Cost factor" : cb_Classification.SelectedItem.ToString(),dgv_Category);
            
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else
+            {
+                CostFactor costFactor = new CostFactor();
+                string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+                string err2 = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
 
+                if (err2 != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err2}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void btn_ExcelCreate_Click(object sender, EventArgs e)
+        {
+            ExcelExport excel = new ExcelExport();
+            excel.ExportLocationGrid(dgv_Category);
         }
 
         private void btn_Save_Click(object sender, EventArgs e)
@@ -121,12 +136,13 @@ namespace TcPCM_Connect
                 ValidFromAdd("Valid From");
                 dgv_Category.Columns.Add("임률", "임률");
             }
-            else dgv_Category.Columns.Add(columnName, columnName);
+            else
+                dgv_Category.Columns.Add(columnName, columnName);
 
             if (dgv_Category.Columns.Count == 1)
             {
-                dgv_Category.Columns.Add("구분 1", "구분 1");
-                dgv_Category.Columns["구분 1"].Visible = false;
+                dgv_Category.Columns.Add("Designation", "Designation");
+                dgv_Category.Columns["Designation"].Visible = false;
             }
         }
 
@@ -163,9 +179,9 @@ namespace TcPCM_Connect
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
             
-           if(dgv_Category.Columns.Contains("구분 1")&& dgv_Category.Columns[e.ColumnIndex].Name != "구분 1")
+           if(dgv_Category.Columns.Contains("Designation") && dgv_Category.Columns[e.ColumnIndex].Name != "Designation")
            {
-                dgv_Category.Rows[e.RowIndex].Cells["구분 1"].Value = $"[LGMagna]{dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
+                dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
            }
             global.MasterDataValiding((DataGridView)sender, e);
         }
@@ -185,6 +201,75 @@ namespace TcPCM_Connect
         {
             DetailSearch select = new DetailSearch();
             select.ShowDialog();
+        }
+
+        private void searchButton1_SearchButtonClick_1(object sender, EventArgs e)
+        {
+            dgv_Category.Rows.Clear();
+
+            string inputString = "";
+            inputString = searchButton1.text;
+            List<string> resultList = new List<string>();
+            if (!string.IsNullOrEmpty(inputString))
+            {
+                resultList = global_DB.ListSelect($"SELECT Name_LOC as name FROM BDRegions where UniqueKey LIKE N'%{inputString}%'", (int)global_DB.connDB.PCMDB);
+                resultList = NameSplit(resultList);
+            }
+            else
+            {
+                resultList = global_DB.ListSelect($"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'", (int)global_DB.connDB.PCMDB);
+                resultList = NameSplit(resultList);
+            }
+
+            foreach (string a in resultList)
+                dgv_Category.Rows.Add(a);
+        }
+        public List<string> NameSplit(List<string> inputList)
+        {
+            List<string> resultList = new List<string>();
+
+            List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR", "ru-RU", "ja-JP", "pt-BR", "de-DE" };
+            string delimiter = "</split>";
+            foreach (string path in inputList)
+            {
+                string[] xmlFiles = path.Split(new string[] { delimiter }, StringSplitOptions.None); ;
+
+                for (int i = 0; i < xmlFiles.Length; i++)
+                {
+                    string name = "";
+                    string xmlString = xmlFiles[i];
+                    try
+                    {
+                        XDocument doc = XDocument.Parse(xmlString);
+
+                        var translations = doc.Descendants("value")
+                                           .OrderBy(v =>
+                                           {
+                                               string lang = (string)v.Attribute("lang");
+                                               return lang == null ? int.MaxValue : desiredLanguages.IndexOf(lang);
+                                           })
+                                           .ToDictionary(v => (string)v.Attribute("lang") ?? string.Empty, v => (string)v);
+
+                        foreach (var lang in desiredLanguages)
+                        {
+                            if (translations.ContainsKey(lang))
+                            {
+                                if (i == xmlFiles.Length - 1)
+                                    name = $"{translations[lang]}";
+                                break;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        if (i == xmlFiles.Length - 1)
+                            name = $"{xmlString}";
+                    }
+                    if(!string.IsNullOrEmpty(name))
+                        resultList.Add(name);
+                }
+            }
+            return resultList;
         }
     }
 }

@@ -1017,6 +1017,7 @@ namespace TcPCM_Connect_Global
 
                     if (!flag) dgv.Rows.RemoveAt(dgv.Rows.Count - 1);
                 }
+                
             }
             catch (Exception exc)
             {
