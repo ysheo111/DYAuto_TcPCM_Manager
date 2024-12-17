@@ -511,7 +511,7 @@ namespace TcPCM_Connect_Global
             Excel.Workbook workBook = null;
             try
             {
-                SaveFileDialog dlg = new SaveFileDialog();
+                OpenFileDialog dlg = new OpenFileDialog();
                 dlg.Filter = ".xlsx|";
 
                 DialogResult dialog = dlg.ShowDialog();
@@ -532,29 +532,28 @@ namespace TcPCM_Connect_Global
                 worksheet.Cells[1, 1] = dgv.Columns[0].Name;
                 for (int row = 1; row < dgv.RowCount; row++)
                 {
-                    worksheet.Cells[row + 1,1] = dgv.Rows[0].Cells[row-1].Value.ToString();
+                    worksheet.Cells[row + 1, 1] = dgv.Rows[row - 1].Cells[0].Value.ToString();
                 }
             }
             catch (Exception exc)
             {
                 return exc.Message;
             }
-            //finally
-            //{
-            //    if (workBook != null)
-            //    {
-            //        //변경점 저장하면서 닫기
-            //        workBook.Save();
+            finally
+            {
+                if (workBook != null)
+                {
+                    //변경점 저장하면서 닫기
+                    workBook.Save();
 
-            //        ////Excel 프로그램 종료
-            //        //workBook.Close();
-            //        //application.Quit();
-
-            //        ////오브젝트 해제1
-            //        //ExcelCommon.ReleaseExcelObject(workBook);
-            //        //ExcelCommon.ReleaseExcelObject(application);
-            //    }
-            //}
+                    ////Excel 프로그램 종료
+                    workBook.Close();
+                    application.Quit();
+                    ////오브젝트 해제1
+                    //ExcelCommon.ReleaseExcelObject(workBook);
+                    //ExcelCommon.ReleaseExcelObject(application);
+                }
+            }
 
             return null;
         }
