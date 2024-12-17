@@ -191,7 +191,7 @@ namespace TcPCM_Connect
 
         private void 테스트ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            selectItem
+            
         }
     }
 }

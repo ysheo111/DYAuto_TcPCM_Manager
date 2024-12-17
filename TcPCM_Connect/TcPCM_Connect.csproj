@@ -179,23 +179,11 @@
     <Compile Include="Controller\SideButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Dashboard\frmCoreCalculator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Dashboard\frmCoreCalculator.Designer.cs">
-      <DependentUpon>frmCoreCalculator.cs</DependentUpon>
-    </Compile>
     <Compile Include="Dashboard\frmTransport.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Dashboard\frmTransport.Designer.cs">
       <DependentUpon>frmTransport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Dashboard\frmCalculator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Dashboard\frmCalculator.Designer.cs">
-      <DependentUpon>frmCalculator.cs</DependentUpon>
     </Compile>
     <Compile Include="Dashboard\frmDashboard.cs">
       <SubType>Form</SubType>
@@ -292,14 +280,8 @@
     <EmbeddedResource Include="Controller\RJTextBox.resx">
       <DependentUpon>RJTextBox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Dashboard\frmCoreCalculator.resx">
-      <DependentUpon>frmCoreCalculator.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Dashboard\frmTransport.resx">
       <DependentUpon>frmTransport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Dashboard\frmCalculator.resx">
-      <DependentUpon>frmCalculator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Dashboard\frmDashboard.resx">
       <DependentUpon>frmDashboard.cs</DependentUpon>
