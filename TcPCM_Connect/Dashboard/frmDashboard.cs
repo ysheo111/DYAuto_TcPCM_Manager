@@ -184,14 +184,15 @@ namespace TcPCM_Connect
             contextMenuStrip1.Show(MousePosition.X, MousePosition.Y);
         }
 
-        private void tv_Bom_MouseClick(object sender, MouseEventArgs e)
-        {
-
-        }
 
         private void 테스트ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             
+        }
+
+        private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
+        {
+
         }
     }
 }

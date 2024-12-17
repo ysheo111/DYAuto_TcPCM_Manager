@@ -118,12 +118,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Component\Select.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Component\Select.Designer.cs">
-      <DependentUpon>Select.cs</DependentUpon>
-    </Compile>
     <Compile Include="Component\ConfigSetting.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -179,12 +173,6 @@
     <Compile Include="Controller\SideButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Dashboard\frmTransport.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Dashboard\frmTransport.Designer.cs">
-      <DependentUpon>frmTransport.cs</DependentUpon>
-    </Compile>
     <Compile Include="Dashboard\frmDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -227,6 +215,12 @@
     <Compile Include="Master\frmExchange.Designer.cs">
       <DependentUpon>frmExchange.cs</DependentUpon>
     </Compile>
+    <Compile Include="Master\Select.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Master\Select.Designer.cs">
+      <DependentUpon>Select.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -265,9 +259,6 @@
     <Compile Include="xaml\UserControl2.xaml.cs">
       <DependentUpon>UserControl2.xaml</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Component\Select.resx">
-      <DependentUpon>Select.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Component\ConfigSetting.resx">
       <DependentUpon>ConfigSetting.cs</DependentUpon>
     </EmbeddedResource>
@@ -279,9 +270,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controller\RJTextBox.resx">
       <DependentUpon>RJTextBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Dashboard\frmTransport.resx">
-      <DependentUpon>frmTransport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Dashboard\frmDashboard.resx">
       <DependentUpon>frmDashboard.cs</DependentUpon>
@@ -304,6 +292,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Master\frmExchange.resx">
       <DependentUpon>frmExchange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Master\Select.resx">
+      <DependentUpon>Select.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserManagment\frmLogin.resx">
       <DependentUpon>frmLogin.cs</DependentUpon>
