@@ -120,6 +120,9 @@ namespace TcPCM_Connect
                 CurrencyAdd("통화");
                 ValidFromAdd("Valid From");
                 dgv_Category.Columns.Add("임률", "임률");
+                dgv_Category.Columns.Add("Labor burden (1Shift)", "Labor burden (1Shift)");
+                dgv_Category.Columns.Add("Labor burden (2Shift)", "Labor burden (2Shift)");
+                dgv_Category.Columns.Add("Labor burden (3Shift)", "Labor burden (3Shift)");
             }
             else dgv_Category.Columns.Add(columnName, columnName);
 
@@ -183,7 +186,7 @@ namespace TcPCM_Connect
 
         private void searchButton1_DetailSearchButtonClick_1(object sender, EventArgs e)
         {
-            DetailSearch select = new DetailSearch();
+            Select select = new Select();
             select.ShowDialog();
         }
     }
