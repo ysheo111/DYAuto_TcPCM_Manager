@@ -59,22 +59,6 @@ namespace TcPCM_Connect
             this.tip_logout.SetToolTip(this.btnSalir, "로그아웃 버튼 입니다.");
         }
 
-        private void sideButton2_Click(object sender, EventArgs e)
-        {
-            ChangeButtonColor(((Button)sender).Name, p_Manu);
-
-            frmCalculator calculator = new frmCalculator();
-            frmApply(calculator, ref panelContenedorForm);
-        }
-
-
-        private void sideButton2_Click_1(object sender, EventArgs e)
-        {
-            ChangeButtonColor(((Button)sender).Name, p_Manu);
-
-            frmCoreCalculator calculator = new frmCoreCalculator();
-            frmApply(calculator, ref panelContenedorForm);
-        }
         private void btn_CBD_Click(object sender, EventArgs e )
         {
             ChangeButtonColor(((Button)sender).Name, p_Manu);
