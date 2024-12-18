@@ -75,5 +75,32 @@ namespace TcPCM_Connect
         }
         #endregion
 
+        private void combo_date_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            rjDatePicker2.Value = DateTime.Now;
+            string DateType = combo_date.SelectedItem.ToString();
+            switch (DateType)
+            {
+                case "오늘":
+                    rjDatePicker1.Value = DateTime.Now;
+                    break;
+                case "당월":
+                    rjDatePicker1.Value = DateTime.Now.AddDays(1 - DateTime.Now.Day);
+                    rjDatePicker2.Value = DateTime.Now.AddMonths(1).AddDays(-DateTime.Now.Day);
+                    break;
+                case "전월":
+                    rjDatePicker1.Value = DateTime.Now.AddMonths(-1);
+                    break;
+                case "3개월":
+                    rjDatePicker1.Value = DateTime.Now.AddMonths(-3);
+                    break;
+                case "6개월":
+                    rjDatePicker1.Value = DateTime.Now.AddMonths(-6);
+                    break;
+                case "1년":
+                    rjDatePicker1.Value = DateTime.Now.AddYears(-1);
+                    break;
+            }
+        }
     }
 }

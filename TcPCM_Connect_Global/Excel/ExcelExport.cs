@@ -505,14 +505,14 @@ namespace TcPCM_Connect_Global
             return values.Count() > 0 ? Math.Round(values.ToArray().Average()):0;
         }
 
-        public string ExportLocationGrid(DataGridView dgv)
+        public string ExportLocationGrid(DataGridView dgv, string columnName)
         {
             Microsoft.Office.Interop.Excel.Application application = null;
             Excel.Workbook workBook = null;
 
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Filter = ".xlsx|";
-            dlg.FileName = "지역.xlsx";
+            dlg.FileName = $"{columnName}.xlsx";
             try
             {
                 DialogResult dialog = dlg.ShowDialog();
@@ -534,7 +534,7 @@ namespace TcPCM_Connect_Global
                 workBook = application.Workbooks.Add();// application.Workbooks.Open(dlg.FileName);
 
                 Excel.Worksheet worksheet = workBook.Sheets[1];
-                worksheet.Name = "지역";
+                worksheet.Name = $"{columnName}";
                 worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible;
 
                 worksheet.Cells[2, 2] = dgv.Columns[0].Name;
@@ -549,12 +549,11 @@ namespace TcPCM_Connect_Global
                 Excel.Range range = worksheet.Range[$"B2:B{dgv.RowCount + 1}"];
                 range.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                 range.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+                worksheet.Columns.AutoFit();
 
-                //변경점 저장
-                if (File.Exists(dlg.FileName))
-                    workBook.Save();
-                else
-                    workBook.SaveAs(dlg.FileName);
+                application.DisplayAlerts = false;
+                workBook.SaveAs(dlg.FileName);
+                application.DisplayAlerts = true;
             }
             catch (Exception exc)
             {

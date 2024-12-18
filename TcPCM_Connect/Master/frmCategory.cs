@@ -47,15 +47,18 @@ namespace TcPCM_Connect
                 string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
                 string err2 = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
 
-                if (err2 != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err2}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (err2 != null) CustomMessageBox.RJMessageBox.Show($"Import 실패하였습니다\n{err2}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                else CustomMessageBox.RJMessageBox.Show("Import 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
         private void btn_ExcelCreate_Click(object sender, EventArgs e)
         {
             ExcelExport excel = new ExcelExport();
-            excel.ExportLocationGrid(dgv_Category);
+            string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+            string err = excel.ExportLocationGrid(dgv_Category, columnName);
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"Export 실패하였습니다\n{err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("Export 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btn_Save_Click(object sender, EventArgs e)
@@ -206,22 +209,30 @@ namespace TcPCM_Connect
             Select select = new Select();
             select.ShowDialog();
         }
-
+//11/23~12/22
+//\700,000
         private void searchButton1_SearchButtonClick_1(object sender, EventArgs e)
         {
             dgv_Category.Rows.Clear();
 
-            string inputString = "";
+            string inputString = "",category = "";
             inputString = searchButton1.text;
             List<string> resultList = new List<string>();
+
+            string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+            if (columnName == "지역")
+                category = "BDRegions";
+            else if (columnName == "업종")
+                category = "BDCustomers";
+
             if (!string.IsNullOrEmpty(inputString))
             {
-                resultList = global_DB.ListSelect($"SELECT Name_LOC as name FROM BDRegions where UniqueKey LIKE N'%{inputString}%'", (int)global_DB.connDB.PCMDB);
+                resultList = global_DB.ListSelect($"SELECT Name_LOC as name FROM {category} where UniqueKey LIKE N'%{inputString}%' And CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'", (int)global_DB.connDB.PCMDB);
                 resultList = NameSplit(resultList);
             }
             else
             {
-                resultList = global_DB.ListSelect($"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'", (int)global_DB.connDB.PCMDB);
+                resultList = global_DB.ListSelect($"SELECT Name_LOC as name FROM {category} where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'", (int)global_DB.connDB.PCMDB);
                 resultList = NameSplit(resultList);
             }
 
@@ -239,7 +250,7 @@ namespace TcPCM_Connect
             string delimiter = "</split>";
             foreach (string path in inputList)
             {
-                string[] xmlFiles = path.Split(new string[] { delimiter }, StringSplitOptions.None); ;
+                string[] xmlFiles = path.Split(new string[] { delimiter }, StringSplitOptions.None);
 
                 for (int i = 0; i < xmlFiles.Length; i++)
                 {
