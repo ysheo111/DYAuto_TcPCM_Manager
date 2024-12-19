@@ -31,14 +31,13 @@ namespace TcPCM_Connect
             dgv_Category.AllowUserToAddRows= true;
             ColumnAdd();
             dgv_Category.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            string test = "?";
         }
 
         private void btn_Create_Click(object sender, EventArgs e)
         {
             ExcelImport excel = new ExcelImport();
             string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "Cost factor" : cb_Classification.SelectedItem.ToString(),dgv_Category);
-           
+
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else
@@ -66,7 +65,7 @@ namespace TcPCM_Connect
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
             splashthread.Start();
-
+            
             try
             {
                 CostFactor costFactor = new CostFactor();
@@ -143,6 +142,13 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("Labor burden (2Shift)", "Labor burden (2Shift)");
                 dgv_Category.Columns.Add("Labor burden (3Shift)", "Labor burden (3Shift)");
             }
+            else if(columnName == "단위")
+            {
+                dgv_Category.Columns.Add("UOM Code", "UOM Code");
+                dgv_Category.Columns.Add("UOM명", "UOM명");
+                dgv_Category.Columns.Add("UniqueId", "UniqueId");
+                dgv_Category.Columns["UniqueId"].Visible = false;
+            }
             else
                 dgv_Category.Columns.Add(columnName, columnName);
 
@@ -184,12 +190,18 @@ namespace TcPCM_Connect
 
         private void dgv_Category_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
             
-           if(dgv_Category.Columns.Contains("Designation") && dgv_Category.Columns[e.ColumnIndex].Name != "Designation")
-           {
+            if(dgv_Category.Columns.Contains("Designation") && dgv_Category.Columns[e.ColumnIndex].Name != "Designation")
+            {
                 dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
-           }
+            }
+            else if(dgv_Category.Columns[e.ColumnIndex].Name == "UOM Code")
+            {
+                dgv_Category.Rows[e.RowIndex].Cells["UniqueId"].Value = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null ? null : dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().ToLower();
+            }
+
             global.MasterDataValiding((DataGridView)sender, e);
         }
 
@@ -209,85 +221,104 @@ namespace TcPCM_Connect
             Select select = new Select();
             select.ShowDialog();
         }
-//11/23~12/22
-//\700,000
+
         private void searchButton1_SearchButtonClick_1(object sender, EventArgs e)
         {
             dgv_Category.Rows.Clear();
 
-            string inputString = "",category = "";
+            string inputString = "", searchQeury = "", category = "", DBcolumnName = "";
             inputString = searchButton1.text;
             List<string> resultList = new List<string>();
 
             string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
             if (columnName == "지역")
+            {
                 category = "BDRegions";
+                DBcolumnName = "Name_LOC";
+            }
             else if (columnName == "업종")
+            {
                 category = "BDCustomers";
+                DBcolumnName = "Name_LOC";
+            }
+            else if (columnName == "단위")
+            {
+                category = "Units";
+                DBcolumnName = "DisplayName_LOC, FullName_LOC";
+            }
 
+            //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
-                resultList = global_DB.ListSelect($"SELECT Name_LOC as name FROM {category} where UniqueKey LIKE N'%{inputString}%' And CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'", (int)global_DB.connDB.PCMDB);
-                resultList = NameSplit(resultList);
+                if (columnName == "단위")
+                    searchQeury = $"SELECT {DBcolumnName} as name FROM {category} where CAST({DBcolumnName} AS NVARCHAR(MAX)) LIKE N'%{inputString}%'";
+                else
+                    searchQeury = $"SELECT {DBcolumnName} as name FROM {category} where UniqueKey LIKE N'%{inputString}%' And CAST({DBcolumnName} AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
             }
+            //전체 검색
             else
             {
-                resultList = global_DB.ListSelect($"SELECT Name_LOC as name FROM {category} where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'", (int)global_DB.connDB.PCMDB);
-                resultList = NameSplit(resultList);
+                if(columnName == "단위")
+                    searchQeury = $"SELECT {DBcolumnName} as name FROM {category}";
+                else
+                    searchQeury = $"SELECT {DBcolumnName} as name FROM {category} where CAST({DBcolumnName} AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
             }
+            DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
 
-            foreach (string a in resultList)
+            foreach (DataRow row in dataTable.Rows)
             {
-                string result = a.Replace("[DYA]", "");
-                dgv_Category.Rows.Add(result);
-            }
-        }
-        public List<string> NameSplit(List<string> inputList)
-        {
-            List<string> resultList = new List<string>();
-
-            List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR", "ru-RU", "ja-JP", "pt-BR", "de-DE" };
-            string delimiter = "</split>";
-            foreach (string path in inputList)
-            {
-                string[] xmlFiles = path.Split(new string[] { delimiter }, StringSplitOptions.None);
-
-                for (int i = 0; i < xmlFiles.Length; i++)
+                dgv_Category.Rows.Add();
+                int i = 0;
+                foreach (DataColumn col in dataTable.Columns)
                 {
-                    string name = "";
-                    string xmlString = xmlFiles[i];
-                    try
-                    {
-                        XDocument doc = XDocument.Parse(xmlString);
-
-                        var translations = doc.Descendants("value")
-                                           .OrderBy(v =>
-                                           {
-                                               string lang = (string)v.Attribute("lang");
-                                               return lang == null ? int.MaxValue : desiredLanguages.IndexOf(lang);
-                                           })
-                                           .ToDictionary(v => (string)v.Attribute("lang") ?? string.Empty, v => (string)v);
-
-                        foreach (var lang in desiredLanguages)
-                        {
-                            if (translations.ContainsKey(lang))
-                            {
-                                if (i == xmlFiles.Length - 1)
-                                    name = $"{translations[lang]}";
-                                break;
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        if (i == xmlFiles.Length - 1)
-                            name = $"{xmlString}";
-                    }
-                    if(!string.IsNullOrEmpty(name))
-                        resultList.Add(name);
+                    string result = row[col].ToString();
+                    result = NameSplit(result);
+                    int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
+                    dgv_Category.Rows[dgv_Category.Rows.Count-2].Cells[count].Value = result;
                 }
             }
-            return resultList;
+        }
+        public string NameSplit(string input)
+        {
+            List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR", "ru-RU", "ja-JP", "pt-BR", "de-DE" };
+            string delimiter = "</split>";
+            string[] xmlFiles = input.Split(new string[] { delimiter }, StringSplitOptions.None);
+
+            for (int i = 0; i < xmlFiles.Length; i++)
+            {
+                string name = "";
+                string xmlString = xmlFiles[i];
+                try
+                {
+                    XDocument doc = XDocument.Parse(xmlString);
+
+                    var translations = doc.Descendants("value")
+                                       .OrderBy(v =>
+                                       {
+                                           string lang = (string)v.Attribute("lang");
+                                           return lang == null ? int.MaxValue : desiredLanguages.IndexOf(lang);
+                                       })
+                                       .ToDictionary(v => (string)v.Attribute("lang") ?? string.Empty, v => (string)v);
+
+                    foreach (var lang in desiredLanguages)
+                    {
+                        if (translations.ContainsKey(lang))
+                        {
+                            if (i == xmlFiles.Length - 1)
+                                name = $"{translations[lang]}";
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                    if (i == xmlFiles.Length - 1)
+                        name = $"{xmlString}";
+                }
+                if (!string.IsNullOrEmpty(name))
+                    input = name;
+            }
+            return input;
         }
     }
 }
