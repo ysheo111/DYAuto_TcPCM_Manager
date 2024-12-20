@@ -207,7 +207,10 @@ namespace TcPCM_Connect_Global
             public static string exchangeRate = "업체적용환율";
 
             public static string author = "작성자";          
-            public static string dateOfCalc = "작성일";          
+            public static string dateOfCalc = "작성일";     
+            
+            public static string guid = "작성일";          
+            public static string partID = "작성일";          
         }
 
         public static class Summary

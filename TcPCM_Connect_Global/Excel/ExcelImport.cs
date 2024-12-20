@@ -22,21 +22,31 @@ namespace TcPCM_Connect_Global
             cbd = new CBD();
         }
 
-        
-        private void CellVaildation(string colName, int rowCol, int colCol, int rowValue, int colValue, Excel.Worksheet worksheet, ref JObject value)
-        {            
-            if (!cbd.CleanString(worksheet.Cells[rowCol, colCol].Value?.ToString()).Contains(cbd.FindValue(rowCol, colCol)))
+        private string CombineString(int nameRow, int rowCol, int colCol, Excel.Worksheet worksheet)
+        {
+            string name = "";
+            for(int i=0;i<nameRow;i++)
             {
-                incorrect.Add($"{cbd.FindValue(rowCol, colCol)}을 다시 확인해주세요. ({cbd.CleanString(worksheet.Cells[rowCol, colCol].Value?.ToString())} {rowCol} {colCol})");
+                name += cbd.CleanString(worksheet.Cells[rowCol, colCol].Value?.ToString());
+            }
+            return name;
+        }
+        
+        private void CellVaildation(string colName, int nameRow, int rowCol, int colCol, int rowValue, int colValue, Excel.Worksheet worksheet, ref JObject value)
+        {
+            string name = CombineString(nameRow, rowCol, colCol, worksheet);
+            if (!name.Contains(cbd.FindValue(rowCol, colCol)))
+            {
+                incorrect.Add($"{cbd.FindValue(rowCol, colCol)}을 다시 확인해주세요. ({name} {rowCol} {colCol})");
                 //(worksheet.Cells[row, excelCol]).Interior.Color = Excel.XlRgbColor.rgbYellow;
             }
             else value.Add(colName, worksheet.Cells[rowValue, colValue].Value);
         }
 
-        private void CellVaildation(string colName, int rowCol, int colCol, Excel.Worksheet worksheet, object data, ref JObject value)
+        private void CellVaildation(string colName, int nameRow, int rowCol, int colCol, Excel.Worksheet worksheet, object data, ref JObject value)
         {
-
-            if (!cbd.CleanString(worksheet.Cells[rowCol, colCol].Value.ToString()).Contains(cbd.FindValue(rowCol, colCol)))
+            string name = CombineString(nameRow, rowCol, colCol, worksheet);
+            if (!name.Contains(cbd.FindValue(rowCol, colCol)))
             {
                 incorrect.Add($"{cbd.FindValue(rowCol, colCol)}을 다시 확인해주세요. ({rowCol} {colCol})");
                 //(worksheet.Cells[row, excelCol]).Interior.Color = Excel.XlRgbColor.rgbYellow;
@@ -240,483 +250,510 @@ namespace TcPCM_Connect_Global
                 JObject header = new JObject();
                 int excelOrder = 0;
                 //Basic
-                int row = 2, excelCol = 4;
-                header.Add(Report.LineType.lineType, "P");
+                int row = 2, excelCol = 2;
+                header.Add(Report.LineType.lineType, "M");
                 header.Add(Report.LineType.level, 0);
 
-                CellVaildation(Report.Header.modelName, row, excelCol-2, row++, excelCol, worksheet, ref header);
-                CellVaildation(Report.Header.productName, row, excelCol-2, row++, excelCol, worksheet, ref header);
-                CellVaildation(Report.Header.partName, row, excelCol-2, row++, excelCol, worksheet, ref header);
-                CellVaildation(Report.Header.partNumber, row, excelCol-2, row++, excelCol, worksheet, ref header);
-                CellVaildation(Report.Header.region, row, excelCol-2, row++, excelCol, worksheet, ref header);
-                string date = "";
-                try
-                {
-                    date = worksheet.Cells[row, excelCol].Value.ToString("yyyy-MM-dd");
-                }
-                catch
-                {
-                    date = DateTime.Now.ToString("yyyy-MM-dd");
-                }
-                CellVaildation(Report.Header.SOP, row++, excelCol-2, worksheet,date, ref header);
+                //        { (2, 2), Report.Header.modelName},
+                //{ (3, 2), Report.Header.partNumber},
+                //{ (4, 2), Report.Header.partName},
 
-                row = 2; excelCol = 15;
-                CellVaildation(Report.Header.company, row, excelCol - 1, row++, excelCol, worksheet, ref header);
-                CellVaildation(Report.Header.team, row, excelCol - 1, row++, excelCol, worksheet, ref header);
-                CellVaildation(Report.Header.author, row, excelCol - 1, row++, excelCol, worksheet, ref header);
-                date = "";
-                try
-                {
-                    date = worksheet.Cells[row++, excelCol].Value.ToString("yyyy-MM-dd");
-                }
-                catch
-                {
-                    date = DateTime.Now.ToString("yyyy-MM-dd");
-                }
-                CellVaildation(Report.Header.dateOfCalculation, row, excelCol - 1, worksheet, date, ref header);
-                CellVaildation(Report.Header.incoterms, row, excelCol - 1, row++, excelCol, worksheet, ref header);
-                CellVaildation(Report.Header.currency, row, excelCol - 1, row++, excelCol, worksheet, ref header);
+                //{ (5, 2), Report.Header.company},
+                //{ (6, 2), Report.Header.customer},
+                //{ (7, 2), Report.Header.currency},
+                //{ (8, 2), Report.Header.transport},
 
-                row = 11; excelCol = 11;
-                CellVaildation(Report.Summary.packageTotal, row-2, excelCol, row, excelCol++, worksheet, ref header);
-                CellVaildation(Report.Summary.transportTotal, row-2, excelCol, row, excelCol++, worksheet, ref header);
-                excelCol++;
-                CellVaildation(Report.Summary.etc, row - 2, excelCol, row, excelCol++, worksheet, ref header);
+                //{ (5, 5), Report.Header.category},
+                //{ (6, 5), Report.Header.suppier},
+                //{ (7, 5), Report.Header.exchangeRate},
 
-                excelCol = 18;
-                CellVaildation(Report.Summary.administrationCosts, row-2, excelCol, row, excelCol++, worksheet, ref header);
-                CellVaildation(Report.Summary.profit, row-2, excelCol, row, excelCol++, worksheet, ref header);
-                CellVaildation(Report.Summary.materialOverhead, row-2, excelCol, row, excelCol++, worksheet, ref header);               
+                //{ (2, 18), Report.Header.dateOfCalc},
+                //{ (3, 18), Report.Header.author},
+
+                int i = 0;
+                foreach (KeyValuePair<(int, int), string> pair in cbd.column)
+                {
+                    int nameRow = i < 9 ? 1 : 2;  // Conditional assignment for nameRow
+
+                    if (i == 10)
+                    {
+                        string date;
+                        try
+                        {
+                            date = worksheet.Cells[row, excelCol + 1].Value.ToString("yyyy-MM-dd");
+                        }
+                        catch (Exception ex)
+                        {
+                            date = DateTime.Now.ToString("yyyy-MM-dd");
+                            Console.WriteLine($"Error retrieving date: {ex.Message}");  // Log error message
+                        }
+                        CellVaildation(pair.Value, nameRow, row++, excelCol, worksheet, date, ref header);
+                    }
+                    else
+                    {
+                        CellVaildation(pair.Value, nameRow, row, excelCol, row++, excelCol + 1, worksheet, ref header);
+                    }
+
+                    if (i == 6)  // Adjusted condition to avoid unnecessary checks
+                    {
+                        excelCol = 5;
+                        row = 5;
+                    }
+                    if (i == 9)
+                    {
+                        excelCol = 18;
+                        row = 2;
+                    }
+                    else if (i == 11)  // Adjusted condition to avoid unnecessary checks
+                    {
+                        break;  // Break after setting row for efficiency
+                    }
+
+                    i++;
+                }
+
+                
+                foreach(KeyValuePair<(int,int),string> pair in cbd.column)
+                {
+                    int nameRow = 1;
+                    if (i == 9) nameRow = 2;
+                    if(i==10)
+                    {
+                        string date = "";
+                        try
+                        {
+                            date = worksheet.Cells[row, excelCol+1].Value.ToString("yyyy-MM-dd");
+                        }
+                        catch
+                        {
+                            date = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+                        CellVaildation(pair.Value, nameRow, row++, excelCol, worksheet, date, ref header);
+                    }
+                    else
+                    {
+                        CellVaildation(pair.Value, nameRow, row, excelCol, row++, excelCol + 1, worksheet, ref header);
+                    }
+                    i++;
+
+                    if (i == 7)
+                    {
+                        excelCol = 5;
+                        row = 5;
+                    }
+                    else if (i == 10)
+                    {
+                        excelCol = 18;
+                        row = 2;
+                    }
+                    else if (i == 12) break;
+                }
+
+                //CellVaildation(Report.Header.productName, row, excelCol-2, row++, excelCol, worksheet, ref header);
+                //CellVaildation(Report.Header.partName, row, excelCol-2, row++, excelCol, worksheet, ref header);
+                //CellVaildation(Report.Header.partNumber, row, excelCol-2, row++, excelCol, worksheet, ref header);
+                //CellVaildation(Report.Header.region, row, excelCol-2, row++, excelCol, worksheet, ref header);
+                //string date = "";
+                //try
+                //{
+                //    date = worksheet.Cells[row, excelCol].Value.ToString("yyyy-MM-dd");
+                //}
+                //catch
+                //{
+                //    date = DateTime.Now.ToString("yyyy-MM-dd");
+                //}
+                //CellVaildation(Report.Header.SOP, row++, excelCol-2, worksheet,date, ref header);
+
+                //row = 2; excelCol = 15;
+                //CellVaildation(Report.Header.company, row, excelCol - 1, row++, excelCol, worksheet, ref header);
+                //CellVaildation(Report.Header.team, row, excelCol - 1, row++, excelCol, worksheet, ref header);
+                //CellVaildation(Report.Header.author, row, excelCol - 1, row++, excelCol, worksheet, ref header);
+                //date = "";
+                //try
+                //{
+                //    date = worksheet.Cells[row++, excelCol].Value.ToString("yyyy-MM-dd");
+                //}
+                //catch
+                //{
+                //    date = DateTime.Now.ToString("yyyy-MM-dd");
+                //}
+                //CellVaildation(Report.Header.dateOfCalculation, row, excelCol - 1, worksheet, date, ref header);
+                //CellVaildation(Report.Header.incoterms, row, excelCol - 1, row++, excelCol, worksheet, ref header);
+                //CellVaildation(Report.Header.currency, row, excelCol - 1, row++, excelCol, worksheet, ref header);
+
+                //row = 11; excelCol = 11;
+                //CellVaildation(Report.Summary.packageTotal, row-2, excelCol, row, excelCol++, worksheet, ref header);
+                //CellVaildation(Report.Summary.transportTotal, row-2, excelCol, row, excelCol++, worksheet, ref header);
+                //excelCol++;
+                //CellVaildation(Report.Summary.etc, row - 2, excelCol, row, excelCol++, worksheet, ref header);
+
+                //excelCol = 18;
+                //CellVaildation(Report.Summary.administrationCosts, row-2, excelCol, row, excelCol++, worksheet, ref header);
+                //CellVaildation(Report.Summary.profit, row-2, excelCol, row, excelCol++, worksheet, ref header);
+                //CellVaildation(Report.Summary.materialOverhead, row-2, excelCol, row, excelCol++, worksheet, ref header);               
 
                 //header.Add(Report.Summary.administrationCosts, worksheet.Cells[10, excelCol++].Value);
                 //header.Add(Report.Summary.profit, worksheet.Cells[10, excelCol++].Value);
                 //header.Add(Report.Summary.materialOverhead, worksheet.Cells[10, excelCol++].Value);
 
-                //원/부재료
-                row = 17;
-                int initRow = row-2;
-                double returnRatio = 0;
-                JArray materials = new JArray();
-                while (true)
-                {
-                    if (((Excel.Range)worksheet.Cells[row, 2]).MergeCells) break;
+                ////원/부재료
+                //row = 17;
+                //int initRow = row-2;
+                //double returnRatio = 0;
+                //JArray materials = new JArray();
+                //while (true)
+                //{
+                //    if (((Excel.Range)worksheet.Cells[row, 2]).MergeCells) break;
 
-                    JObject material = new JObject();
-                    JObject scrap = new JObject();
+                //    JObject material = new JObject();
+                //    JObject scrap = new JObject();
 
-                    //material.Add(Report.Material.priceUnit, worksheet.Cells[16, 9].Value);
-                    material.Add(Report.Header.currency, header[Report.Header.currency]);
-                    //scrap.Add(Report.Material.priceUnit, worksheet.Cells[16, 13].Value);
-                    scrap.Add(Report.Header.currency, header[Report.Header.currency]);
+                //    //material.Add(Report.Material.priceUnit, worksheet.Cells[16, 9].Value);
+                //    material.Add(Report.Header.currency, header[Report.Header.currency]);
+                //    //scrap.Add(Report.Material.priceUnit, worksheet.Cells[16, 13].Value);
+                //    scrap.Add(Report.Header.currency, header[Report.Header.currency]);
 
-                    excelCol = 3;
-                    if (worksheet.Cells[row, excelCol].Value == null)
-                    {
-                        row++;
-                        continue;
-                    }
+                //    excelCol = 3;
+                //    if (worksheet.Cells[row, excelCol].Value == null)
+                //    {
+                //        row++;
+                //        continue;
+                //    }
 
-                    CellVaildation(Report.Material.name, initRow, excelCol - 1, row, excelCol, worksheet, ref material);
-                    //material.Add(Report.Material.name, worksheet.Cells[row, excelCol].Value);
-                    material.Add(Report.LineType.lineType, "P");
-                    material.Add(Report.LineType.level, 1);
-                    material.Add("Procurement", "Siemens.TCPCM.ProcurementType.Purchase");
-                    material.Add("Calculation quality", "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
+                //    CellVaildation(Report.Material.name, initRow, excelCol - 1, row, excelCol, worksheet, ref material);
+                //    //material.Add(Report.Material.name, worksheet.Cells[row, excelCol].Value);
+                //    material.Add(Report.LineType.lineType, "P");
+                //    material.Add(Report.LineType.level, 1);
+                //    material.Add("Procurement", "Siemens.TCPCM.ProcurementType.Purchase");
+                //    material.Add("Calculation quality", "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
 
-                    scrap.Add(Report.Material.name, $"{worksheet.Cells[row, excelCol].Value}_Scrap");
-                    scrap.Add(Report.LineType.lineType, "P");
-                    scrap.Add(Report.LineType.level, 1);
-                    scrap.Add("Procurement", $"Siemens.TCPCM.ProcurementType.Purchase_RawMaterial");
-                    scrap.Add("Calculation quality", $"Siemens.TCPCM.CalculationQuality.Estimation(rough)");
+                //    scrap.Add(Report.Material.name, $"{worksheet.Cells[row, excelCol].Value}_Scrap");
+                //    scrap.Add(Report.LineType.lineType, "P");
+                //    scrap.Add(Report.LineType.level, 1);
+                //    scrap.Add("Procurement", $"Siemens.TCPCM.ProcurementType.Purchase_RawMaterial");
+                //    scrap.Add("Calculation quality", $"Siemens.TCPCM.CalculationQuality.Estimation(rough)");
 
-                    excelCol = 5;
-                    CellVaildation(Report.Material.itemNumber, initRow, excelCol, row, excelCol++, worksheet, ref material);
-                    //material.Add(Report.Material.itemNumber, worksheet.Cells[row, excelCol++].Value);
+                //    excelCol = 5;
+                //    CellVaildation(Report.Material.itemNumber, initRow, excelCol, row, excelCol++, worksheet, ref material);
+                //    //material.Add(Report.Material.itemNumber, worksheet.Cells[row, excelCol++].Value);
 
-                    CellVaildation(Report.Material.substance, initRow + 1, excelCol, row, excelCol, worksheet, ref material);
-                    CellVaildation(Report.Material.substance, initRow + 1, excelCol, row, excelCol++, worksheet, ref scrap);
+                //    CellVaildation(Report.Material.substance, initRow + 1, excelCol, row, excelCol, worksheet, ref material);
+                //    CellVaildation(Report.Material.substance, initRow + 1, excelCol, row, excelCol++, worksheet, ref scrap);
 
-                    //material.Add(Report.Material.substance, worksheet.Cells[row, excelCol].Value);
-                    //scrap.Add(Report.Material.substance, worksheet.Cells[row, excelCol++].Value);
-                    //material.Add(Report.Material.standard, worksheet.Cells[row, excelCol].Value);
-                    //scrap.Add(Report.Material.standard, worksheet.Cells[row, excelCol++].Value);
-                    excelCol++;
-                    CellVaildation(Report.Material.qunantityUnit, initRow, excelCol, row, excelCol, worksheet, ref material);
-                    string[] quantityArray = material[Report.Material.qunantityUnit]?.ToString().Replace("Pcs", "pcs").Split('/');
-                    material[Report.Material.qunantityUnit] = quantityArray[0];
-                    CellVaildation(Report.Material.qunantityUnit, initRow, excelCol, row, excelCol, worksheet, ref scrap);
-                    scrap[Report.Material.qunantityUnit] = quantityArray[0];
-                    CellVaildation(Report.Material.priceUnit, initRow, excelCol, row, excelCol, worksheet, ref material);
-                    material[Report.Material.priceUnit] = (quantityArray.Length == 1? quantityArray[0]: quantityArray[1]);
-                    CellVaildation(Report.Material.priceUnit, initRow, excelCol, row, excelCol++, worksheet, ref scrap);
-                    scrap[Report.Material.priceUnit] = (quantityArray.Length == 1 ? quantityArray[0] : quantityArray[1]);
-                    //material.Add(Report.Material.qunantityUnit, worksheet.Cells[row, excelCol].Value);
-                    //scrap.Add(Report.Material.qunantityUnit, worksheet.Cells[row, excelCol].Value);
-                    //material.Add(Report.Material.priceUnit, worksheet.Cells[row, excelCol].Value);
-                    //scrap.Add(Report.Material.priceUnit, worksheet.Cells[row, excelCol++].Value);
+                //    //material.Add(Report.Material.substance, worksheet.Cells[row, excelCol].Value);
+                //    //scrap.Add(Report.Material.substance, worksheet.Cells[row, excelCol++].Value);
+                //    //material.Add(Report.Material.standard, worksheet.Cells[row, excelCol].Value);
+                //    //scrap.Add(Report.Material.standard, worksheet.Cells[row, excelCol++].Value);
+                //    excelCol++;
+                //    CellVaildation(Report.Material.qunantityUnit, initRow, excelCol, row, excelCol, worksheet, ref material);
+                //    string[] quantityArray = material[Report.Material.qunantityUnit]?.ToString().Replace("Pcs", "pcs").Split('/');
+                //    material[Report.Material.qunantityUnit] = quantityArray[0];
+                //    CellVaildation(Report.Material.qunantityUnit, initRow, excelCol, row, excelCol, worksheet, ref scrap);
+                //    scrap[Report.Material.qunantityUnit] = quantityArray[0];
+                //    CellVaildation(Report.Material.priceUnit, initRow, excelCol, row, excelCol, worksheet, ref material);
+                //    material[Report.Material.priceUnit] = (quantityArray.Length == 1? quantityArray[0]: quantityArray[1]);
+                //    CellVaildation(Report.Material.priceUnit, initRow, excelCol, row, excelCol++, worksheet, ref scrap);
+                //    scrap[Report.Material.priceUnit] = (quantityArray.Length == 1 ? quantityArray[0] : quantityArray[1]);
+                //    //material.Add(Report.Material.qunantityUnit, worksheet.Cells[row, excelCol].Value);
+                //    //scrap.Add(Report.Material.qunantityUnit, worksheet.Cells[row, excelCol].Value);
+                //    //material.Add(Report.Material.priceUnit, worksheet.Cells[row, excelCol].Value);
+                //    //scrap.Add(Report.Material.priceUnit, worksheet.Cells[row, excelCol++].Value);
 
-                    CellVaildation(Report.Material.unitCost, initRow, excelCol, row, excelCol++, worksheet, ref material);
-                    CellVaildation(Report.Material.netWeight, initRow + 1, excelCol, row, excelCol++, worksheet, ref material);
-                    CellVaildation(Report.Material.quantity, initRow + 1, excelCol, row, excelCol++, worksheet, ref material);                    
-                    double quantity = global.ConvertDouble(worksheet.Cells[row, excelCol].Value);
-                    double gross = global.ConvertDouble(material[Report.Material.quantity]);
-                    material[Report.Material.quantity] = gross == 0 ? quantity : gross;
-                    //material.Add(Report.Material.unitCost, worksheet.Cells[row, excelCol++].Value);
-                    //material.Add(Report.Material.netWeight, worksheet.Cells[row, excelCol++].Value);                  
-                    //material.Add(Report.Material.quantity, worksheet.Cells[row, excelCol++].Value);
+                //    CellVaildation(Report.Material.unitCost, initRow, excelCol, row, excelCol++, worksheet, ref material);
+                //    CellVaildation(Report.Material.netWeight, initRow + 1, excelCol, row, excelCol++, worksheet, ref material);
+                //    CellVaildation(Report.Material.quantity, initRow + 1, excelCol, row, excelCol++, worksheet, ref material);                    
+                //    double quantity = global.ConvertDouble(worksheet.Cells[row, excelCol].Value);
+                //    double gross = global.ConvertDouble(material[Report.Material.quantity]);
+                //    material[Report.Material.quantity] = gross == 0 ? quantity : gross;
+                //    //material.Add(Report.Material.unitCost, worksheet.Cells[row, excelCol++].Value);
+                //    //material.Add(Report.Material.netWeight, worksheet.Cells[row, excelCol++].Value);                  
+                //    //material.Add(Report.Material.quantity, worksheet.Cells[row, excelCol++].Value);
 
-                    double sprue =
-                        Math.Round((global.ConvertDouble(material[Report.Material.quantity]) - global.ConvertDouble(material[Report.Material.netWeight]))
-                    / global.ConvertDouble(material[Report.Material.netWeight]) * 100);
+                //    double sprue =
+                //        Math.Round((global.ConvertDouble(material[Report.Material.quantity]) - global.ConvertDouble(material[Report.Material.netWeight]))
+                //    / global.ConvertDouble(material[Report.Material.netWeight]) * 100);
                    
-                    material.Add(Report.Material.grossWeight, (global.ConvertDouble(material[Report.Material.netWeight]) == 0 ? quantity : sprue));
-                    //header.Add(Report.Material.grossWeight, sprue);
-                    scrap.Add(Report.Material.grossWeight, (global.ConvertDouble(material[Report.Material.netWeight]) == 0 ? quantity : sprue));
+                //    material.Add(Report.Material.grossWeight, (global.ConvertDouble(material[Report.Material.netWeight]) == 0 ? quantity : sprue));
+                //    //header.Add(Report.Material.grossWeight, sprue);
+                //    scrap.Add(Report.Material.grossWeight, (global.ConvertDouble(material[Report.Material.netWeight]) == 0 ? quantity : sprue));
 
-                    scrap.Add(Report.Material.quantity,
-                        -(global.ConvertDouble(material[Report.Material.quantity]) - global.ConvertDouble(material[Report.Material.netWeight])));
+                //    scrap.Add(Report.Material.quantity,
+                //        -(global.ConvertDouble(material[Report.Material.quantity]) - global.ConvertDouble(material[Report.Material.netWeight])));
 
-                    if (row == 17)
-                    {
-                        //header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.DieCastingPart");
-                        header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
-                        //material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.RawMaterial.Standard");
+                //    if (row == 17)
+                //    {
+                //        //header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.DieCastingPart");
+                //        header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
+                //        //material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.RawMaterial.Standard");
 
-                        scrap[Report.Material.quantity] = global.ConvertDouble(material[Report.Material.netWeight]) - global.ConvertDouble(material[Report.Material.quantity]);
+                //        scrap[Report.Material.quantity] = global.ConvertDouble(material[Report.Material.netWeight]) - global.ConvertDouble(material[Report.Material.quantity]);
 
-                        //if (manufacturingType == Bom.ManufacturingType.사출.ToString())
-                        //{
-                        //    header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
-                        //    header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.InjectionMoldingPart");
-                        //    material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.RawMaterial.Plastic");                           
-                        //}
-                        //else if (manufacturingType == Bom.ManufacturingType.주조.ToString())
-                        //{
-                        //    header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.DieCastingPart");
-                        //    header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
-                        //    //header.Add(Report.Material.loss, 100);
-                        //    //header.Add(Report.Material.netWeight, worksheet.Cells[row, 11].Value);
-                        //    material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.RawMaterial.CastingMaterial");
-                        //}
-                        //else if (manufacturingType == Bom.ManufacturingType.프레스.ToString())
-                        //{
-                        //    header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.StampingPart");
-                        //    header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
+                //        //if (manufacturingType == Bom.ManufacturingType.사출.ToString())
+                //        //{
+                //        //    header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
+                //        //    header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.InjectionMoldingPart");
+                //        //    material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.RawMaterial.Plastic");                           
+                //        //}
+                //        //else if (manufacturingType == Bom.ManufacturingType.주조.ToString())
+                //        //{
+                //        //    header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.DieCastingPart");
+                //        //    header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
+                //        //    //header.Add(Report.Material.loss, 100);
+                //        //    //header.Add(Report.Material.netWeight, worksheet.Cells[row, 11].Value);
+                //        //    material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.RawMaterial.CastingMaterial");
+                //        //}
+                //        //else if (manufacturingType == Bom.ManufacturingType.프레스.ToString())
+                //        //{
+                //        //    header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.StampingPart");
+                //        //    header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
 
-                        //    material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.SemiFinished.SheetMetal.Plate");
-                        //    header.Add(Report.Header.width, worksheet.Cells[5, 26].Value);
-                        //    header.Add(Report.Header.height, worksheet.Cells[5, 27].Value);
-                        //    header.Add(Report.Header.thinkness, worksheet.Cells[5, 29].Value);
-                        //}
-                        //else if (manufacturingType == Bom.ManufacturingType.가공.ToString() || manufacturingType == Bom.ManufacturingType.프레스.ToString())
-                        //{
-                        //    //header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.DieCastingPart");
-                        //    header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
-                        //    //material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.RawMaterial.Standard");
+                //        //    material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.SemiFinished.SheetMetal.Plate");
+                //        //    header.Add(Report.Header.width, worksheet.Cells[5, 26].Value);
+                //        //    header.Add(Report.Header.height, worksheet.Cells[5, 27].Value);
+                //        //    header.Add(Report.Header.thinkness, worksheet.Cells[5, 29].Value);
+                //        //}
+                //        //else if (manufacturingType == Bom.ManufacturingType.가공.ToString() || manufacturingType == Bom.ManufacturingType.프레스.ToString())
+                //        //{
+                //        //    //header.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.DieCastingPart");
+                //        //    header.Add(Report.Material.netWeight, worksheet.Cells[row, 10].Value);
+                //        //    //material.Add(Report.Material.standard, "Siemens.TCPCM.Classification.Material.RawMaterial.Standard");
 
-                        //    scrap[Report.Material.quantity] = global.ConvertDouble(material[Report.Material.netWeight])-global.ConvertDouble(material[Report.Material.quantity]);
-                        //}
+                //        //    scrap[Report.Material.quantity] = global.ConvertDouble(material[Report.Material.netWeight])-global.ConvertDouble(material[Report.Material.quantity]);
+                //        //}
 
-                        material.Add("Weight  Type", "Deployed weight");
-                        scrap.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.Scrap");
-                        scrap.Add("Weight  Type", $"Scrap / Waste");
-                    }
+                //        material.Add("Weight  Type", "Deployed weight");
+                //        //scrap.Add(Report.Material.standard, $"Siemens.TCPCM.Classification.Material.Scrap");
+                //        scrap.Add("Weight  Type", $"Scrap / Waste");
+                //    }
 
-                    excelCol = 14;
-                    double etc = global.ConvertDouble(worksheet.Cells[row, excelCol].Value) / (global.ConvertDouble(worksheet.Cells[row, excelCol+1].Value)- global.ConvertDouble(worksheet.Cells[row, excelCol].Value)) * 100;
-                    CellVaildation(Report.Material.etc, initRow, excelCol, worksheet, etc, ref material);
-                    //etc += worksheet.Cells[row, excelCol++].Value;
+                //    excelCol = 14;
+                //    double etc = global.ConvertDouble(worksheet.Cells[row, excelCol].Value) / (global.ConvertDouble(worksheet.Cells[row, excelCol+1].Value)- global.ConvertDouble(worksheet.Cells[row, excelCol].Value)) * 100;
+                //    CellVaildation(Report.Material.etc, initRow, excelCol, worksheet, etc, ref material);
+                //    //etc += worksheet.Cells[row, excelCol++].Value;
 
-                    excelCol = 23;
-                    JObject dross = new JObject();
-                    if (worksheet.Cells[row, excelCol-2].Value != null && worksheet.Cells[row, excelCol - 2].Value?.ToString().Contains("dross"))
-                    {
-                        string strDross = worksheet.Cells[row, excelCol - 2].Value?.ToString();
-                        string[] split =  strDross.Split(':');
-                        dross = new JObject( material);
-                        dross["Procurement"] = "Siemens.TCPCM.ProcurementType.InternalSale";
-                        dross[Report.Material.quantity] = split[1].Split(',')[0].Replace(" ","");
-                        dross[Report.Material.unitCost] = split[2].Split(',')[0].Replace(" ", "");
+                //    excelCol = 23;
+                //    JObject dross = new JObject();
+                //    if (worksheet.Cells[row, excelCol-2].Value != null && worksheet.Cells[row, excelCol - 2].Value?.ToString().Contains("dross"))
+                //    {
+                //        string strDross = worksheet.Cells[row, excelCol - 2].Value?.ToString();
+                //        string[] split =  strDross.Split(':');
+                //        dross = new JObject( material);
+                //        dross["Procurement"] = "Siemens.TCPCM.ProcurementType.InternalSale";
+                //        dross[Report.Material.quantity] = split[1].Split(',')[0].Replace(" ","");
+                //        dross[Report.Material.unitCost] = split[2].Split(',')[0].Replace(" ", "");
                         
-                    }
-                    excelCol++;
-                    if (returnRatio == 0 && worksheet.Cells[row, excelCol].Value != 0)
-                    {
-                        returnRatio = 100 - worksheet.Cells[row, excelCol].Value;
-                    }
-                    excelCol++;
+                //    }
+                //    excelCol++;
+                //    if (returnRatio == 0 && worksheet.Cells[row, excelCol].Value != 0)
+                //    {
+                //        returnRatio = 100 - worksheet.Cells[row, excelCol].Value;
+                //    }
+                //    excelCol++;
 
-                    CellVaildation(Report.Material.unitCost, initRow+1, excelCol, row, excelCol++, worksheet, ref scrap);
+                //    CellVaildation(Report.Material.unitCost, initRow+1, excelCol, row, excelCol++, worksheet, ref scrap);
                     
-                    //scrap.Add(Report.Material.unitCost, worksheet.Cells[row, excelCol++].Value);
-                    materials.Add(material);
-                    if (global.ConvertDouble(worksheet.Cells[row, excelCol].Value) != 0) materials.Add(scrap);
-                    if (dross.Count!=0)materials.Add(dross);
-                    row++;
-                }
+                //    //scrap.Add(Report.Material.unitCost, worksheet.Cells[row, excelCol++].Value);
+                //    materials.Add(material);
+                //    if (global.ConvertDouble(worksheet.Cells[row, excelCol].Value) != 0) materials.Add(scrap);
+                //    if (dross.Count!=0)materials.Add(dross);
+                //    row++;
+                //}
 
 
-                CellVaildation(Report.Material.returnRatio, 16, 24, worksheet, returnRatio, ref header);
+                //CellVaildation(Report.Material.returnRatio, 16, 24, worksheet, returnRatio, ref header);
 
-                int increase = row - 26;
-                Dictionary<(int, int), string > temp = new Dictionary<(int, int), string>(cbd.column);
-                cbd.column.Clear();
-                foreach (KeyValuePair< (int, int), string> keyValue in (increase > 0 ? temp.Reverse() : temp))
-                {
-                    cbd.column.Add((keyValue.Key.Item1+ increase, keyValue.Key.Item2), keyValue.Value);                    
-                }
-                //header.Add(Report.Material.etc, etc);
-                //header.Add(Report.Material.returnRatio, returnRatio);
-                CellVaildation(Report.Header.plcVolume, row+1, 18, row + 2, 18, worksheet, ref header);
-                CellVaildation(Report.Header.plc, row + 1, 19, row + 2, 19, worksheet, ref header);
-                CellVaildation(Report.Header.annualQty, row + 1, 20, row + 2, 20, worksheet, ref header);
+                //int increase = row - 26;
+                //Dictionary<(int, int), string > temp = new Dictionary<(int, int), string>(cbd.column);
+                //cbd.column.Clear();
+                //foreach (KeyValuePair< (int, int), string> keyValue in (increase > 0 ? temp.Reverse() : temp))
+                //{
+                //    cbd.column.Add((keyValue.Key.Item1+ increase, keyValue.Key.Item2), keyValue.Value);                    
+                //}
+                ////header.Add(Report.Material.etc, etc);
+                ////header.Add(Report.Material.returnRatio, returnRatio);
+                ////CellVaildation(Report.Header.plcVolume, row+1, 18, row + 2, 18, worksheet, ref header);
+                ////CellVaildation(Report.Header.plc, row + 1, 19, row + 2, 19, worksheet, ref header);
+                ////CellVaildation(Report.Header.annualQty, row + 1, 20, row + 2, 20, worksheet, ref header);
 
-                //header.Add(Report.Header.plcVolume, worksheet.Cells[row + 1, 18].Value);
-                //header.Add(Report.Header.plc, worksheet.Cells[row + 1, 19].Value);
-                //header.Add(Report.Header.annualQty, worksheet.Cells[row + 1, 20].Value);
+                ////header.Add(Report.Header.plcVolume, worksheet.Cells[row + 1, 18].Value);
+                ////header.Add(Report.Header.plc, worksheet.Cells[row + 1, 19].Value);
+                ////header.Add(Report.Header.annualQty, worksheet.Cells[row + 1, 20].Value);
 
-                MemberInfo[] manufacturingMembers = typeof(Report.Manufacturing).GetMembers(BindingFlags.Static | BindingFlags.Public);
-                MemberInfo[] headerMembers = typeof(Report.Header).GetMembers(BindingFlags.Static | BindingFlags.Public);
-                MemberInfo[] materialMembers = typeof(Report.Material).GetMembers(BindingFlags.Static | BindingFlags.Public);
-                MemberInfo[] toolMembers = typeof(Report.Tooling).GetMembers(BindingFlags.Static | BindingFlags.Public);
+                //MemberInfo[] manufacturingMembers = typeof(Report.Manufacturing).GetMembers(BindingFlags.Static | BindingFlags.Public);
+                //MemberInfo[] headerMembers = typeof(Report.Header).GetMembers(BindingFlags.Static | BindingFlags.Public);
+                //MemberInfo[] materialMembers = typeof(Report.Material).GetMembers(BindingFlags.Static | BindingFlags.Public);
+                //MemberInfo[] toolMembers = typeof(Report.Tooling).GetMembers(BindingFlags.Static | BindingFlags.Public);
 
-                MemberInfo[] total = new MemberInfo[manufacturingMembers.Length + headerMembers.Length + materialMembers.Length+ toolMembers.Length];
-                manufacturingMembers.CopyTo(total, 0);
-                headerMembers.CopyTo(total, manufacturingMembers.Length);
-                materialMembers.CopyTo(total, manufacturingMembers.Length + headerMembers.Length);
-                toolMembers.CopyTo(total, manufacturingMembers.Length + headerMembers.Length+materialMembers.Length);
+                //MemberInfo[] total = new MemberInfo[manufacturingMembers.Length + headerMembers.Length + materialMembers.Length+ toolMembers.Length];
+                //manufacturingMembers.CopyTo(total, 0);
+                //headerMembers.CopyTo(total, manufacturingMembers.Length);
+                //materialMembers.CopyTo(total, manufacturingMembers.Length + headerMembers.Length);
+                //toolMembers.CopyTo(total, manufacturingMembers.Length + headerMembers.Length+materialMembers.Length);
 
-                foreach (MemberInfo member in total)
-                {
-                    string key = ((FieldInfo)member).GetValue(member.Name)?.ToString();
-                    if (!header.ContainsKey(key)) header.Add(key, null);
-                }
+                //foreach (MemberInfo member in total)
+                //{
+                //    string key = ((FieldInfo)member).GetValue(member.Name)?.ToString();
+                //    if (!header.ContainsKey(key)) header.Add(key, null);
+                //}
 
-                header.Add("Weight  Type","");
-                header.Add("Procurement", "Siemens.TCPCM.ProcurementType.Purchase");
-                header.Add("Calculation quality", "Siemens.TCPCM.CalculationQuality.Benchmarkcalculation");
-                data.Add(header);
-                data.Merge(materials);
+                //header.Add("Weight  Type","");
+                //header.Add("Procurement", "Siemens.TCPCM.ProcurementType.Purchase");
+                //header.Add("Calculation quality", "Siemens.TCPCM.CalculationQuality.Benchmarkcalculation");
+                //data.Add(header);
+                //data.Merge(materials);
 
-                //가공비
-                int currencyRow = row+5;
-                row += 5;
-                while (true)
-                {
-                    if (((Excel.Range)worksheet.Cells[row, 2]).MergeCells) break;
+                ////가공비
+                //int currencyRow = row+5;
+                //row += 5;
+                //while (true)
+                //{
+                //    if (((Excel.Range)worksheet.Cells[row, 2]).MergeCells) break;
 
-                    JObject manufacturing = new JObject();
-                    JObject machine = new JObject();
-                    JObject labor = new JObject();
+                //    JObject manufacturing = new JObject();
+                //    JObject machine = new JObject();
+                //    JObject labor = new JObject();
 
-                    manufacturing.Add(Report.LineType.lineType, "D");
-                    manufacturing.Add(Report.LineType.level, 1);
-                    manufacturing.Add(Report.Material.grossWeight, header[Report.Material.grossWeight]);
-                    manufacturing.Add(Report.Material.loss, header[Report.Material.loss]);
-                    manufacturing.Add(Report.Material.quantity, 1);
-                    //if (manufacturingType == Bom.ManufacturingType.사출.ToString())
-                    //{
-                    //    manufacturing.Add(Report.Manufacturing.techology, "Siemens.TCPCM.Classification.Technology.InjectionMolding");
-                    //}
-                    //else if (manufacturingType == Bom.ManufacturingType.주조.ToString() || manufacturingType == Bom.ManufacturingType.가공.ToString())
-                    //{
-                    //    manufacturing.Add(Report.Manufacturing.techology, "Siemens.TCPCM.Classification.Technology.DieCasting");
-                    //}
-                    machine.Add(Report.LineType.lineType, "M");
-                    machine.Add(Report.LineType.level, 1);
-                    labor.Add(Report.LineType.lineType, "L");
-                    labor.Add(Report.LineType.level, 1);
+                //    manufacturing.Add(Report.LineType.lineType, "D");
+                //    manufacturing.Add(Report.LineType.level, 1);
+                //    manufacturing.Add(Report.Material.grossWeight, header[Report.Material.grossWeight]);
+                //    manufacturing.Add(Report.Material.loss, header[Report.Material.loss]);
+                //    manufacturing.Add(Report.Material.quantity, 1);
+                //    //if (manufacturingType == Bom.ManufacturingType.사출.ToString())
+                //    //{
+                //    //    manufacturing.Add(Report.Manufacturing.techology, "Siemens.TCPCM.Classification.Technology.InjectionMolding");
+                //    //}
+                //    //else if (manufacturingType == Bom.ManufacturingType.주조.ToString() || manufacturingType == Bom.ManufacturingType.가공.ToString())
+                //    //{
+                //    //    manufacturing.Add(Report.Manufacturing.techology, "Siemens.TCPCM.Classification.Technology.DieCasting");
+                //    //}
+                //    machine.Add(Report.LineType.lineType, "M");
+                //    machine.Add(Report.LineType.level, 1);
+                //    labor.Add(Report.LineType.lineType, "L");
+                //    labor.Add(Report.LineType.level, 1);
 
-                    excelCol = 2;
-                    if (worksheet.Cells[row, 6].Value == null)
-                    {
-                        row++;
-                        continue;
-                    }
-                    manufacturing.Add(Report.Manufacturing.sequence, row);
-                    machine.Add(Report.Manufacturing.sequence, row);
-                    labor.Add(Report.Manufacturing.sequence, row);
+                //    excelCol = 2;
+                //    if (worksheet.Cells[row, 6].Value == null)
+                //    {
+                //        row++;
+                //        continue;
+                //    }
+                //    manufacturing.Add(Report.Manufacturing.sequence, row);
+                //    machine.Add(Report.Manufacturing.sequence, row);
+                //    labor.Add(Report.Manufacturing.sequence, row);
 
-                    excelCol = 3;
-                    CellVaildation(Report.Manufacturing.partName, currencyRow - 2, excelCol-1, row, excelCol, worksheet, ref manufacturing);
-                    CellVaildation(Report.Manufacturing.partName, currencyRow - 2, excelCol-1, row, excelCol, worksheet, ref machine);
-                    CellVaildation(Report.Manufacturing.partName, currencyRow - 2, excelCol-1, row, excelCol++, worksheet, ref labor);
+                //    excelCol = 3;
+                //    CellVaildation(Report.Manufacturing.partName, currencyRow - 2, excelCol-1, row, excelCol, worksheet, ref manufacturing);
+                //    CellVaildation(Report.Manufacturing.partName, currencyRow - 2, excelCol-1, row, excelCol, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.partName, currencyRow - 2, excelCol-1, row, excelCol++, worksheet, ref labor);
 
-                    //manufacturing.Add(Report.Manufacturing.partName, worksheet.Cells[row, excelCol].Value);
-                    //machine.Add(Report.Manufacturing.partName, worksheet.Cells[row, excelCol].Value);
-                    //labor.Add(Report.Manufacturing.partName, worksheet.Cells[row, excelCol++].Value);
+                //    //manufacturing.Add(Report.Manufacturing.partName, worksheet.Cells[row, excelCol].Value);
+                //    //machine.Add(Report.Manufacturing.partName, worksheet.Cells[row, excelCol].Value);
+                //    //labor.Add(Report.Manufacturing.partName, worksheet.Cells[row, excelCol++].Value);
 
-                    excelCol = 5;
-                    CellVaildation(Report.Manufacturing.itemNumber, currencyRow - 2, excelCol, row, excelCol, worksheet, ref manufacturing);
-                    CellVaildation(Report.Manufacturing.itemNumber, currencyRow - 2, excelCol, row, excelCol, worksheet, ref machine);
-                    CellVaildation(Report.Manufacturing.itemNumber, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref labor);
+                //    excelCol = 5;
+                //    CellVaildation(Report.Manufacturing.itemNumber, currencyRow - 2, excelCol, row, excelCol, worksheet, ref manufacturing);
+                //    CellVaildation(Report.Manufacturing.itemNumber, currencyRow - 2, excelCol, row, excelCol, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.itemNumber, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref labor);
 
-                    CellVaildation(Report.Manufacturing.manufacturingName, currencyRow - 2, excelCol, row, excelCol, worksheet, ref manufacturing);
-                    CellVaildation(Report.Manufacturing.manufacturingName, currencyRow - 2, excelCol, row, excelCol, worksheet, ref machine);
-                    CellVaildation(Report.Manufacturing.manufacturingName, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref labor);
+                //    CellVaildation(Report.Manufacturing.manufacturingName, currencyRow - 2, excelCol, row, excelCol, worksheet, ref manufacturing);
+                //    CellVaildation(Report.Manufacturing.manufacturingName, currencyRow - 2, excelCol, row, excelCol, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.manufacturingName, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref labor);
 
-                    CellVaildation(Report.Manufacturing.machineName, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
-                    CellVaildation(Report.Manufacturing.cavity, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
-                    CellVaildation(Report.Manufacturing.workers, currencyRow - 2, excelCol, row, excelCol, worksheet, ref labor);
-                    CellVaildation(Report.Manufacturing.workers, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.machineName, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.cavity, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
+                //    CellVaildation(Report.Manufacturing.workers, currencyRow - 2, excelCol, row, excelCol, worksheet, ref labor);
+                //    CellVaildation(Report.Manufacturing.workers, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
 
-                    excelCol++;
-                    CellVaildation(Report.Manufacturing.usage, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);                   
-                    CellVaildation(Report.Manufacturing.grossWage, currencyRow - 2, excelCol, row, excelCol, worksheet, ref labor);
-                    CellVaildation(Report.Manufacturing.grossWage, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    excelCol++;
+                //    CellVaildation(Report.Manufacturing.usage, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);                   
+                //    CellVaildation(Report.Manufacturing.grossWage, currencyRow - 2, excelCol, row, excelCol, worksheet, ref labor);
+                //    CellVaildation(Report.Manufacturing.grossWage, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
 
-                    //labor.Add(Report.Manufacturing.grossWage, worksheet.Cells[row, excelCol].Value);
-                    //machine.Add(Report.Manufacturing.grossWage, worksheet.Cells[row, excelCol++].Value);
-                    //labor.Add(Report.Material.priceUnit, worksheet.Cells[currencyRow, excelCol++].Value);
-                    excelCol++;
-                    labor.Add(Report.Header.currency, header[Report.Header.currency]);
+                //    //labor.Add(Report.Manufacturing.grossWage, worksheet.Cells[row, excelCol].Value);
+                //    //machine.Add(Report.Manufacturing.grossWage, worksheet.Cells[row, excelCol++].Value);
+                //    //labor.Add(Report.Material.priceUnit, worksheet.Cells[currencyRow, excelCol++].Value);
+                //    excelCol++;
+                //    labor.Add(Report.Header.currency, header[Report.Header.currency]);
 
-                    excelCol = 16;
-                    CellVaildation(Report.Manufacturing.et, currencyRow - 3, excelCol-1, currencyRow - 3, excelCol++, worksheet, ref manufacturing);
-                    manufacturing[Report.Manufacturing.et] = global.ConvertDouble(manufacturing[Report.Manufacturing.et]) * 100;
+                //    excelCol = 16;
+                //    CellVaildation(Report.Manufacturing.et, currencyRow - 3, excelCol-1, currencyRow - 3, excelCol++, worksheet, ref manufacturing);
+                //    manufacturing[Report.Manufacturing.et] = global.ConvertDouble(manufacturing[Report.Manufacturing.et]) * 100;
 
-                    excelCol++;
-                    CellVaildation(Report.Manufacturing.lotQty, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
-                    CellVaildation(Report.Manufacturing.oee, currencyRow - 2, excelCol, worksheet, (worksheet.Cells[row, excelCol++].Value), ref manufacturing);
-                    CellVaildation(Report.Manufacturing.prepare, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
-                    CellVaildation(Report.Manufacturing.netCycleTime, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
+                //    excelCol++;
+                //    CellVaildation(Report.Manufacturing.lotQty, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
+                //    CellVaildation(Report.Manufacturing.oee, currencyRow - 2, excelCol, worksheet, (worksheet.Cells[row, excelCol++].Value), ref manufacturing);
+                //    CellVaildation(Report.Manufacturing.prepare, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
+                //    CellVaildation(Report.Manufacturing.netCycleTime, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
 
-                    //manufacturing.Add(Report.Manufacturing.lotQty, worksheet.Cells[row, excelCol++].Value);
-                    //manufacturing.Add(Report.Manufacturing.oee, 100 - worksheet.Cells[row, excelCol++].Value);
-                    //manufacturing.Add(Report.Manufacturing.prepare, worksheet.Cells[row, excelCol++].Value);
-                    //manufacturing.Add(Report.Manufacturing.netCycleTime, worksheet.Cells[row, excelCol++].Value);
+                //    //manufacturing.Add(Report.Manufacturing.lotQty, worksheet.Cells[row, excelCol++].Value);
+                //    //manufacturing.Add(Report.Manufacturing.oee, 100 - worksheet.Cells[row, excelCol++].Value);
+                //    //manufacturing.Add(Report.Manufacturing.prepare, worksheet.Cells[row, excelCol++].Value);
+                //    //manufacturing.Add(Report.Manufacturing.netCycleTime, worksheet.Cells[row, excelCol++].Value);
 
-                    excelCol = 23;
-                    CellVaildation(Report.Manufacturing.machineCost, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
-                    //machine.Add(Report.Manufacturing.machineCost, worksheet.Cells[row, excelCol].Value);
+                //    excelCol = 23;
+                //    CellVaildation(Report.Manufacturing.machineCost, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    //machine.Add(Report.Manufacturing.machineCost, worksheet.Cells[row, excelCol].Value);
 
-                    machine.Add(Report.Header.currency, header[Report.Header.currency]);
-                    manufacturing.Add(Report.Header.currency, header[Report.Header.currency]);
+                //    machine.Add(Report.Header.currency, header[Report.Header.currency]);
+                //    manufacturing.Add(Report.Header.currency, header[Report.Header.currency]);
 
-                    CellVaildation(Report.Manufacturing.amotizingYearOfMachine, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
-                    CellVaildation(Report.Manufacturing.machineArea, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.amotizingYearOfMachine, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.machineArea, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
 
-                    //machine.Add(Report.Manufacturing.amotizingYearOfMachine, worksheet.Cells[row, excelCol++].Value);
-                    //machine.Add(Report.Manufacturing.machineArea, worksheet.Cells[row, excelCol++].Value);
+                //    //machine.Add(Report.Manufacturing.amotizingYearOfMachine, worksheet.Cells[row, excelCol++].Value);
+                //    //machine.Add(Report.Manufacturing.machineArea, worksheet.Cells[row, excelCol++].Value);
 
-                    double rationForSupplementaryMachine = 0;
-                    if (worksheet.Cells[row, excelCol].Value != null && worksheet.Cells[row, excelCol + 1].Value == null && worksheet.Cells[row, excelCol + 2].Value == null)
-                    {
-                        rationForSupplementaryMachine = global.ConvertDouble(worksheet.Cells[row, excelCol].Value);
-                    }
-                    else
-                    {
-                        rationForSupplementaryMachine =
-                       global.ConvertDouble(worksheet.Cells[row, excelCol++].Value) / 100
-                       * global.ConvertDouble(worksheet.Cells[row, excelCol++].Value) /
-                       global.ConvertDouble(worksheet.Cells[row, excelCol++].Value);
-                    }
+                //    double rationForSupplementaryMachine = 0;
+                //    if (worksheet.Cells[row, excelCol].Value != null && worksheet.Cells[row, excelCol + 1].Value == null && worksheet.Cells[row, excelCol + 2].Value == null)
+                //    {
+                //        rationForSupplementaryMachine = global.ConvertDouble(worksheet.Cells[row, excelCol].Value);
+                //    }
+                //    else
+                //    {
+                //        rationForSupplementaryMachine =
+                //       global.ConvertDouble(worksheet.Cells[row, excelCol++].Value) / 100
+                //       * global.ConvertDouble(worksheet.Cells[row, excelCol++].Value) /
+                //       global.ConvertDouble(worksheet.Cells[row, excelCol++].Value);
+                //    }
 
-                    CellVaildation(Report.Manufacturing.rationForSupplementaryMachine, currencyRow - 2, 26, worksheet, rationForSupplementaryMachine, ref machine);
-                    //machine.Add(Report.Manufacturing.rationForSupplementaryMachine, rationForSupplementaryMachine);
+                //    CellVaildation(Report.Manufacturing.rationForSupplementaryMachine, currencyRow - 2, 26, worksheet, rationForSupplementaryMachine, ref machine);
+                //    //machine.Add(Report.Manufacturing.rationForSupplementaryMachine, rationForSupplementaryMachine);
 
-                    excelCol = 29;
-                    double workingDayPerYear = worksheet.Cells[row, excelCol++].Value * worksheet.Cells[row, excelCol].Value;
-                    CellVaildation(Report.Manufacturing.workingDayPerYear, currencyRow - 2, excelCol, worksheet, workingDayPerYear, ref manufacturing);
-                    CellVaildation(Report.Manufacturing.workingTimePerDay, currencyRow - 2, excelCol, worksheet, worksheet.Cells[row, excelCol++].Value, ref manufacturing);
-                    CellVaildation(Report.Manufacturing.machinePower, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
-                    CellVaildation(Report.Manufacturing.machinePowerEfficiency, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
-                    CellVaildation(Report.Manufacturing.machinePowerCost, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
-                    CellVaildation(Report.Manufacturing.ratioOfMachineRepair, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
-                    CellVaildation(Report.Manufacturing.ratioOfIndirectlyMachineryCost, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
-
-
-                    if(global.ConvertDouble( machine[Report.Manufacturing.amotizingYearOfMachine])==0)
-                    {
-                        machine[Report.Manufacturing.machineCost] = worksheet.Cells[row, 40].Value;
-                        machine[Report.Manufacturing.usage] = 1;
-                    }
-                    //excelCol = 45;
-                    //CellVaildation(Report.Manufacturing.machineRepairCost, currencyRow - 1, excelCol, worksheet,(worksheet.Cells[row, excelCol++].Value* workingDayPerYear), ref machine);
-                    //manufacturing.Add(Report.Manufacturing.workingDayPerYear, worksheet.Cells[row, excelCol++].Value * worksheet.Cells[row, excelCol].Value);
-                    //manufacturing.Add(Report.Manufacturing.workingTimePerDay, worksheet.Cells[row, excelCol++].Value / 10);
-                    //machine.Add(Report.Manufacturing.machinePower, worksheet.Cells[row, excelCol++].Value);
-                    //machine.Add(Report.Manufacturing.machinePowerEfficiency, worksheet.Cells[row, excelCol++].Value);
-                    //machine.Add(Report.Manufacturing.machinePowerCost, worksheet.Cells[row, excelCol++].Value);
-                    //manufacturing.Add(Report.Manufacturing.ratioOfMachineRepair, worksheet.Cells[row, excelCol++].Value);
-                    //manufacturing.Add(Report.Manufacturing.ratioOfIndirectlyMachineryCost, worksheet.Cells[row, excelCol++].Value);
-
-                    data.Add(manufacturing);
-                    data.Add(machine);
-                    data.Add(labor);
-
-                    row++;
-                }
-
-                //tool
-                increase = (row +3)- 44;
-                temp = new Dictionary<(int, int), string>(cbd.column);
-                cbd.column.Clear();
-                foreach (KeyValuePair<(int, int), string> keyValue in (increase > 0 ? temp.Reverse() : temp))
-                {
-                    cbd.column.Add((keyValue.Key.Item1 + increase, keyValue.Key.Item2), keyValue.Value);
-                }
-
-                currencyRow = 44 + increase;
-                row = (currencyRow + 2);
-
-                JObject manufacturingTool = new JObject();
-                manufacturingTool.Add(Report.Manufacturing.manufacturingName, "Proto 금형 & 투자비");
-                manufacturingTool.Add(Report.Manufacturing.sequence, currencyRow);
-                manufacturingTool.Add(Report.LineType.lineType, "C");
-                manufacturingTool.Add(Report.LineType.level, 1);
-                manufacturingTool.Add(Report.Manufacturing.netCycleTime, "1");
-                manufacturingTool.Add(Report.Header.currency, header[Report.Header.currency]);
-                manufacturingTool.Add(Report.Header.partName, header[Report.Header.partName]);
-
-                data.Add(manufacturingTool);
-                while (true)
-                {
-                    if (((Excel.Range)worksheet.Cells[row, 2]).MergeCells) break;
-
-                    if (worksheet.Cells[row, 15].Value == null)
-                    {
-                        row++;
-                        continue;
-                    }
-
-                    JObject tool = new JObject();                   
-                    //manufacturing.Add(Report.Manufacturing.techology, "양산금형비");
-                    tool.Add(Report.LineType.lineType, "T");
-                    tool.Add(Report.LineType.level, 1);
-                    tool.Add(Report.Manufacturing.sequence, currencyRow);
-                    tool.Add(Report.Header.partName, header[Report.Header.partName]);
-                    tool.Add(Report.Header.currency, header[Report.Header.currency]);
-                    manufacturingTool.Add(Report.Manufacturing.usage, 1);
-
-                    excelCol = 5;
-                    CellVaildation(Report.Tooling.tooling, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.type, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.cavity, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.lifetime, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.method, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-
-                    if (  tool[Report.Tooling.method].Contains("In-house") )
-                    {
-                        tool[Report.Tooling.method] = "Direct input";
-                    }
-                    else
-                    {
-                        tool[Report.Tooling.method] = "Input of percentage rate";
-                    }
-                    excelCol++;
-                    CellVaildation(Report.Tooling.leadtime, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.annualCapa, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.unitCost, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.quantity, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-
-                    data.Add(tool);
-                    row++;
-                }
+                //    excelCol = 29;
+                //    double workingDayPerYear = worksheet.Cells[row, excelCol++].Value * worksheet.Cells[row, excelCol].Value;
+                //    CellVaildation(Report.Manufacturing.workingDayPerYear, currencyRow - 2, excelCol, worksheet, workingDayPerYear, ref manufacturing);
+                //    CellVaildation(Report.Manufacturing.workingTimePerDay, currencyRow - 2, excelCol, worksheet, worksheet.Cells[row, excelCol++].Value, ref manufacturing);
+                //    CellVaildation(Report.Manufacturing.machinePower, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.machinePowerEfficiency, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.machinePowerCost, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.ratioOfMachineRepair, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref machine);
+                //    CellVaildation(Report.Manufacturing.ratioOfIndirectlyMachineryCost, currencyRow - 2, excelCol, row, excelCol++, worksheet, ref manufacturing);
 
 
-                //tool
-                increase = (row + 3) - 54;
+                //    if(global.ConvertDouble( machine[Report.Manufacturing.amotizingYearOfMachine])==0)
+                //    {
+                //        machine[Report.Manufacturing.machineCost] = worksheet.Cells[row, 40].Value;
+                //        machine[Report.Manufacturing.usage] = 1;
+                //    }
+                //    //excelCol = 45;
+                //    //CellVaildation(Report.Manufacturing.machineRepairCost, currencyRow - 1, excelCol, worksheet,(worksheet.Cells[row, excelCol++].Value* workingDayPerYear), ref machine);
+                //    //manufacturing.Add(Report.Manufacturing.workingDayPerYear, worksheet.Cells[row, excelCol++].Value * worksheet.Cells[row, excelCol].Value);
+                //    //manufacturing.Add(Report.Manufacturing.workingTimePerDay, worksheet.Cells[row, excelCol++].Value / 10);
+                //    //machine.Add(Report.Manufacturing.machinePower, worksheet.Cells[row, excelCol++].Value);
+                //    //machine.Add(Report.Manufacturing.machinePowerEfficiency, worksheet.Cells[row, excelCol++].Value);
+                //    //machine.Add(Report.Manufacturing.machinePowerCost, worksheet.Cells[row, excelCol++].Value);
+                //    //manufacturing.Add(Report.Manufacturing.ratioOfMachineRepair, worksheet.Cells[row, excelCol++].Value);
+                //    //manufacturing.Add(Report.Manufacturing.ratioOfIndirectlyMachineryCost, worksheet.Cells[row, excelCol++].Value);
+
+                //    data.Add(manufacturing);
+                //    data.Add(machine);
+                //    data.Add(labor);
+
+                //    row++;
+                //}
+
+                ////tool
+                //increase = (row +3)- 44;
                 //temp = new Dictionary<(int, int), string>(cbd.column);
                 //cbd.column.Clear();
                 //foreach (KeyValuePair<(int, int), string> keyValue in (increase > 0 ? temp.Reverse() : temp))
@@ -724,79 +761,146 @@ namespace TcPCM_Connect_Global
                 //    cbd.column.Add((keyValue.Key.Item1 + increase, keyValue.Key.Item2), keyValue.Value);
                 //}
 
-                row = (54 + increase + 2);
-                manufacturingTool = new JObject();
-                manufacturingTool.Add(Report.Manufacturing.manufacturingName, "양산 금형 & 투자비");
-                manufacturingTool.Add(Report.LineType.lineType, "C");
-                manufacturingTool.Add(Report.Manufacturing.netCycleTime, "1");
-                manufacturingTool.Add(Report.LineType.level, 1);
-                manufacturingTool.Add(Report.Manufacturing.sequence, currencyRow+1);
-                manufacturingTool.Add(Report.Header.currency, header[Report.Header.currency]);
-                manufacturingTool.Add(Report.Header.partName, header[Report.Header.partName]);
-                manufacturingTool.Add(Report.Manufacturing.usage,1);
+                //currencyRow = 44 + increase;
+                //row = (currencyRow + 2);
 
-                data.Add(manufacturingTool);
-                while (true)
-                {
-                    if (((Excel.Range)worksheet.Cells[row, 2]).MergeCells) break;
+                //JObject manufacturingTool = new JObject();
+                //manufacturingTool.Add(Report.Manufacturing.manufacturingName, "Proto 금형 & 투자비");
+                //manufacturingTool.Add(Report.Manufacturing.sequence, currencyRow);
+                //manufacturingTool.Add(Report.LineType.lineType, "C");
+                //manufacturingTool.Add(Report.LineType.level, 1);
+                //manufacturingTool.Add(Report.Manufacturing.netCycleTime, "1");
+                //manufacturingTool.Add(Report.Header.currency, header[Report.Header.currency]);
+                //manufacturingTool.Add(Report.Header.partName, header[Report.Header.partName]);
 
-                    if (worksheet.Cells[row, 15].Value == null)
-                    {
-                        row++;
-                        continue;
-                    }
+                //data.Add(manufacturingTool);
+                //while (true)
+                //{
+                //    if (((Excel.Range)worksheet.Cells[row, 2]).MergeCells) break;
 
-                    JObject tool = new JObject();
-                    tool.Add(Report.LineType.lineType, "T");
-                    tool.Add(Report.LineType.level, 1);                    
-                    tool.Add(Report.Manufacturing.sequence, currencyRow + 1);
-                    tool.Add(Report.Header.partName, header[Report.Header.partName]);
-                    tool.Add(Report.Header.currency, header[Report.Header.currency]);
+                //    if (worksheet.Cells[row, 15].Value == null)
+                //    {
+                //        row++;
+                //        continue;
+                //    }
 
-                    excelCol = 5;
-                    CellVaildation(Report.Tooling.tooling, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.type, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    tool[Report.Tooling.type] = tool[Report.Tooling.type]?.ToString().Replace("&","");
-                    CellVaildation(Report.Tooling.cavity, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.lifetime, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.method, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    if (tool[Report.Tooling.method]?.ToString().ToLower().Contains("house")==true)
-                    {
-                        tool[Report.Tooling.method] = "Direct input";
-                    }
-                    else
-                    {
-                        tool[Report.Tooling.method] = "Input of percentage rate";
-                    }
-                    excelCol++;
-                    CellVaildation(Report.Tooling.leadtime, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.annualCapa, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.unitCost, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
-                    CellVaildation(Report.Tooling.quantity, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    JObject tool = new JObject();                   
+                //    //manufacturing.Add(Report.Manufacturing.techology, "양산금형비");
+                //    tool.Add(Report.LineType.lineType, "T");
+                //    tool.Add(Report.LineType.level, 1);
+                //    tool.Add(Report.Manufacturing.sequence, currencyRow);
+                //    tool.Add(Report.Header.partName, header[Report.Header.partName]);
+                //    tool.Add(Report.Header.currency, header[Report.Header.currency]);
+                //    manufacturingTool.Add(Report.Manufacturing.usage, 1);
 
-                    data.Add(tool);
+                //    excelCol = 5;
+                //    CellVaildation(Report.Tooling.tooling, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.type, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.cavity, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.lifetime, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.method, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
 
-                    row++;
-                }
+                //    if (  tool[Report.Tooling.method].Contains("In-house") )
+                //    {
+                //        tool[Report.Tooling.method] = "Direct input";
+                //    }
+                //    else
+                //    {
+                //        tool[Report.Tooling.method] = "Input of percentage rate";
+                //    }
+                //    excelCol++;
+                //    CellVaildation(Report.Tooling.leadtime, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.annualCapa, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.unitCost, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.quantity, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
 
-                String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Import";
-                string response = WebAPI.POST(callUrl, new JObject
-                {
-                    { "Data", data },
-                    { "ConfigurationGuid", global_iniLoad.GetConfig("CBD", "Import") },
-                    { "TargetType", tagetType},
-                    { "TargetId",  tagetID.ToString()},
-                });
+                //    data.Add(tool);
+                //    row++;
+                //}
 
-                try
-                {
-                    JObject postResult = JObject.Parse(response);
-                    if ((bool)postResult["success"] == false) err = postResult["message"].ToString();
-                }
-                catch
-                {
-                    err = response;
-                }
+
+                ////tool
+                //increase = (row + 3) - 54;
+                ////temp = new Dictionary<(int, int), string>(cbd.column);
+                ////cbd.column.Clear();
+                ////foreach (KeyValuePair<(int, int), string> keyValue in (increase > 0 ? temp.Reverse() : temp))
+                ////{
+                ////    cbd.column.Add((keyValue.Key.Item1 + increase, keyValue.Key.Item2), keyValue.Value);
+                ////}
+
+                //row = (54 + increase + 2);
+                //manufacturingTool = new JObject();
+                //manufacturingTool.Add(Report.Manufacturing.manufacturingName, "양산 금형 & 투자비");
+                //manufacturingTool.Add(Report.LineType.lineType, "C");
+                //manufacturingTool.Add(Report.Manufacturing.netCycleTime, "1");
+                //manufacturingTool.Add(Report.LineType.level, 1);
+                //manufacturingTool.Add(Report.Manufacturing.sequence, currencyRow+1);
+                //manufacturingTool.Add(Report.Header.currency, header[Report.Header.currency]);
+                //manufacturingTool.Add(Report.Header.partName, header[Report.Header.partName]);
+                //manufacturingTool.Add(Report.Manufacturing.usage,1);
+
+                //data.Add(manufacturingTool);
+                //while (true)
+                //{
+                //    if (((Excel.Range)worksheet.Cells[row, 2]).MergeCells) break;
+
+                //    if (worksheet.Cells[row, 15].Value == null)
+                //    {
+                //        row++;
+                //        continue;
+                //    }
+
+                //    JObject tool = new JObject();
+                //    tool.Add(Report.LineType.lineType, "T");
+                //    tool.Add(Report.LineType.level, 1);                    
+                //    tool.Add(Report.Manufacturing.sequence, currencyRow + 1);
+                //    tool.Add(Report.Header.partName, header[Report.Header.partName]);
+                //    tool.Add(Report.Header.currency, header[Report.Header.currency]);
+
+                //    excelCol = 5;
+                //    CellVaildation(Report.Tooling.tooling, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.type, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    tool[Report.Tooling.type] = tool[Report.Tooling.type]?.ToString().Replace("&","");
+                //    CellVaildation(Report.Tooling.cavity, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.lifetime, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.method, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    if (tool[Report.Tooling.method]?.ToString().ToLower().Contains("house")==true)
+                //    {
+                //        tool[Report.Tooling.method] = "Direct input";
+                //    }
+                //    else
+                //    {
+                //        tool[Report.Tooling.method] = "Input of percentage rate";
+                //    }
+                //    excelCol++;
+                //    CellVaildation(Report.Tooling.leadtime, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.annualCapa, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.unitCost, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+                //    CellVaildation(Report.Tooling.quantity, currencyRow, excelCol, row, excelCol++, worksheet, ref tool);
+
+                //    data.Add(tool);
+
+                //    row++;
+                //}
+
+                //String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Import";
+                //string response = WebAPI.POST(callUrl, new JObject
+                //{
+                //    { "Data", data },
+                //    { "ConfigurationGuid", global_iniLoad.GetConfig("CBD", "Import") },
+                //    { "TargetType", tagetType},
+                //    { "TargetId",  tagetID.ToString()},
+                //});
+
+                //try
+                //{
+                //    JObject postResult = JObject.Parse(response);
+                //    if ((bool)postResult["success"] == false) err = postResult["message"].ToString();
+                //}
+                //catch
+                //{
+                //    err = response;
+                //}
             }
             catch (Exception exc)
             {
