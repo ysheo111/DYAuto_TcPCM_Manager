@@ -149,14 +149,6 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("UniqueId", "UniqueId");
                 dgv_Category.Columns["UniqueId"].Visible = false;
             }
-            else if (columnName == "환율")
-            {
-                ValidFromAdd("Valid From");
-                dgv_Category.Columns.Add("구분자", "구분자");
-                dgv_Category.Columns.Add("이름", "이름");
-                CurrencyAdd("통화");
-                dgv_Category.Columns.Add("환율", "환율");
-            }
             else
                 dgv_Category.Columns.Add(columnName, columnName);
 
@@ -210,14 +202,6 @@ namespace TcPCM_Connect
                 dgv_Category.Rows[e.RowIndex].Cells["UniqueId"].Value = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null ? null : dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().ToLower();
             }
 
-            if(dgv_Category.Columns[e.ColumnIndex].Name == "환율" && dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
-            {
-                if (double.TryParse(dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out double number))
-                {
-                    dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = number.ToString("#,##0.##");
-                }
-            }
-
             global.MasterDataValiding((DataGridView)sender, e);
         }
 
@@ -253,13 +237,6 @@ namespace TcPCM_Connect
                 searchQeury = $"SELECT Name_LOC as name FROM BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
             else if (columnName == "단위")
                 searchQeury = $"SELECT DisplayName_LOC,FullName_LOC as name FROM Units";
-            else if (columnName == "환율")
-            {
-                searchQeury = $"SELECT MDExchangeRateDetails.DateValidFrom, MDExchangeRateDetails.StateId, MDExchangeRateHeaders.Name_LOC, Currencies.IsoCode, MDExchangeRateDetails.ExchangeRate" +
-                    $" as name FROM MDExchangeRateHeaders" +
-                    $" JOIN MDExchangeRateDetails ON MDExchangeRateHeaders.Id = MDExchangeRateDetails.ExchangeRateHeaderId" +
-                    $" JOIN Currencies ON MDExchangeRateHeaders.CurrencyId = Currencies.Id";
-            }
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
@@ -271,11 +248,6 @@ namespace TcPCM_Connect
                 {
                     searchQeury = searchQeury + $" where CAST(DisplayName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
                                 $" or Cast(FullName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
-                }
-                else if (columnName == "환율")
-                {
-                    searchQeury = searchQeury + $" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
-                                $" or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
             }
             DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);

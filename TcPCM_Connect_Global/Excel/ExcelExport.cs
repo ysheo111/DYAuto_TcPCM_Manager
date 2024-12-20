@@ -536,8 +536,12 @@ namespace TcPCM_Connect_Global
                 Excel.Worksheet worksheet = workBook.Sheets[1];
                 worksheet.Name = $"{columnName}";
                 worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible;
-                
-                for(int i = 0; i < dgv.ColumnCount-1; i++)
+
+                int lastCount = dgv.ColumnCount - 1;
+                if (columnName == "환율")
+                    lastCount++;
+
+                for(int i =0 ; i < lastCount; i++)
                 {
                     worksheet.Cells[2, i+2] = dgv.Columns[i].Name;
                     worksheet.Cells[2, i+2].Interior.Color = Excel.XlRgbColor.rgbLightGray;

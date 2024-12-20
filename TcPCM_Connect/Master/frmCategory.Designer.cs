@@ -135,8 +135,7 @@
             "공간 생산 비용",
             "전력단가",
             "임률",
-            "단위",
-            "환율"});
+            "단위"});
             this.cb_Classification.ListBackColor = System.Drawing.Color.White;
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Location = new System.Drawing.Point(67, 24);
