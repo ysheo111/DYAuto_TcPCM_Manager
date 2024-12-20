@@ -141,7 +141,7 @@ namespace TcPCM_Connect_Global
                         JObject item = new JObject();
 
                         item.Add("Designation", worksheet.Cells[6, 2].Value);
-                        item.Add("Tool", $"[LGMagna]{machineName[i]}");
+                        item.Add("Tool", $"[DYA]{machineName[i]}");
                         item.Add("Assembly hierarchy level", "2");
                         item.Add("Line type", "M");
                         item.Add("MFG", (i-1)*10);
@@ -232,19 +232,6 @@ namespace TcPCM_Connect_Global
 
                 Excel.Worksheet worksheet = workBook.Worksheets.Item[val];
                 worksheet.Activate();
-                //string caption = "공정 선택";
-                //string text = "원가 계산서에서 진행될 공정을 선택해주세요.";
-                //string[] combo 
-                //    = new string[] { Bom.ManufacturingType.사출.ToString()
-                //    , Bom.ManufacturingType.주조.ToString()
-                //    , Bom.ManufacturingType.프레스.ToString()
-                //    , Bom.ManufacturingType.가공.ToString()};
-
-                //CustomMessageBox.Private.FormMessageBox box 
-                //    = new CustomMessageBox.Private.FormMessageBox(text, caption, MessageBoxButtons.OKCancel, combo);
-
-                //if (box.ShowDialog() != DialogResult.OK) return "공정 선택이 잘못 되었습니다. 다시 시도해주세요." ;
-                //string manufacturingType = box.ReturnValue1;
 
                 //CBD의 기본정보
                 worksheet.get_Range("G2", "G2").Select();
