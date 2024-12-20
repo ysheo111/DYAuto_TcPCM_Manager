@@ -145,7 +145,7 @@ namespace TcPCM_Connect
             else if(columnName == "단위")
             {
                 dgv_Category.Columns.Add("UOM Code", "UOM Code");
-                dgv_Category.Columns.Add("UOM명", "UOM명");
+                dgv_Category.Columns.Add("UOM 명", "UOM 명");
                 dgv_Category.Columns.Add("UniqueId", "UniqueId");
                 dgv_Category.Columns["UniqueId"].Visible = false;
             }
