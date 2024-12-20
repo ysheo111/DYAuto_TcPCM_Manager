@@ -40,8 +40,8 @@ namespace TcPCM_Connect_Global
                         addictionalItem.Add("구분", categoryName);
                         if (nullCheck) categoryLabor.Add(addictionalItem);
                     }
-                    else if (col.Name.Contains("지역") || col.Name.Contains("업종"))
-                        item.Add("UniqueId", row.Cells[col.Name].Value?.ToString());
+                    //else if (col.Name.Contains("지역") || col.Name.Contains("업종"))
+                    //    item.Add("UniqueId", row.Cells[col.Name].Value?.ToString());
                     else
                         item.Add(col.Name, row.Cells[col.Name].Value?.ToString());
                 }
