@@ -56,48 +56,47 @@ namespace TcPCM_Connect_Global
     {
         public Dictionary<(int, int), string> column = new Dictionary<(int, int), string>
         {
-         {(2, 2), "차종명"},
-        {(3, 2), "제품명"},
-        {(4, 2), "부품명"},
-        {(5, 2), "부품번"},
-        {(6, 2), "생산지"},
-        {(7, 2), "SOP"},
-        {(2, 14), "회사명"},
-        {(3, 14), "소속팀"},
-        {(4, 14), "작성자"},
-        {(5, 14), "작성일"},
-        {(6, 14), "incoterms"},
-        {(7, 14), "Currency"},
-        {(10, 4), "재료비"},
-        {(10, 5), "노무비"},
-        {(10, 6), "제조경비"},
-        {(9, 8), "일반관리비"},
-        {(9, 9), "이윤"},
-        {(9, 10), "재료관리비"},
-        {(9, 11), "포장비"},
-        {(9, 12), "운반비"},
-        {(9, 13), "금형"},
-        {(9, 14), "기타비"},
-        {(9, 15), "총계"},
-        {(9, 16), "비고"},
-        {(9, 18), "일반관리비율"},
-        {(9, 19), "이윤율"},
-        {(9, 20), "재료관리비율"},
-        {(15, 2), "구성부품명"},
-        {(15, 5), "번호"},
-        {(16, 6), "소재명"},
-        {(16, 7), "규격"},
-        {(15, 8), "단위"},
-        {(15, 9), "단가"},
-        {(16, 10), "정미"},
-        {(16, 11), "투입"},
-        {(15, 12), "수량"},
-        {(15, 13), "Scrap비"},
-        {(15, 14), "기타비"},
-        {(15, 15), "재료비"},
-        {(16, 24), "회수율"},
-        {(16, 25), "단가"},
-        {(16, 26), "소계"},
+         {(2, 2), Report.Header.modelName},
+        {(3, 2), Report.Header.partNumber},
+        {(4, 2), Report.Header.partName},
+
+        {(5, 2), Report.Header.company},
+        {(6, 2), Report.Header.customer},
+        {(7, 2), Report.Header.currency},
+        {(8, 2), Report.Header.transport},
+
+        {(5, 5), Report.Header.category},
+        {(6, 5), Report.Header.suppier},
+        {(7, 5), Report.Header.exchangeRate},
+
+        {(2, 18), Report.Header.dateOfCalc},
+        {(3, 18), Report.Header.author},
+
+        {(11, 8), Report.Summary.administrationCosts},
+        {(11, 9), Report.Summary.profit},
+        {(11, 10), Report.Summary.materialOverhead},
+        {(11, 11), Report.Summary.rnd},
+        {(11, 12), Report.Summary.packageTransport},
+        {(11, 13), Report.Summary.etc},
+
+        {(22, 3), Report.Material.name},
+        {(22, 5),  Report.Material.itemNumber },
+        {(22, 6),  Report.Material.transport },
+        {(22, 7),  Report.Material.substance },
+
+        {(22, 8),  Report.Material.thinckness },
+        {(22, 9),  Report.Material.length },
+        {(22, 10), Report.Material.width },
+        {(22, 11), Report.Material.netWeight },
+        {(22, 12), Report.Material.grossWeight },
+        {(22, 13), Report.Material.unit },
+
+        {(22, 14), Report.Material.rawMaterial },
+        {(22, 15), Report.Material.quantity },
+        {(22, 17), Report.Material.scrap },
+        {(22, 19), Report.Material.trash },
+
+
         {(29, 2), "구성부품명"},
         {(29, 5), "구성부품번호"},
         {(29, 6), "공정명"},
@@ -194,33 +193,21 @@ namespace TcPCM_Connect_Global
 
         public static class Header
         {
-            public static string modelName = "차종명";
-            public static string productName = "제품명";
-            public static string partName = "Designation";
-            public static string partNumber = "Item number (Part)";
-            public static string currency = "Currency (Calculation)";
-            public static string iso = "Currency (Calculation)";
-            public static string exchangeRate = "Exchange rate (Blanks / assembly part)";
-            public static string company = "회사명";
-            public static string team = "소속팀";
-            public static string author = "작성자";
-            public static string incoterms = "incoterms";
-            public static string SOP = "SOP";
-            public static string region = "Region * (Calculation)";
-            public static string dateOfCreation = "Modified (Calculation)";
-            public static string dateOfCalculation = "Date of calculation (Calculation)";
-            public static string guid = "Database internal identifier (ID) (Calculation)";
-            public static string partID = "Database internal identifier (Part)";
-            public static string recovery = "Recovery rate, Overhead rate[%]";
-            public static string etc = "etc, Current part";//기타비           
-           
-            public static string annualQty = "Lifetime requirement (Calculation)";
-            public static string plc = "Lifetime (Calculation)";
-            public static string plcVolume = "Total annual requirement usable parts (Calculation)[Pcs]";
+            public static string modelName = "차종";
+            public static string partNumber = "품번";
+            public static string partName = "품명";
 
-            public static string width = "Width[mm]";
-            public static string height = "Height[mm]";
-            public static string thinkness = "Thinkness[mm]";
+            public static string company = "업체명";
+            public static string customer = "납품국가";
+            public static string currency = "화폐";
+            public static string transport = "물류조건";
+
+            public static string category = "업종";           
+            public static string suppier = "제조국가";
+            public static string exchangeRate = "업체적용환율";
+
+            public static string author = "작성자";          
+            public static string dateOfCalc = "작성일";          
         }
 
         public static class Summary
@@ -240,32 +227,39 @@ namespace TcPCM_Connect_Global
             public static string financialTotal = "금융비, Total";
             public static string moldTotal = "Tools / devices allocation depreciation and interest";
             public static string total = "Net sales price";
-            public static string administrationCosts = "Sales and general administration costs, Overhead rate[%]";
-            public static string profit = "Profit, Overhead rate[%]";
-            public static string materialOverhead = "재료 관리비, Overhead rate[%]";
-            public static string package = "포장비 산출 내역";
-            public static string transport = "운반비 산출 내역";
-            public static string development = "개발비 산출 내역";
-            public static string etc = "etc, Current part";
-            public static string defect = "Defect rate, Total";//기타비
+
+            public static string administrationCosts = "일반관리비";
+            public static string profit = "이윤";
+            public static string materialOverhead = "재료관리비";
+            public static string rnd = "R&D비";
+            public static string packageTransport = "포장&운반비";
+            public static string etc = "기타";
         }
 
         public static class Material
         {
-            public static string name = "Designation";
-            public static string dross = "dross";
-            public static string itemNumber = "Item number (Part)";
-            public static string standard = "Substance classification (Revision)";
-            public static string substance = "Substance (Revision)";
+            public static string name = "구성부품명";
+            public static string itemNumber = "DYA품번";
+            public static string transport = "공급기준";
+            public static string substance = "재질";
+
+            public static string thinckness = "두께";
+            public static string length = "가로";
+            public static string width = "세로";
+            public static string netWeight = "Net 중량";
+            public static string grossWeight = "투입중량";
+            public static string unit = "단위";
+
+            public static string rawMaterial = "원재료단가";
+            public static string quantity = "Q'TY";
+            public static string scrap = "SCRAP단가";
+            public static string trash = "폐기물처리비";
+
             public static string qunantityUnit = "Quantity unit (Blanks / assembly part)";//Material Price 
             public static string scrapQunantityUnit = "Quantity unit (Scrap)";//스크랩
             public static string unitCost = "Material costs (MtC)";
-            public static string netWeight = "Net weight (Bulk materials calculator)";
-            public static string grossWeight = "Quantity (Blanks / assembly part)";//Material Price 
-            public static string quantity = "Quantity";//전체 수량
             public static string externalQuantity = "Quantity (Manufacturing step)";//external Manufacturing
             public static string externalQunantityUnit = "Quantity unit (Manufacturing step)";//external Manufacturing
-            public static string scrap = "Scrap Total";//스크랩
             public static string etc = "etc, Current part";//기타비
             public static string etcCost = "Material scrap costs (Blanks / assembly part)";//기타비
             public static string total = "total";
@@ -285,7 +279,6 @@ namespace TcPCM_Connect_Global
             public static string returnCost = "Recovery rate, Current part";
             public static string pressLoss = "Other costs1, Total";
             public static string other = "Other costs2, Total";
-            public static string trash = "Other costs3, Total";
             //public static string injectionRecovery = "회수율(%) (Bulk materials calculator)[%]";
             //public static string diecastingRecovery = "Sprue and overflows loss rate (Bulk materials calculator)[%]";
             public static string etcComment = "기타비 산출 내역";
