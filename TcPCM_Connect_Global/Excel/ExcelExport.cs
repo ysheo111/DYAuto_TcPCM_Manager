@@ -536,17 +536,22 @@ namespace TcPCM_Connect_Global
                 Excel.Worksheet worksheet = workBook.Sheets[1];
                 worksheet.Name = $"{columnName}";
                 worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible;
-
-                worksheet.Cells[2, 2] = dgv.Columns[0].Name;
-                worksheet.Cells[2, 2].Interior.Color = Excel.XlRgbColor.rgbLightGray;
-
-                for (int row = 1; row < dgv.RowCount; row++)
+                
+                for(int i = 0; i < dgv.ColumnCount-1; i++)
                 {
-                    string input = dgv.Rows[row - 1].Cells[0].Value.ToString();
-                    string result = input.Replace("[DYA]","");
-                    worksheet.Cells[row+2, 2] = result;
+                    worksheet.Cells[2, i+2] = dgv.Columns[i].Name;
+                    worksheet.Cells[2, i+2].Interior.Color = Excel.XlRgbColor.rgbLightGray;
+
+                    for (int row = 1; row < dgv.RowCount; row++)
+                    {
+                        string input = dgv.Rows[row - 1].Cells[i].Value.ToString();
+                        string result = input.Replace("[DYA]","");
+                        worksheet.Cells[row+2, i + 2] = result;
+                    }
                 }
-                Excel.Range range = worksheet.Range[$"B2:B{dgv.RowCount + 1}"];
+                string lastColumnAlpha = GetExcelColumnName(worksheet.UsedRange.Columns.Count + 1);
+
+                Excel.Range range = worksheet.Range[$"B2:{lastColumnAlpha}{dgv.RowCount + 1}"];
                 range.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                 range.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
                 worksheet.Columns.AutoFit();
@@ -566,6 +571,14 @@ namespace TcPCM_Connect_Global
                 return exc.Message;
             }
             return null;
+        }
+        private static string GetExcelColumnName(int columnNumber)
+        {
+            //string columnName = string.Empty;
+            int modulo = (columnNumber - 1) % 26;
+            string columnName = Convert.ToChar(65 + modulo).ToString();// + columnName;
+
+            return columnName;
         }
     }
 }

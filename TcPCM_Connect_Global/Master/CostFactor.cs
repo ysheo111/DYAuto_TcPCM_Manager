@@ -89,7 +89,6 @@ namespace TcPCM_Connect_Global
                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
             }
 
-
             if (name == "임률")
             {
                 JObject postData = new JObject
@@ -99,7 +98,6 @@ namespace TcPCM_Connect_Global
                     };
                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
             }
-
 
             return err;
         }
