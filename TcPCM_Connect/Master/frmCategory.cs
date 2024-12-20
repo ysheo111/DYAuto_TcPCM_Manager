@@ -142,12 +142,20 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("Labor burden (2Shift)", "Labor burden (2Shift)");
                 dgv_Category.Columns.Add("Labor burden (3Shift)", "Labor burden (3Shift)");
             }
-            else if(columnName == "단위")
+            else if (columnName == "단위")
             {
                 dgv_Category.Columns.Add("UOM Code", "UOM Code");
                 dgv_Category.Columns.Add("UOM 명", "UOM 명");
                 dgv_Category.Columns.Add("UniqueId", "UniqueId");
                 dgv_Category.Columns["UniqueId"].Visible = false;
+            }
+            else if (columnName == "환율")
+            {
+                ValidFromAdd("Valid From");
+                dgv_Category.Columns.Add("구분자", "구분자");
+                dgv_Category.Columns.Add("이름", "이름");
+                CurrencyAdd("통화");
+                dgv_Category.Columns.Add("환율", "환율");
             }
             else
                 dgv_Category.Columns.Add(columnName, columnName);
@@ -202,6 +210,14 @@ namespace TcPCM_Connect
                 dgv_Category.Rows[e.RowIndex].Cells["UniqueId"].Value = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null ? null : dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().ToLower();
             }
 
+            if(dgv_Category.Columns[e.ColumnIndex].Name == "환율" && dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
+            {
+                if (double.TryParse(dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out double number))
+                {
+                    dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = number.ToString("#,##0.##");
+                }
+            }
+
             global.MasterDataValiding((DataGridView)sender, e);
         }
 
@@ -226,44 +242,44 @@ namespace TcPCM_Connect
         {
             dgv_Category.Rows.Clear();
 
-            string inputString = "", searchQeury = "", category = "", DBcolumnName = "";
-            inputString = searchButton1.text;
-            List<string> resultList = new List<string>();
-
             string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
-            if (columnName == "지역")
-            {
-                category = "BDRegions";
-                DBcolumnName = "Name_LOC";
-            }
-            else if (columnName == "업종")
-            {
-                category = "BDCustomers";
-                DBcolumnName = "Name_LOC";
-            }
-            else if (columnName == "단위")
-            {
-                category = "Units";
-                DBcolumnName = "DisplayName_LOC, FullName_LOC";
-            }
+            string inputString = "", searchQeury = "";
+            inputString = searchButton1.text;
 
+            //전체 검색
+            if (columnName == "지역")
+                searchQeury = $"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+            else if (columnName == "업종")
+                searchQeury = $"SELECT Name_LOC as name FROM BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+            else if (columnName == "단위")
+                searchQeury = $"SELECT DisplayName_LOC,FullName_LOC as name FROM Units";
+            else if (columnName == "환율")
+            {
+                searchQeury = $"SELECT MDExchangeRateDetails.DateValidFrom, MDExchangeRateDetails.StateId, MDExchangeRateHeaders.Name_LOC, Currencies.IsoCode, MDExchangeRateDetails.ExchangeRate" +
+                    $" as name FROM MDExchangeRateHeaders" +
+                    $" JOIN MDExchangeRateDetails ON MDExchangeRateHeaders.Id = MDExchangeRateDetails.ExchangeRateHeaderId" +
+                    $" JOIN Currencies ON MDExchangeRateHeaders.CurrencyId = Currencies.Id";
+            }
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
-                if (columnName == "단위")
-                    searchQeury = $"SELECT {DBcolumnName} as name FROM {category} where CAST({DBcolumnName} AS NVARCHAR(MAX)) LIKE N'%{inputString}%'";
-                else
-                    searchQeury = $"SELECT {DBcolumnName} as name FROM {category} where UniqueKey LIKE N'%{inputString}%' And CAST({DBcolumnName} AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
-            }
-            //전체 검색
-            else
-            {
-                if(columnName == "단위")
-                    searchQeury = $"SELECT {DBcolumnName} as name FROM {category}";
-                else
-                    searchQeury = $"SELECT {DBcolumnName} as name FROM {category} where CAST({DBcolumnName} AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+                if (columnName == "지역" || columnName == "업종")
+                {
+                    searchQeury = searchQeury + $" And UniqueKey LIKE N'%{inputString}%'";
+                }
+                else if(columnName == "단위")
+                {
+                    searchQeury = searchQeury + $" where CAST(DisplayName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
+                                $" or Cast(FullName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                }
+                else if (columnName == "환율")
+                {
+                    searchQeury = searchQeury + $" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
+                                $" or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                }
             }
             DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+            if (dataTable == null) return;
 
             foreach (DataRow row in dataTable.Rows)
             {

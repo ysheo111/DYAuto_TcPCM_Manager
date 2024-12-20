@@ -79,6 +79,25 @@ namespace TcPCM_Connect_Global
                 }), err);
 
             }
+            if(name == "환율")
+            {
+                JObject postData = new JObject
+                {
+                    { "Data", category },
+                    { "ConfigurationGuid", global_iniLoad.GetConfig(className, name) }
+                };
+                err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+
+                if (err == null)
+                {
+                    postData = new JObject
+                    {
+                        { "Data", category },
+                        { "ConfigurationGuid", global_iniLoad.GetConfig(className, name+"_Detail") }
+                    };
+                    err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                }
+            }
             else
             {
                 JObject postData = new JObject
