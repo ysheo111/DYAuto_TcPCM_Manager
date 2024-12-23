@@ -1009,10 +1009,8 @@ namespace TcPCM_Connect_Global
                     ExcelCommon.ReleaseExcelObject(application);
                 }
             }
-
             return items;
         }
-
 
         public string LoadMasterData(string worksheetName, DataGridView dgv)
         {

@@ -537,9 +537,9 @@ namespace TcPCM_Connect_Global
                 worksheet.Name = $"{columnName}";
                 worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible;
 
-                int lastCount = dgv.ColumnCount - 1;
-                if (columnName == "환율")
-                    lastCount++;
+                int lastCount = dgv.ColumnCount;
+                if (columnName == "지역" || columnName == "업종" || columnName == "단위")
+                    lastCount--;
 
                 for(int i =0 ; i < lastCount; i++)
                 {
