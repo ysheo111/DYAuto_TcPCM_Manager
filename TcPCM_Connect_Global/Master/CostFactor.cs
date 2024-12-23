@@ -79,12 +79,12 @@ namespace TcPCM_Connect_Global
                 }), err);
 
             }
-            if(name == "환율")
+            if(className == "ExchangeRate")
             {
                 JObject postData = new JObject
                 {
                     { "Data", category },
-                    { "ConfigurationGuid", global_iniLoad.GetConfig(className, name) }
+                    { "ConfigurationGuid", global_iniLoad.GetConfig(className, name+"_Header") }
                 };
                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
 

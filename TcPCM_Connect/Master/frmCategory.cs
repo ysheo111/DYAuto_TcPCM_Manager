@@ -124,10 +124,9 @@ namespace TcPCM_Connect
             }
             else if (columnName == "전력단가")
             {
-                dgv_Category.Columns.Add("지역", "지역");
-                dgv_Category.Columns.Add("업종", "업종");
-                CurrencyAdd("통화");
                 ValidFromAdd("Valid From");
+                dgv_Category.Columns.Add("지역", "지역");
+                CurrencyAdd("통화");
                 dgv_Category.Columns.Add("전력단가", "전력단가");
             }
             else if (columnName == "임률")
@@ -148,14 +147,6 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("UOM 명", "UOM 명");
                 dgv_Category.Columns.Add("UniqueId", "UniqueId");
                 dgv_Category.Columns["UniqueId"].Visible = false;
-            }
-            else if (columnName == "환율")
-            {
-                ValidFromAdd("Valid From");
-                dgv_Category.Columns.Add("구분자", "구분자");
-                dgv_Category.Columns.Add("이름", "이름");
-                CurrencyAdd("통화");
-                dgv_Category.Columns.Add("환율", "환율");
             }
             else
                 dgv_Category.Columns.Add(columnName, columnName);
@@ -210,14 +201,6 @@ namespace TcPCM_Connect
                 dgv_Category.Rows[e.RowIndex].Cells["UniqueId"].Value = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null ? null : dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().ToLower();
             }
 
-            if(dgv_Category.Columns[e.ColumnIndex].Name == "환율" && dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value != null)
-            {
-                if (double.TryParse(dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out double number))
-                {
-                    dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = number.ToString("#,##0.##");
-                }
-            }
-
             global.MasterDataValiding((DataGridView)sender, e);
         }
 
@@ -240,6 +223,10 @@ namespace TcPCM_Connect
 
         private void searchButton1_SearchButtonClick_1(object sender, EventArgs e)
         {
+            Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+            splashthread.IsBackground = true;
+            splashthread.Start();
+
             dgv_Category.Rows.Clear();
 
             string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
@@ -253,13 +240,13 @@ namespace TcPCM_Connect
                 searchQeury = $"SELECT Name_LOC as name FROM BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
             else if (columnName == "단위")
                 searchQeury = $"SELECT DisplayName_LOC,FullName_LOC as name FROM Units";
-            else if (columnName == "환율")
-            {
-                searchQeury = $"SELECT MDExchangeRateDetails.DateValidFrom, MDExchangeRateDetails.StateId, MDExchangeRateHeaders.Name_LOC, Currencies.IsoCode, MDExchangeRateDetails.ExchangeRate" +
-                    $" as name FROM MDExchangeRateHeaders" +
-                    $" JOIN MDExchangeRateDetails ON MDExchangeRateHeaders.Id = MDExchangeRateDetails.ExchangeRateHeaderId" +
-                    $" JOIN Currencies ON MDExchangeRateHeaders.CurrencyId = Currencies.Id";
-            }
+            else if (columnName == "전력단가")
+                searchQeury = $"SELECT DateValidFrom,BDRegions.Name_LOC,Currencies.IsoCode,Value" +
+                                $" FROM MDCostFactorDetails" +
+                                $" JOIN BDRegions ON RegionId = BDRegions.Id JOIN Currencies" +
+                                $" ON CurrencyId = Currencies.Id" +
+                                $" WHERE CostFactorHeaderId in (" +
+                                $" select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ElectricityPrice')";
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
@@ -270,12 +257,11 @@ namespace TcPCM_Connect
                 else if(columnName == "단위")
                 {
                     searchQeury = searchQeury + $" where CAST(DisplayName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
-                                $" or Cast(FullName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                                                $" or Cast(FullName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
-                else if (columnName == "환율")
+                else if (columnName == "전력단가")
                 {
-                    searchQeury = searchQeury + $" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
-                                $" or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                    searchQeury = searchQeury + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
             }
             DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
@@ -293,6 +279,8 @@ namespace TcPCM_Connect
                     dgv_Category.Rows[dgv_Category.Rows.Count-2].Cells[count].Value = result;
                 }
             }
+
+            LoadingScreen.CloseSplashScreen();
         }
         public string NameSplit(string input)
         {
