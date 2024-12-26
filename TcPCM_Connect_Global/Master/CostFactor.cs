@@ -30,6 +30,14 @@ namespace TcPCM_Connect_Global
                 {
                     if (row.Cells[col.Name].Value != null && !col.Name.ToLower().Contains("valid")) nullCheck = true;
 
+                    if (name == "Plant")// && col.Name.Contains("지역"))
+                    {
+                        item.Add("지역", row.Cells[col.Name].Value?.ToString());
+                        item.Add("Designation", "[DYA]"+row.Cells[col.Name].Value?.ToString());
+                        item.Add("Number", row.Cells[col.Name].Value?.ToString());
+                        break;
+                    }
+
                     if (col.Name.Contains("연간 작업 일수"))
                         item.Add(col.Name, global.ConvertDouble(row.Cells[col.Name].Value) * global.ConvertDouble(row.Cells["Shift 당 작업 시간"].Value) * global.ConvertDouble(row.Cells["Shift"].Value));
                     else if (col.Name.Contains("Labor"))
@@ -40,8 +48,6 @@ namespace TcPCM_Connect_Global
                         addictionalItem.Add("구분", categoryName);
                         if (nullCheck) categoryLabor.Add(addictionalItem);
                     }
-                    //else if (col.Name.Contains("지역") || col.Name.Contains("업종"))
-                    //    item.Add("UniqueId", row.Cells[col.Name].Value?.ToString());
                     else
                         item.Add(col.Name, row.Cells[col.Name].Value?.ToString());
                 }
@@ -117,6 +123,41 @@ namespace TcPCM_Connect_Global
                     };
                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
             }
+
+            return err;
+        }
+
+        public string SegmantImport(string className, string name, DataGridView dgv, List<string> segmantList)
+        {
+            String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/MasterData/Import";
+
+            JArray category = new JArray();
+            JArray categoryLabor = new JArray();
+
+            foreach (DataGridViewRow row in dgv.Rows)
+            {
+                foreach(string segmant in segmantList)
+                {
+                    JObject item = new JObject();
+                    bool nullCheck = false;
+
+                    if (row.Cells["지역"].Value != null) nullCheck = true;
+
+                    item.Add(name, segmant);
+                    item.Add("Designation", "[DYA]" + segmant);
+                    item.Add("Plant", row.Cells["지역"].Value?.ToString());
+                    if (nullCheck) category.Add(item);
+                    else break;
+                }
+            }
+            string err = null;
+
+            JObject postData = new JObject
+            {
+                { "Data", category },
+                { "ConfigurationGuid", global_iniLoad.GetConfig(className, name.Replace(" ","")) }
+            };
+            err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
 
             return err;
         }

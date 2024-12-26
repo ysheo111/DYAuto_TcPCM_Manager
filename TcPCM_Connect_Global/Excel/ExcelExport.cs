@@ -538,8 +538,10 @@ namespace TcPCM_Connect_Global
                 worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible;
 
                 int lastCount = dgv.ColumnCount;
-                if (columnName == "지역" || columnName == "업종" || columnName == "단위")
+                if (columnName == "지역" || columnName == "단위")
                     lastCount--;
+                else if (columnName == "업종")
+                    lastCount = lastCount - 2;
 
                 for(int i =0 ; i < lastCount; i++)
                 {

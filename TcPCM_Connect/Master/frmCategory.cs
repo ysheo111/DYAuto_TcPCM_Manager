@@ -41,14 +41,7 @@ namespace TcPCM_Connect
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else
-            {
-                CostFactor costFactor = new CostFactor();
-                string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
-                string err2 = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
-
-                if (err2 != null) CustomMessageBox.RJMessageBox.Show($"Import 실패하였습니다\n{err2}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("Import 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+                ImportMethod();
         }
 
         private void btn_ExcelCreate_Click(object sender, EventArgs e)
@@ -56,21 +49,64 @@ namespace TcPCM_Connect
             ExcelExport excel = new ExcelExport();
             string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
             string err = excel.ExportLocationGrid(dgv_Category, columnName);
+            
             if (err != null) CustomMessageBox.RJMessageBox.Show($"Export 실패하였습니다\n{err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("Export 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btn_Save_Click(object sender, EventArgs e)
         {
+            ImportMethod();
+        }
+
+        private void ImportMethod()
+        {
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
             splashthread.Start();
-            
+
             try
             {
                 CostFactor costFactor = new CostFactor();
                 string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
-                string err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
+                string err = null;
+                if (columnName == "지역")
+                {
+                    err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
+                    if (err == null)
+                    {
+                        err = costFactor.Import("Category", "Plant", dgv_Category);
+                        if (err == null)
+                        {
+                            string searchQeury = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
+                            List<string> segmantList = global_DB.ListSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+                            err = costFactor.SegmantImport("Category", "업종", dgv_Category, segmantList);
+                        }
+                    }
+                }
+                else if (columnName == "업종")
+                {
+                    string searchQeury = $"SELECT UniqueKey as name FROM BDPlants where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+                    List<string> regionList = global_DB.ListSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+                    foreach (string region in regionList)
+                    {
+                        foreach (DataGridViewRow row in dgv_Category.Rows)
+                        {
+                            if (string.IsNullOrEmpty(row.Cells["업종"].Value?.ToString()))
+                                break;
+                            row.Cells["Plant"].Value = region;
+                        }
+                        err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
+                        if (err != null)
+                        {
+                            CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            LoadingScreen.CloseSplashScreen();
+                            return;
+                        }
+                    }
+                }
+                else
+                    err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
 
                 if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -140,6 +176,14 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("Labor burden (1Shift)", "Labor burden (1Shift)");
                 dgv_Category.Columns.Add("Labor burden (2Shift)", "Labor burden (2Shift)");
                 dgv_Category.Columns.Add("Labor burden (3Shift)", "Labor burden (3Shift)");
+            }
+            else if (columnName == "업종")
+            {
+                dgv_Category.Columns.Add("업종", "업종");
+                dgv_Category.Columns.Add("Designation", "Designation");
+                dgv_Category.Columns["Designation"].Visible = false;
+                dgv_Category.Columns.Add("Plant", "Plant");
+                dgv_Category.Columns["Plant"].Visible = false;
             }
             else if (columnName == "단위")
             {
@@ -237,7 +281,7 @@ namespace TcPCM_Connect
             if (columnName == "지역")
                 searchQeury = $"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
             else if (columnName == "업종")
-                searchQeury = $"SELECT Name_LOC as name FROM BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+                searchQeury = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
             else if (columnName == "단위")
                 searchQeury = $"SELECT DisplayName_LOC,FullName_LOC as name FROM Units";
             else if (columnName == "전력단가")
@@ -323,6 +367,19 @@ namespace TcPCM_Connect
                     input = name;
             }
             return input;
+        }
+
+        private void testButton_Click(object sender, EventArgs e)
+        {
+            ManufacturingLibrary library = new ManufacturingLibrary();
+            string err = library.ExcelOpen();
+
+            if (err != null)
+                CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else
+            {
+
+            }
         }
     }
 }
