@@ -56,103 +56,81 @@ namespace TcPCM_Connect_Global
     {
         public Dictionary<(int, int), string> column = new Dictionary<(int, int), string>
         {
-         {(2, 2), Report.Header.modelName},
-        {(3, 2), Report.Header.partNumber},
-        {(4, 2), Report.Header.partName},
+             {(2, 2), Report.Header.modelName},
+            {(3, 2), Report.Header.partNumber},
+            {(4, 2), Report.Header.partName},
 
-        {(5, 2), Report.Header.company},
-        {(6, 2), Report.Header.customer},
-        {(7, 2), Report.Header.currency},
-        {(8, 2), Report.Header.transport},
+            {(5, 2), Report.Header.company},
+            {(6, 2), Report.Header.customer},
+            {(7, 2), Report.Header.currency},
+            {(8, 2), Report.Header.transport},
 
-        {(5, 5), Report.Header.category},
-        {(6, 5), Report.Header.suppier},
-        {(7, 5), Report.Header.exchangeRate},
+            {(5, 5), Report.Header.category},
+            {(6, 5), Report.Header.suppier},
+            {(7, 5), Report.Header.exchangeRate},
+            {(7, 6), Report.Header.exchangeRateCurrency},
 
-        {(2, 18), Report.Header.dateOfCalc},
-        {(3, 18), Report.Header.author},
+            {(2, 18), Report.Header.dateOfCalc},
+            {(3, 18), Report.Header.author},
 
-        {(11, 8), Report.Summary.administrationCosts},
-        {(11, 9), Report.Summary.profit},
-        {(11, 10), Report.Summary.materialOverhead},
-        {(11, 11), Report.Summary.rnd},
-        {(11, 12), Report.Summary.packageTransport},
-        {(11, 13), Report.Summary.etc},
+            {(11, 8), Report.Summary.administrationCosts},
+            {(11, 9), Report.Summary.profit},
+            {(11, 10), Report.Summary.materialOverhead},
+            {(11, 11), Report.Summary.rnd},
+            {(11, 12), Report.Summary.packageTransport},
+            {(11, 13), Report.Summary.etc},
 
-        {(22, 3), Report.Material.name},
-        {(22, 5),  Report.Material.itemNumber },
-        {(22, 6),  Report.Material.transport },
-        {(22, 7),  Report.Material.substance },
+            {(22, 3), Report.Material.name},
+            {(22, 5),  Report.Material.itemNumber },
+            {(22, 6),  Report.Material.transport },
+            {(22, 7),  Report.Material.substance },
 
-        {(22, 8),  Report.Material.thinckness },
-        {(22, 9),  Report.Material.length },
-        {(22, 10), Report.Material.width },
-        {(22, 11), Report.Material.netWeight },
-        {(22, 12), Report.Material.grossWeight },
-        {(22, 13), Report.Material.unit },
+            {(22, 8),  Report.Material.thinckness },
+            {(22, 9),  Report.Material.length },
+            {(22, 10), Report.Material.width },
+            {(22, 11), Report.Material.netWeight },
+            {(22, 12), Report.Material.grossWeight },
+            {(22, 13), Report.Material.unit },
 
-        {(22, 14), Report.Material.rawMaterial },
-        {(22, 15), Report.Material.quantity },
-        {(22, 17), Report.Material.scrap },
-        {(22, 19), Report.Material.trash },
+            {(22, 14), Report.Material.rawMaterial },
+            {(22, 15), Report.Material.quantity },
+            {(22, 17), Report.Material.scrap },
+            {(22, 19), Report.Material.trash },
 
+            {(55, 3), Report.Manufacturing.partName},
+            {(55, 5), Report.Manufacturing.itemNumber},
+            {(55, 6), Report.Manufacturing.category},
+            {(55, 7), Report.Manufacturing.machineName},
+            {(55, 8), Report.Manufacturing.workers},
+            {(55, 9), Report.Manufacturing.cycletime},
+            {(55, 10),Report.Manufacturing.cavity},
+            {(55, 11),Report.Manufacturing.quantity},
+            {(55, 12),Report.Manufacturing.utillization},
+            {(55, 13),Report.Manufacturing.grossWage},
 
-        {(29, 2), "구성부품명"},
-        {(29, 5), "구성부품번호"},
-        {(29, 6), "공정명"},
-        {(29, 7), "설비명"},
-        {(29, 8), "Cavity수"},
-        {(29, 9), "작업자수"},
-        {(29, 10), "작업시간"},
-        {(29, 11), "수량"},
-        {(29, 12), "임률"},
-        {(29, 13), "노무비"},
-        {(29, 14), "경비율"},
-        {(29, 15), "제조경비"},
-        {(29, 16), "비고"},
-        {(28, 15), "Efficiency"},
-        {(27, 18), "생산수량"},
-        {(27, 19), "생산기간"},
-        {(27, 20), "총생산수량"},
-        {(29, 18), "Lot수량"},
-        {(29, 19), "가동효율"},
-        {(29, 20), "준비시간"},
-        {(29, 21), "정미작업시간"},
-        {(29, 22), "표준작업시간"},
-        {(29, 23), "기계가액"},
-        {(29, 24), "기계상각연수"},
-        {(29, 25), "기계투영면적"},
-        {(29, 26), "부대설비면적비"},
-        {(29, 27), "건축단가"},
-        {(29, 28), "건물상각연수"},
-        {(29, 29), "연간작업일수"},
-        {(29, 30), "일일작업시간"},
-        {(29, 31), "기계전력용량"},
-        {(29, 32), "전력소비율"},
-        {(29, 33), "전력단가"},
-        {(29, 34), "수선비율"},
-        {(29, 35), "간접경비율"},
-        {(29, 36), "기계상각비"},
-        {(29, 37), "건물상각비"},
-        {(29, 38), "전력비"},
-        {(29, 39), "수선비"},
-        {(29, 40), "직접경비율"},
-        {(29, 41), "간접경비율"},
-        {(29, 42), "경비율"},
-        {(44, 2), "분류"},
-        {(44, 4), "유형"},
-        {(44, 5), "상세"},
-        {(44, 6), "비용지급방식"},
-        {(44, 7), "Cavity"},
-        {(44, 8), "수명"},
-        {(44, 9), "제작방식"},
-        {(44, 10), "제조사/공급사"},
-        {(44, 11), "LeadTime"},
-        {(44, 12), "연간Capa."},
-        {(44, 13), "단가"},
-        {(44, 14), "수량"},
-        {(44, 15), "총비용"},
-        {(44, 16), "Remark"}
+            {(4, 3),Report.Manufacturing.partName},
+            {(4, 4),Report.Manufacturing.category},
+            {(4, 5),Report.Manufacturing.machineName},
+            {(4, 6),Report.Manufacturing.productionDay},
+            {(4, 7),Report.Manufacturing.productionTime},
+            {(4, 8),Report.Manufacturing.machineCost},
+            {(4, 9),Report.Manufacturing.amotizingYearOfMachine},
+
+            {(4, 11),Report.Manufacturing.machineArea},
+            {(4, 12),Report.Manufacturing.rationForSupplementaryMachine1},
+            {(4, 13),Report.Manufacturing.rationForSupplementaryMachine2},
+            {(4, 14),Report.Manufacturing.amotizingYearOfMachine},
+              
+            {(4, 16),Report.Manufacturing.ratioOfMachineRepair},
+              
+            {(4, 18),Report.Manufacturing.machinePower},
+            {(4, 19),Report.Manufacturing.machinePowerCost},
+            {(4, 20),Report.Manufacturing.machinePowerEfficiency},
+              
+            {(4, 22),Report.Manufacturing.otherMachineCost},
+            {(4, 23),Report.Manufacturing.otherYearOfMachine},
+              
+            {(4, 26),Report.Manufacturing.redirectExpenseRatio}
         };
 
         public string FindValue(int row, int col)
@@ -173,10 +151,8 @@ namespace TcPCM_Connect_Global
     public class Report
     {
         public static class LineType
-        {
-            public static string lineType = "Line type (Additional information)";
-            public static string source = "Cost source (Calculation)";
-            public static string level = "Assembly hierarchy level";
+        {            
+            public static string source = "Cost source (Calculation)";            
             public static string material = "part";
             public static string dross = "Siemens.TCPCM.ProcurementType.InternalSale";
             public static string materialExternal = "outsourcing";
@@ -189,6 +165,13 @@ namespace TcPCM_Connect_Global
             public static string view = "Tier detailed view (Additional information BOM export)";
             public static string mode = "Mode";
             public static string materialMode = "Calculator template (Calculation)";
+
+            public static string level = "Level";
+            public static string lineType = "indicator";
+
+            public static string procument = "조달유형";
+            public static string method = "계산방법";
+            public static string materials = "Materials";
         }
 
         public static class Header
@@ -205,9 +188,10 @@ namespace TcPCM_Connect_Global
             public static string category = "업종";           
             public static string suppier = "제조국가";
             public static string exchangeRate = "업체적용환율";
+            public static string exchangeRateCurrency = "업체적용환율단위";
 
             public static string author = "작성자";          
-            public static string dateOfCalc = "작성일";     
+            public static string dateOfCalc = "작성일";                
             
             public static string guid = "작성일";          
             public static string partID = "작성일";          
@@ -241,15 +225,15 @@ namespace TcPCM_Connect_Global
 
         public static class Material
         {
-            public static string name = "구성부품명";
-            public static string itemNumber = "DYA품번";
+            public static string name = "품명";
+            public static string itemNumber = "품번";
             public static string transport = "공급기준";
             public static string substance = "재질";
 
             public static string thinckness = "두께";
             public static string length = "가로";
             public static string width = "세로";
-            public static string netWeight = "Net 중량";
+            public static string netWeight = "Net중량";
             public static string grossWeight = "투입중량";
             public static string unit = "단위";
 
@@ -257,6 +241,8 @@ namespace TcPCM_Connect_Global
             public static string quantity = "Q'TY";
             public static string scrap = "SCRAP단가";
             public static string trash = "폐기물처리비";
+
+            public static string materials = "Materials";
 
             public static string qunantityUnit = "Quantity unit (Blanks / assembly part)";//Material Price 
             public static string scrapQunantityUnit = "Quantity unit (Scrap)";//스크랩
@@ -294,19 +280,41 @@ namespace TcPCM_Connect_Global
 
         public static class Manufacturing
         {
-            public static string partName = "Designation";
-            public static string itemNumber = "Item number (Part)";
+            public static string partName = "공정명";
+            public static string itemNumber = "품번";
+            public static string category = "업종";
+            public static string machineName = "기계명";
+            public static string workers = "작업자수";
+            public static string cycletime = "표준작업";
+            public static string cavity = "CVT";
+            public static string quantity = "Q'TY";
+            public static string utillization = "효율";
+            public static string grossWage = "임율";
+            public static string productionDay = "년간가동일";
+            public static string productionTime = "일일가동시간";
+            public static string machineCost = "설비취득가";
+            public static string amotizingYearOfMachine = "내용년수";
+            public static string machineArea = "기계투영면적";
+            public static string rationForSupplementaryMachine1 = "부대설비비율";
+            public static string rationForSupplementaryMachine2 = "건축비";
+            public static string rationForSupplementaryMachine3 = "건물내용년수";
+            public static string spaceCost = "건물상각비";
+            public static string machinePower = "전력용량";
+            public static string machinePowerCost = "전력단가";
+            public static string machinePowerEfficiency = "전력소비율";
+            public static string otherMachineCost = "투입비용";
+            public static string otherYearOfMachine = "내용년수";
+            public static string redirectExpenseRatio = "간접경비율";
+            public static string ratioOfMachineRepair = "수선비율";
+
+            public static string sequence = "Sequence Number";
+
             public static string id = "Database internal identifier (Manufacturing step)";
             public static string machineId = "Database internal identifier (Machine)";
-            public static string laborId = "Database internal identifier (Labor)";
-            public static string sequence = "Sequence Number (Manufacturing step)";
+            public static string laborId = "Database internal identifier (Labor)";            
             public static string manufacturingName= "Designation (Manufacturing step)";
-            public static string machineName= "Designation (Machine)";
-            public static string cavity= "Number of parts per cycle (Manufacturing step)";
             public static string workingTime="working time";
-            public static string workers= "Number of workers (Labor)";
-            public static string quantity= "Quantity";
-            public static string grossWage= "Gross wage (Labor)[/h]";
+            
             public static string laborCosts= "Costs (Labor)";
             public static string laborSetupCosts= "Set-up costs labor (Manufacturing step)";
             public static string machineCostRate= "machineCostRate";
@@ -323,26 +331,18 @@ namespace TcPCM_Connect_Global
             public static string netCycleTime= "Cycle time (Manufacturing step)";
             public static string netCycleTimeUnit= "Cycle time unit (Manufacturing step)";
             public static string standardCycleTime= "standardCycleTime";
-            public static string machineCost= "Acquisition value (Machine)";
-            public static string amotizingYearOfMachine= "Imputed depreciation, direct input value (Machine)[Year(s)]";
-            public static string machineArea= "Required gross area including auxiliary areas (Machine)[m²]";
             public static string rationForSupplementaryMachine= "Space cost factor (Machine)[/(m²*month)]";
             //public static string factoryBuildingCost;
             //public static string amotizingYearOfFactory;
             public static string workingDayPerYear= "Production days per year (Manufacturing step)";
             public static string workingTimePerShift= "Production hours per shift factor (Manufacturing step)[h]";
-            public static string workingTimePerDay= "Shifts per production day factor (Manufacturing step)";
-            public static string machinePower= "Rated power (Machine)[kW]";
-            public static string machinePowerEfficiency= "Power utilization (Machine)[%]";
-            public static string machinePowerCost = "Energy cost factor (Machine)[/kWh]";
-            public static string ratioOfMachineRepair= "Residual manufacturing overhead rate (Manufacturing step)[%]";
+            public static string workingTimePerDay= "Shifts per production day factor (Manufacturing step)";            
             public static string ratioOfIndirectlyMachineryCost= "Other expenditures overheads rate(Manufacturing step)[%]";
             public static string amotizingCostOfMachine= "Imputed depreciation costs rate (Machine)[/h]";
             public static string amotizingCostOfFactory= "Space costs rate (Machine)[/h]";
             public static string amotizingCostOfPower = "Energy costs rate (Machine)[/h]";
             public static string machineRepairCost = "Ratio of Machine Repair (Manufacturing step)[/h]";
             public static string directExpenseRatio= "Machine costs rate (Machine)[/h]";
-            public static string redirectExpenseRatio=  "Other expenditures cost (Manufacturing step)";
             public static string techology= "Techology";
 
             public static string usage = "내역[1]";

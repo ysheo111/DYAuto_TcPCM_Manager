@@ -40,7 +40,7 @@ namespace TcPCM_Connect
             }
             global_iniLoad.loadDBInfo(true);
             //btn_Dashboard.PerformClick();   
-            btn_Category.PerformClick();
+            btn_Dashboard.PerformClick();
         }
 
         private void btnSalir_Click(object sender, EventArgs e)

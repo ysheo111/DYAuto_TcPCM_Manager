@@ -148,7 +148,7 @@ namespace TcPCM_Connect
                     selectedNode = selectedNode.Distinct().ToList();
                     foreach (TreeNode node in selectedNode) // 여기 수정
                     {
-                        selectedNodes.Add(node.Text);
+                        selectedNodes.Add(node.Name);
                     }
                     SelectItems(selectedNodes);
                 }
@@ -185,14 +185,28 @@ namespace TcPCM_Connect
         }
 
 
-        private void 테스트ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-        }
-
         private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
         {
 
+        }
+
+        private void eXCEL내려받기ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+ 
+        }
+
+        private void eXCEL올리기ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExcelImport import = new ExcelImport();
+            string Id = selectItem.Last();
+            string tagetType = "Calculation";
+            if (Id.Contains("f")) tagetType = "Folder";
+            else if (Id.Contains("p")) tagetType = "Project";
+
+            string err = import.Import(tagetType, global.ConvertDouble(Id.Remove(0, 1)));
+
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
