@@ -72,6 +72,7 @@
     <Compile Include="Excel\frmMachineSelect.Designer.cs">
       <DependentUpon>frmMachineSelect.cs</DependentUpon>
     </Compile>
+    <Compile Include="Excel\ManufacturingLibrary.cs" />
     <Compile Include="Excel\frmPartWorkSheetSelect.cs">
       <SubType>Form</SubType>
     </Compile>
