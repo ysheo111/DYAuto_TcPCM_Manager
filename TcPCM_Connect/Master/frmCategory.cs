@@ -371,6 +371,10 @@ namespace TcPCM_Connect
 
         private void testButton_Click(object sender, EventArgs e)
         {
+            Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+            splashthread.IsBackground = true;
+            splashthread.Start();
+
             ManufacturingLibrary library = new ManufacturingLibrary();
             string err = library.ExcelOpen();
 
@@ -378,8 +382,13 @@ namespace TcPCM_Connect
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else
             {
-
+                err = library.MakePostData("CBD");
+                if (err != null)
+                    CustomMessageBox.RJMessageBox.Show($"저장에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                else
+                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            LoadingScreen.CloseSplashScreen();
         }
     }
 }

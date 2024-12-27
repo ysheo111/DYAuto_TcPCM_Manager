@@ -11,13 +11,18 @@ namespace TcPCM_Connect_Global
 {
     public class ManufacturingLibrary
     {
-        string sheetName;
+        List<Dictionary<string, string>> values = new List<Dictionary<string, string>>();
+        List<Dictionary<string, string>> cosumRateList = new List<Dictionary<string, string>>();
+        string sheetName = null;
+
         public string ExcelOpen()
         {
+            Excel.Worksheet worksheet = null;
             Excel.Application application = null;
             Excel.Workbook workBook = null;
             try
             {
+
                 OpenFileDialog dlg = new OpenFileDialog();
 
                 DialogResult dialog = dlg.ShowDialog();
@@ -27,7 +32,7 @@ namespace TcPCM_Connect_Global
                     return "ERROR : 파일 오픈에 실패하였습니다.";
 
                 //Excel 프로그램 실행
-                application = new Microsoft.Office.Interop.Excel.Application();
+                application = new Excel.Application();
                 //Excel 화면 띄우기 옵션
                 application.Visible = false;
                 //파일로부터 불러오기
@@ -43,12 +48,25 @@ namespace TcPCM_Connect_Global
 
                 if (sheetSelect.ShowDialog() == DialogResult.Cancel)
                     return null;
-                string sheetName = sheetSelect.ReturnValue1;
+                if(sheetSelect.ReturnValues == null)
+                {
+                    sheetName = sheetSelect.ReturnValue1;
 
-                Excel.Worksheet worksheet = workBook.Worksheets.Item[sheetName];
+                    worksheet = workBook.Worksheets.Item[sheetName];
 
-                LoadData(worksheet, sheetName);
+                    LoadData(worksheet);
+                }
+                else
+                {
+                    foreach (string returnValue in sheetSelect.ReturnValues)
+                    {
+                        sheetName = returnValue;
 
+                        worksheet = workBook.Worksheets.Item[sheetName];
+
+                        LoadData(worksheet);
+                    }
+                }
                 return null;
             }
             catch (Exception exc)
@@ -59,71 +77,78 @@ namespace TcPCM_Connect_Global
             {
                 if (workBook != null)
                 {
-                    //변경점 저장 안하면서 닫기
                     workBook.Close(false);
-                    //Excel 프로그램 종료
+
                     application.Quit();
-                    //오브젝트 해제1
+
                     ExcelCommon.ReleaseExcelObject(workBook);
                     ExcelCommon.ReleaseExcelObject(application);
                 }
             }
         }
-        public void LoadData(Excel.Worksheet worksheet, string sheetName)
+
+        public string LoadData(Excel.Worksheet worksheet)//, string sheetname)//string className)
         {
-            object[,] xlRng = worksheet.UsedRange.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
-            string[] keys = new string[xlRng.GetUpperBound(1) + 1];
-            int firstCol = 0, firstRow = 0, cosumRateIndex = 0;
-
-            for (firstRow = xlRng.GetLowerBound(0); firstRow <= xlRng.GetUpperBound(0); firstRow++)
+            string err = null;
+            try
             {
-                for (int col = xlRng.GetLowerBound(1); col <= xlRng.GetUpperBound(1); col++)
-                {
-                    if (xlRng[firstRow, col] == null)
-                        continue;
-                    if (firstCol == 0)
-                        firstCol = col;
+                object[,] xlRng = worksheet.UsedRange.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
 
-                    keys[col] = xlRng[firstRow, col]?.ToString();
-                    if (keys[col].Contains("전력소비율"))
-                        cosumRateIndex = col;
-                }
-                if (!keys.All(x => x == null)) break;
-            }
+                string[] keys = new string[xlRng.GetUpperBound(1) + 1];
+                int firstCol = 0, firstRow = 0, cosumRateIndex = 0;
 
-            List<Dictionary<string, string>> values = new List<Dictionary<string, string>>();
-            List<List<string>> cosumRateList = new List<List<string>>();
-            for (int row = firstRow + 2; row <= xlRng.GetUpperBound(0); row++)
-            {
-                var rowData = new Dictionary<string, string>();
-                for (int col = xlRng.GetLowerBound(1); col <= xlRng.GetUpperBound(1); col++)
+                for (firstRow = xlRng.GetLowerBound(0); firstRow <= xlRng.GetUpperBound(0); firstRow++)
                 {
-                    string key = keys[col - xlRng.GetLowerBound(1)];
-                    if (key != null)
+                    for (int col = xlRng.GetLowerBound(1); col <= xlRng.GetUpperBound(1); col++)
                     {
-                        if (key.Contains("설비명"))
-                        {
-                            rowData["기계명"] = xlRng[row, col - xlRng.GetLowerBound(1)] == null ? null : xlRng[row, col - xlRng.GetLowerBound(1)].ToString();
-                        }
-                        rowData[key] = xlRng[row, col - xlRng.GetLowerBound(1)] == null ? null : xlRng[row, col - xlRng.GetLowerBound(1)].ToString();
+                        if (xlRng[firstRow, col] == null)
+                            continue;
+                        if (firstCol == 0)
+                            firstCol = col;
+
+                        keys[col] = xlRng[firstRow, col]?.ToString();
+                        if (keys[col].Contains("전력소비율"))
+                            cosumRateIndex = col;
                     }
+                    if (!keys.All(x => x == null)) break;
                 }
-                values.Add(rowData); // 행 데이터를 리스트에 추가
 
-                List<string> minMaxAvg = new List<string>();
-                for (int i = cosumRateIndex; i < cosumRateIndex + 3; i++)
+                //List<Dictionary<string, string>> values = new List<Dictionary<string, string>>();
+                //List<Dictionary<string, string>> cosumRateList = new List<Dictionary<string, string>>();
+                for (int row = firstRow + 2; row <= xlRng.GetUpperBound(0); row++)
                 {
-                    minMaxAvg.Add(xlRng[row, i].ToString());
-                }
-                cosumRateList.Add(minMaxAvg);
-            }
+                    var rowData = new Dictionary<string, string>();
+                    for (int col = xlRng.GetLowerBound(1); col <= xlRng.GetUpperBound(1); col++)
+                    {
+                        string key = keys[col - xlRng.GetLowerBound(1)];
+                        if (key != null)
+                        {
+                            if (key.Contains("설비명"))
+                            {
+                                rowData["기계명"] = xlRng[row, col - xlRng.GetLowerBound(1)] == null ? null : xlRng[row, col - xlRng.GetLowerBound(1)].ToString();
+                            }
+                            rowData[key] = xlRng[row, col - xlRng.GetLowerBound(1)] == null ? null : xlRng[row, col - xlRng.GetLowerBound(1)].ToString();
+                        }
+                    }
+                    values.Add(rowData); // 행 데이터를 리스트에 추가
 
-            for (int i=0; i<values.Count; i++)
-            {
-                MakePostData(values[i], cosumRateList[i], sheetName);
+                    Dictionary<string, string> minMaxAvg = new Dictionary<string, string>();
+                    for (int i = cosumRateIndex; i < cosumRateIndex + 3; i++)
+                    {
+                        minMaxAvg.Add(xlRng[firstRow+1, i].ToString(), xlRng[row, i].ToString());
+                    }
+                    cosumRateList.Add(minMaxAvg);
+                }
+
+                //err = MakePostData(values, cosumRateList, className);
             }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+            return err;
         }
-        public void MakePostData(Dictionary<string, string> keyValues, List<string> cosumRateList, string sheetName)
+        public string MakePostData(string className)//, string sheetName)//List<Dictionary<string, string>> values, List<Dictionary<string, string>> cosumRateList,
         {
             String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/MasterData/Import";
             string err = null;
@@ -131,37 +156,53 @@ namespace TcPCM_Connect_Global
             JArray category = new JArray();
             JObject item = new JObject();
 
-            string[] dArray = { "Cycle time", "Cavity", "Set - up time", "Utilization ratio" };
-            string[] rArray = { "Number of workers" };
-            string[] aArray = { "기계명", "공정 형태", "Number of Machine", "Attended system", "설비가", "설치면적", "전력량", "전력소비율", "설비내용년수", "수선/개조비", "설비구분" };
-
+            string[] dArray = { "설비명", "공정 형태", "Cycle time", "Cavity", "Set-up time", "Utilization ratio" };
+            string[] rArray = { "설비명", "Number of workers" };
+            string[] aArray = { "설비명", "기계명", "Number of Machine", @"설비가 (k\)", "설치면적 (㎡)", "전력량 (KWh)", "전력소비율 (%)", "설비내용년수", "수선/개조비", "설비구분" };
             string[] allArray = dArray.Concat(rArray).Concat(aArray).ToArray();
 
-            item.Add("품번", "");
-            item.Add("품명", sheetName);
-            item.Add("Assembly level", 1);
-            //item.Add("Line Type", "M");
-            //category.Add(item);
-            category.Add(MakeJArray(keyValues, item, allArray, null, "M"));
-
-            item = new JObject();
-            item.Add("품번", "10");
-            item.Add("품명", sheetName);
-            item.Add("Assembly level", 2);
-
-            JObject item2 = (JObject)item.DeepClone();
-            item2.Add("기계명",keyValues["설비명"]);
-            
-            category.Add(MakeJArray(keyValues, item, allArray, dArray, "D"));
-            category.Add(MakeJArray(keyValues, item, allArray, rArray, "R"));
-            category.Add(MakeJArray(keyValues, item2, allArray, aArray, "A"));
-
-            JObject postData = new JObject
+            bool partPlag = false;
+            try
+            {
+                for (int i = 0; i < values.Count; i++)
                 {
-                    { "Data", category },
-                    { "ConfigurationGuid", "6abf068a-2bc8-49fa-90b4-4e794c686b6e" }
-                };
-            err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                    if (!partPlag)
+                    {
+                        item.Add("품번", "");
+                        item.Add("품명", sheetName);
+                        item.Add("Assembly level", 1);
+                        category.Add(MakeJArray(values[i], item, allArray, null, "M"));
+                        partPlag = true;
+                    }
+                    item = new JObject();
+                    item.Add("품번", i+1);
+                    item.Add("품명", sheetName);
+                    item.Add("Assembly level", 2);
+            
+                    category.Add(MakeJArray(values[i], item, allArray, dArray, "D"));
+                    foreach(var cosumRate in cosumRateList[i])
+                    {
+                        values[i]["기계명"] = values[i]["기계명"] + cosumRate.Key;
+                        values[i]["전력소비율 (%)"] = cosumRate.Value;
+                        category.Add(MakeJArray(values[i], item, allArray, aArray, "A"));
+                        values[i]["기계명"] = values[i]["기계명"].Replace(cosumRate.Key,"");
+                    }
+                    category.Add(MakeJArray(values[i], item, allArray, rArray, "R"));
+                }
+                JObject postData = new JObject
+                    {
+                        {  "Data", category },
+                        {  "ConfigurationGuid", global_iniLoad.GetConfig(className, "공정Import")},//"6abf068a-2bc8-49fa-90b4-4e794c686b6e"},
+                        {  "TargetType", "Folder"},
+                        {  "TargetId", 203}
+                    };
+                err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+            }
+            catch(Exception e)
+            {
+                return e.Message;
+            }
+            return err;
         }
 
         public JObject MakeJArray(Dictionary<string, string> keyValues, JObject item, string[] All, string[] array, string LineType)
@@ -169,23 +210,15 @@ namespace TcPCM_Connect_Global
             JObject item2 = (JObject)item.DeepClone();
 
             item2.Add("Line Type", LineType);
-            try
+            foreach (var data in keyValues)
             {
-                foreach (var a in keyValues)
+                if (All.Contains(data.Key))
                 {
-                    //if (All.Contains(a.Key))
-                    //{
-
-                    //}
-                    if (array != null && array.Contains(a.Key))
-                        item2.Add(a.Key, a.Value);
+                    if (array != null && array.Contains(data.Key))
+                        item2.Add(data.Key, data.Value);
                     else
-                        item2.Add(a.Key, null);
+                        item2.Add(data.Key, null);
                 }
-            }
-            catch
-            {
-
             }
             return item2;
         }

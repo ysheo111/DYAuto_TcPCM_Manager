@@ -14,6 +14,7 @@ namespace TcPCM_Connect_Global
     {
         public List<string> workSheet = new List<string>();
         public string ReturnValue1 { get; set; }
+        public List<string> ReturnValues { get; set; }
 
         public workSheetSelect()
         {
@@ -22,7 +23,19 @@ namespace TcPCM_Connect_Global
 
         private void btn_Check_Click(object sender, EventArgs e)
         {
-            this.ReturnValue1 = dgv_WorkSheet.Rows[dgv_WorkSheet.CurrentCell.RowIndex].Cells["WorkSheet"].Value?.ToString();
+            if(dgv_WorkSheet.SelectedCells.Count == 1)
+                this.ReturnValue1 = dgv_WorkSheet.Rows[dgv_WorkSheet.CurrentCell.RowIndex].Cells["WorkSheet"].Value?.ToString();
+            else
+            {
+                this.ReturnValues = new List<string>();
+                foreach (DataGridViewCell cell in dgv_WorkSheet.SelectedCells)
+                {
+                    if (cell.OwningColumn.Name == "WorkSheet" && cell.Value != null)
+                    {
+                        ReturnValues.Add(cell.Value.ToString());
+                    }
+                }
+            }
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
@@ -40,7 +53,19 @@ namespace TcPCM_Connect_Global
 
         private void dgv_WorkSheet_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            this.ReturnValue1 = dgv_WorkSheet.Rows[dgv_WorkSheet.CurrentCell.RowIndex].Cells["WorkSheet"].Value?.ToString();
+            if (dgv_WorkSheet.SelectedCells.Count == 1)
+                this.ReturnValue1 = dgv_WorkSheet.Rows[dgv_WorkSheet.CurrentCell.RowIndex].Cells["WorkSheet"].Value?.ToString();
+            else
+            {
+                this.ReturnValues = new List<string>();
+                foreach (DataGridViewCell cell in dgv_WorkSheet.SelectedCells)
+                {
+                    if (cell.OwningColumn.Name == "WorkSheet" && cell.Value != null)
+                    {
+                        ReturnValues.Add(cell.Value.ToString());
+                    }
+                }
+            }
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
