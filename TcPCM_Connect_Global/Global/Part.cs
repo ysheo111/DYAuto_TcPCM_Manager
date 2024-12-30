@@ -46,33 +46,22 @@ namespace TcPCM_Connect_Global
             }
 
             public string modelName;
-            public string productName;
             public string partName;
             public string partNumber;
-            public string currency;
-            public string iso;
-            public double exchangeRate;
+
             public string company;
-            public string incoterms;
-            public DateTime SOP;
-            public string team;
+            public string customer;
+            public string currency;           
+            public string iso;
+            public string transport;
+
+            public string category;
+            public string suppier;
+            public double exchangeRate;
+            public string exchangeRateCurrency;
+
             public string author;
-            public string region;
-            public DateTime dateOfCreation;
             public DateTime dateOfCalculation;
-            public double guid;
-            public double partID;
-            public double recovery;
-            public double etc;//기타비
-
-
-            public double annualQty;
-            public double plc;
-            public double plcVolume;
-
-            public double width;
-            public double height;
-            public double thinkness;
         }
 
         public class Summary
@@ -96,29 +85,12 @@ namespace TcPCM_Connect_Global
                 }
             }
 
-            public double material;
-            public double variant;
-            public double labor;
-            public double setupTotal;
-            public double machineOverheads;
-            public double machine;
-            public double setupMachine;
-            public double administrationCostsTotal;
-            public double profitTotal;
-            public double materialOverheadTotal;
-            public double packageTotal;
-            public double transportTotal;
-            public double financialTotal;
-            public double moldTotal;
-            public double total;
             public double administrationCosts;
             public double profit;
             public double materialOverhead;
-            public string package;
-            public string transport;
-            public string development;
-            public string etc;
-            public double defect;//기타비
+            public double rnd;
+            public double packageTransport;
+            public double etc;
         }
 
         public class Material
@@ -145,7 +117,7 @@ namespace TcPCM_Connect_Global
 
             public string name;
             public string itemNumber;
-            public string standard;
+            public string transport;
             public string substance;
             public string qunantityUnit;//Material Price 
             public string scrapQunantityUnit;//스크랩

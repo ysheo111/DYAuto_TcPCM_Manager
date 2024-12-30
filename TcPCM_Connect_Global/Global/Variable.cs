@@ -194,7 +194,7 @@ namespace TcPCM_Connect_Global
             public static string dateOfCalc = "작성일";                
             
             public static string guid = "작성일";          
-            public static string partID = "작성일";          
+            public static string partID = "Database internal identifier (ID) (Calculation)";          
         }
 
         public static class Summary

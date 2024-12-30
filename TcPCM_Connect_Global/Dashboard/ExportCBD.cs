@@ -139,7 +139,7 @@ namespace TcPCM_Connect_Global
 
         public void FindDashboard(string searchString, ImageList image, DataGridView dgv)
         {
-            string query =   $@"WITH RecursiveParents AS (
+            string query = $@"WITH RecursiveParents AS (
                 SELECT 
                     cs.CurrentCalcId,
 		            cs.ParentCalcId,  
@@ -290,11 +290,11 @@ namespace TcPCM_Connect_Global
                     {"folder", 0}
                 };
             // 원하는 언어 순서
-            List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR",  "ru-RU", "ja-JP", "pt-BR", "de-DE" };
+            List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR", "ru-RU", "ja-JP", "pt-BR", "de-DE" };
 
             foreach (DataRow row in dt.Rows)
             {
-                string id="",name = "",path = "";
+                string id = "", name = "", path = "";
                 int imageIndex = 0;
 
                 if (row["partInit"] != DBNull.Value)
@@ -320,7 +320,7 @@ namespace TcPCM_Connect_Global
                 string[] xmlFiles = path.Split(new string[] { delimiter }, StringSplitOptions.None); ;
                 string newPath = "";
 
-                for(int i=0; i< xmlFiles.Length; i++)
+                for (int i = 0; i < xmlFiles.Length; i++)
                 {
                     string xmlString = xmlFiles[i];
                     try
@@ -340,7 +340,7 @@ namespace TcPCM_Connect_Global
                             if (translations.ContainsKey(lang))
                             {
                                 newPath += $"{translations[lang]}\\";
-                                if(i== xmlFiles.Length-1) name = $"{translations[lang]}";
+                                if (i == xmlFiles.Length - 1) name = $"{translations[lang]}";
                                 break;
                             }
                         }
@@ -354,48 +354,8 @@ namespace TcPCM_Connect_Global
 
                 Image icon = image.Images[imageIndex];
 
-                dgv.Rows.Add(id, icon, name, newPath.Remove(newPath.Length-1));
+                dgv.Rows.Add(id, icon, name, newPath.Remove(newPath.Length - 1));
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="dgv"></param>
-        /// <param name="selectList"></param>
-        /// <returns></returns>
-        public Dictionary<string, Dictionary<string, Part>> PartDataExport(List<string> partList)
-        {
-            var partInfoList = LoadTcPCM(partList);
-            if (partInfoList == null) return null;
-
-            return partInfoList;
-        }
-
-        private Dictionary<string, Dictionary<string, Part>> LoadTcPCM(List<string> itemList)
-        {
-            if (itemList?.Count <= 0) return null;
-
-            String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Export";
-
-            JObject postData = new JObject();
-            postData.Add("CalculationIds", JArray.FromObject(itemList));
-            postData.Add("ConfigurationGuid", global_iniLoad.GetConfig("CBD", "Export"));
-            var apiResult = WebAPI.POST(callUrl, postData);
-
-            BomExport bomExport = new BomExport();
-            string query = string.Join(") Union select CurrentCalcId, ParentCalcId from [dbo].[CalcBomChildren](", itemList);
-            System.Data.DataTable calcBomChildren = global_DB.MutiSelect($"select CurrentCalcId, ParentCalcId from [dbo].[CalcBomChildren]({query})", (int)global_DB.connDB.PCMDB);
-            foreach (DataRow row in calcBomChildren.Rows)
-            {
-                bomExport.bom.Add(row["CurrentCalcId"].ToString(), row["ParentCalcId"]?.ToString());
-            }
-
-            if (apiResult?.Length <= 0) return null;
-
-            var chartData = bomExport.SimpleDataSort(apiResult);
-            return chartData;
-        } 
-     
     }
 }

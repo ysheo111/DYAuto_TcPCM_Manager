@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TcPCM_Connect_Global;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace TcPCM_Connect
 {
@@ -84,7 +85,7 @@ namespace TcPCM_Connect
         {
             e.Node.Nodes.RemoveByKey("expand");
             List<string> add = export.HierarchicalExplore((TagType)e.Node.Tag, e.Node.Name.Remove(0, 1));
-            export.ExploreNodeAdd(e.Node.Nodes, add); 
+            export.ExploreNodeAdd(e.Node.Nodes, add);
         }
 
 
@@ -109,7 +110,7 @@ namespace TcPCM_Connect
             dataGridViewCheckBoxColumn.HeaderText = "";
             dataGridViewCheckBoxColumn.Name = "img";
             dgv_BaicInfo.Columns.Add(dataGridViewCheckBoxColumn);
-            
+
 
             dgv_BaicInfo.Columns.Add(Report.Header.partName, "구성품명");
             dgv_BaicInfo.Columns[Report.Header.partName].ReadOnly = true;
@@ -130,7 +131,7 @@ namespace TcPCM_Connect
 
             if (clickedNode != null)
             {
-                if (Control.ModifierKeys == Keys.Control && e.Button==MouseButtons.Left)
+                if (Control.ModifierKeys == Keys.Control && e.Button == MouseButtons.Left)
                 {
                     // Ctrl 키를 누르고 클릭한 경우: 선택 토글
                     clickedNode.BackColor = clickedNode.BackColor == Color.LightSkyBlue ? Color.White : Color.LightSkyBlue;
@@ -141,7 +142,7 @@ namespace TcPCM_Connect
                 {
                     // 마우스 오른쪽 버튼 클릭한 경우: 선택된 노드 정보 표시
                     List<string> selectedNodes = new List<string>();
-                    if(selectedNode.Count == 0)
+                    if (selectedNode.Count == 0)
                     {
                         selectedNode.Add(clickedNode);
                     }
@@ -153,14 +154,14 @@ namespace TcPCM_Connect
                     SelectItems(selectedNodes);
                 }
                 else
-                { 
+                {
                     // 모든 노드 선택 해제
                     foreach (TreeNode node in selectedNode)
                     {
                         node.BackColor = Color.White;
                     }
                     selectedNode.Clear();
-                }                
+                }
             }
         }
 
@@ -168,14 +169,14 @@ namespace TcPCM_Connect
         {
             List<string> item = new List<string>();
             if (e.Button == MouseButtons.Right)
-            {                
+            {
                 foreach (DataGridViewCell cell in dgv_BaicInfo.SelectedCells)
-                {                    
+                {
                     item.Add(dgv_BaicInfo.Rows[cell.RowIndex].Cells["PartNumber"].Value.ToString());
                 }
 
                 SelectItems(item);
-            }            
+            }
         }
 
         private void SelectItems(List<string> item)
@@ -191,19 +192,43 @@ namespace TcPCM_Connect
         }
 
         private void eXCEL내려받기ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
- 
+        {            
+            if (selectItem.Count == 0)
+            {
+                CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            }
+
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+            {
+                CustomMessageBox.RJMessageBox.Show($"폴더 오픈을 실패하였습니다", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            PartBomExport bom = new PartBomExport();
+            string err= bom.ExportPartBom(selectItem);
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            //dialog.FileName
+
         }
 
         private void eXCEL올리기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExcelImport import = new ExcelImport();
             string Id = selectItem.Last();
-            string tagetType = "Calculation";
-            if (Id.Contains("f")) tagetType = "Folder";
-            else if (Id.Contains("p")) tagetType = "Project";
+            string targetType = Id.StartsWith("f") ? "Folder" :
+                                Id.StartsWith("p") ? "Project" : "Calculation";
 
-            string err = import.Import(tagetType, global.ConvertDouble(Id.Remove(0, 1)));
+            if (Id.StartsWith("f") || Id.StartsWith("p"))
+            {
+                Id = Id.Substring(1); // 첫 글자 제거
+            }
+
+            string err = import.Import(targetType, global.ConvertDouble(Id));
 
             if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
