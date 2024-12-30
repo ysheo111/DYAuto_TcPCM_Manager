@@ -219,19 +219,43 @@ namespace TcPCM_Connect
         private void eXCEL올리기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExcelImport import = new ExcelImport();
+            Dictionary<string,string> id= GetTargetTypeID();
+
+            string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]));
+
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void 공정라이브러리ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, string> id = GetTargetTypeID();
+            TcPCM_Connect_Global.ManufacturingLibrary library = new TcPCM_Connect_Global.ManufacturingLibrary();
+            string err = library.ExcelOpen();
+
+            if (err != null)
+                CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else
+            {
+
+            }
+        }
+
+        private Dictionary<string,string> GetTargetTypeID()
+        {
+            Dictionary<string, string> pairs = new Dictionary<string, string>();
             string Id = selectItem.Last();
             string targetType = Id.StartsWith("f") ? "Folder" :
                                 Id.StartsWith("p") ? "Project" : "Calculation";
-
+            
             if (Id.StartsWith("f") || Id.StartsWith("p"))
             {
                 Id = Id.Substring(1); // 첫 글자 제거
             }
+            pairs.Add("ID", Id);
+            pairs.Add("TargetType", targetType);
 
-            string err = import.Import(targetType, global.ConvertDouble(Id));
-
-            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return pairs;
         }
     }
 }
