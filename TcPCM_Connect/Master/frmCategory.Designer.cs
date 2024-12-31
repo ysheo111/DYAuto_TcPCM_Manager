@@ -42,7 +42,6 @@
             this.btn_Save = new CustomControls.RJControls.RJButton();
             this.dgv_Category = new System.Windows.Forms.DataGridView();
             this.btn_Create = new CustomControls.RJControls.RJButton();
-            this.testButton = new System.Windows.Forms.Button();
             this.roundBorderPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Category)).BeginInit();
             this.SuspendLayout();
@@ -56,7 +55,6 @@
             this.roundBorderPanel2.BorderColor = System.Drawing.Color.Gainsboro;
             this.roundBorderPanel2.BorderRadius = 10;
             this.roundBorderPanel2.BorderSize = 1;
-            this.roundBorderPanel2.Controls.Add(this.testButton);
             this.roundBorderPanel2.Controls.Add(this.btn_ExcelCreate);
             this.roundBorderPanel2.Controls.Add(this.searchButton1);
             this.roundBorderPanel2.Controls.Add(this.label2);
@@ -282,16 +280,6 @@
             this.btn_Create.UseVisualStyleBackColor = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
             // 
-            // testButton
-            // 
-            this.testButton.Location = new System.Drawing.Point(800, 465);
-            this.testButton.Name = "testButton";
-            this.testButton.Size = new System.Drawing.Size(87, 32);
-            this.testButton.TabIndex = 67;
-            this.testButton.Text = "testButton";
-            this.testButton.UseVisualStyleBackColor = true;
-            this.testButton.Click += new System.EventHandler(this.testButton_Click);
-            // 
             // frmCategory
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -320,6 +308,5 @@
         private System.Windows.Forms.Label label2;
         private Controller.SearchButton searchButton1;
         private CustomControls.RJControls.RJButton btn_ExcelCreate;
-        private System.Windows.Forms.Button testButton;
     }
 }
