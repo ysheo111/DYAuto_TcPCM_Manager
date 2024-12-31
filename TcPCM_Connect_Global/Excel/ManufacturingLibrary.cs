@@ -83,7 +83,6 @@ namespace TcPCM_Connect_Global
                 }
             }
         }
-
         public string LoadData(Excel.Worksheet worksheet, string sheetName)
         {
             List<Dictionary<string, string>> values = new List<Dictionary<string, string>>();
@@ -91,17 +90,21 @@ namespace TcPCM_Connect_Global
             string err = null;
             try
             {
-                object[,] xlRng = worksheet.UsedRange.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
-
-                string[] keys = new string[xlRng.GetUpperBound(1) + 1];
                 int firstCol = 0, firstRow = 0, cosumRateIndex = 0;
 
+                Excel.Range usedRange = worksheet.UsedRange;
+                int rowCount = usedRange.Rows.Count;
+                int colCount = usedRange.Columns.Count;
+
+                string[] keys = new string[colCount + 1];
+
                 #region 헤더 만들기
-                for (int row = xlRng.GetLowerBound(0); row < xlRng.GetUpperBound(0); row++)
+                for (int row = 1; row <= rowCount; row++)
                 {
-                    for (int col = xlRng.GetLowerBound(1); col <= xlRng.GetUpperBound(1); col++)
+                    for (int col = 1; col <= colCount; col++)
                     {
-                        if (dArray.Contains(xlRng[row, col]) || rArray.Contains(xlRng[row, col]) || aArray.Contains(xlRng[row, col]))
+                        object headerValue = usedRange.Cells[row,col]?.Value2;
+                        if (dArray.Contains(headerValue) || rArray.Contains(headerValue) || aArray.Contains(headerValue))
                         {
                             firstRow = row;
                             break;
@@ -110,35 +113,37 @@ namespace TcPCM_Connect_Global
                     if (firstRow != 0)
                         break;
                 }
-
-                for (int row = firstRow; firstRow <= xlRng.GetUpperBound(0); firstRow++)
+                for (int row = firstRow; firstRow <= rowCount; firstRow++)
                 {
-                    for (int col = xlRng.GetLowerBound(1); col <= xlRng.GetUpperBound(1); col++)
+                    for (int col = 1; col <= colCount; col++)
                     {
-                        if (xlRng[firstRow, col] == null)
+                        object cellValue = usedRange.Cells[row, col]?.Value2;
+                        if (cellValue == null)
                             continue;
                         if (firstCol == 0)
                             firstCol = col;
 
-                        keys[col] = xlRng[firstRow, col]?.ToString();
+                        keys[col] = usedRange.Cells[firstRow, col]?.Value2;
                     }
                     if (!keys.All(x => x == null)) break;
                 }
                 #endregion
 
                 #region 값 정리하기(values, cosumRateList)
-                for (int row = firstRow + 2; row <= xlRng.GetUpperBound(0); row++)
+                for (int row = firstRow + 2; row <= rowCount; row++)
                 {
                     bool flag = true;
                     var rowData = new Dictionary<string, string>();
-                    for (int col = xlRng.GetLowerBound(1); col <= xlRng.GetUpperBound(1); col++)
+                    string name = null;
+                    for (int col = 1; col <= colCount; col++)
                     {
                         string key = keys[col];
+                        object cellValue = usedRange.Cells[row, col]?.Value2;
                         if (key != null)
                         {
                             if (key.Contains("설비명"))
                             {
-                                string name = xlRng[row, col] == null ? null : xlRng[row, col].ToString();
+                                name = cellValue?.ToString();
                                 if (name == null || name.Contains("예시"))
                                 {
                                     flag = false;
@@ -149,32 +154,37 @@ namespace TcPCM_Connect_Global
                             if (keys[col].Contains("전력소비율"))
                             {
                                 cosumRateIndex = col;
-                                if (Convert.ToDouble(xlRng[row, col]) > 1)
+                                if (Convert.ToDouble(cellValue) > 1)
                                 {
-                                    rowData[key] = xlRng[row, col] == null ? null : (Convert.ToDouble(xlRng[row, col]) / 100).ToString();
+                                    rowData[key] = cellValue == null ? null : (Convert.ToDouble(cellValue) / 100).ToString();
                                     continue;
                                 }
                             }
-                            rowData[key] = xlRng[row, col] == null ? null : xlRng[row, col].ToString();
+                            rowData[key] = cellValue == null ? null : cellValue.ToString();
                         }
                     }
                     if (flag)
                     {
                         values.Add(rowData);
 
-                        string abc = xlRng[firstRow + 1, cosumRateIndex]?.ToString();
-                        if (abc != null && ( abc.Contains("MIN") || abc.Contains("MAX") || abc.Contains("AVG")))
+                        string abc = usedRange.Cells[firstRow + 1, cosumRateIndex]?.Value2.ToString();
+                        if (abc != null && (abc.Contains("MIN") || abc.Contains("MAX") || abc.Contains("AVG")))
                         {
                             Dictionary<string, string> minMaxAvg = new Dictionary<string, string>();
                             for (int i = cosumRateIndex; i < cosumRateIndex + 3; i++)
                             {
-                                if(Convert.ToDouble(xlRng[row, i]) > 1)
-                                    minMaxAvg.Add(xlRng[firstRow + 1, i].ToString(), (Convert.ToDouble(xlRng[row, i]) / 100).ToString());
+                                if (Convert.ToDouble(usedRange.Cells[row, i]?.Value2) > 1)
+                                    minMaxAvg.Add(usedRange.Cells[firstRow + 1, i]?.Value2.ToString(), (Convert.ToDouble(usedRange.Cells[row, i]?.Value2) / 100).ToString());
                                 else
-                                    minMaxAvg.Add(xlRng[firstRow + 1, i].ToString(), xlRng[row, i].ToString());
+                                    minMaxAvg.Add(usedRange.Cells[firstRow + 1, i]?.Value2.ToString(), usedRange.Cells[row, i]?.Value2.ToString());
                             }
                             cosumRateList.Add(minMaxAvg);
                         }
+                    }
+                    else
+                    {
+                        if(string.IsNullOrEmpty(name))
+                            break;
                     }
                 }
                 #endregion
@@ -188,7 +198,6 @@ namespace TcPCM_Connect_Global
             return err;
         }
 
-        
         public JArray MakePostData(string sheetName, List<Dictionary<string, string>> values, List<Dictionary<string, string>> cosumRateList)
         {
             string[] allArray = dArray.Concat(rArray).Concat(aArray).ToArray();
@@ -247,9 +256,9 @@ namespace TcPCM_Connect_Global
             item2.Add("Line Type", LineType);
             foreach (var data in keyValues)
             {
-                if (All.Any(serach => data.Key.Contains(serach)))//All.Contains(data.Key))
+                if (All.Any(serach => data.Key.Contains(serach)))
                 {
-                    if (array != null && array.Any(serach => data.Key.Contains(serach)))//array != null && array.Contains(data.Key))
+                    if (array != null && array.Any(serach => data.Key.Contains(serach)))
                         item2.Add(data.Key, data.Value);
                     else
                         item2.Add(data.Key, null);
