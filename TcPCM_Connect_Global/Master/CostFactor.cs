@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media.Animation;
+using System.Xml.Linq;
 
 namespace TcPCM_Connect_Global
 {
@@ -14,6 +15,7 @@ namespace TcPCM_Connect_Global
     /// </summary>
     public class CostFactor
     {
+        string USDesignName = null;
         public string Import(string className, string name, DataGridView dgv)
         {
             String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/MasterData/Import";
@@ -32,9 +34,17 @@ namespace TcPCM_Connect_Global
 
                     if (name == "Plant")// && col.Name.Contains("지역"))
                     {
-                        item.Add("지역", row.Cells[col.Name].Value?.ToString());
-                        item.Add("Designation", "[DYA]"+row.Cells[col.Name].Value?.ToString());
-                        item.Add("Number", row.Cells[col.Name].Value?.ToString());
+                        item.Add("지역", row.Cells["지역"].Value?.ToString());
+                        item.Add("Designation", row.Cells["Designation"].Value?.ToString());
+
+                        if(!string.IsNullOrEmpty(row.Cells["Designation-US"].Value?.ToString()))
+                            item.Add("Designation-US", "[DYA]"+row.Cells["Designation-US"].Value.ToString());
+                        else if(!string.IsNullOrEmpty(USDesignName) )
+                            item.Add("Designation-US", USDesignName);
+                        else
+                            item.Add("Designation-US", null);
+
+                        item.Add("Number", row.Cells["지역"].Value?.ToString());
                         break;
                     }
 
@@ -47,6 +57,20 @@ namespace TcPCM_Connect_Global
                         addictionalItem.Add("Labor burden", row.Cells[col.Name].Value?.ToString());
                         addictionalItem.Add("구분", categoryName);
                         if (nullCheck) categoryLabor.Add(addictionalItem);
+                    }
+                    else if (col.Name.Contains("Designation-US") && !string.IsNullOrEmpty(item["지역"]?.ToString()) )
+                    {
+                        if(row.Cells[col.Name].Value == null)
+                        {
+                            string searchQeury = $"select Name_LOC from BDRegions" +
+                                $" where CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{item["지역"].ToString()}%'" +
+                                $" And CAST(Name_LOC AS NVARCHAR(MAX)) like '%en-US%'";
+                            string result = global_DB.ScalarExecute(searchQeury, (int)global_DB.connDB.PCMDB);
+                            USDesignName = NameSplit(result);
+                            item.Add(col.Name, USDesignName);
+                        }
+                        else
+                            item.Add(col.Name, "[DYA]"+row.Cells[col.Name].Value?.ToString());
                     }
                     else
                         item.Add(col.Name, row.Cells[col.Name].Value?.ToString());
@@ -160,6 +184,39 @@ namespace TcPCM_Connect_Global
             err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
 
             return err;
+        }
+
+        public string NameSplit(string input)
+        {
+            //List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR", "ru-RU", "ja-JP", "pt-BR", "de-DE" };
+            string delimiter = "</split>";
+            string[] xmlFiles = input.Split(new string[] { delimiter }, StringSplitOptions.None);
+
+            for (int i = 0; i < xmlFiles.Length; i++)
+            {
+                string name = "";
+                string xmlString = xmlFiles[i];
+                try
+                {   
+                    XDocument doc = XDocument.Parse(xmlString);
+
+                    var enValue = doc.Descendants("value")
+                             .FirstOrDefault(v => (string)v.Attribute("lang") == "en-US");
+
+                    if (enValue != null)
+                    {
+                        name = enValue.Value;
+                    }
+                }
+                catch
+                {
+                    if (i == xmlFiles.Length - 1)
+                        name = $"{xmlString}";
+                }
+                if (!string.IsNullOrEmpty(name))
+                    input = name;
+            }
+            return input;
         }
     }
 }
