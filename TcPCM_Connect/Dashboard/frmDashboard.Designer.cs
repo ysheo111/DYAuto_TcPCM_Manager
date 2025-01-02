@@ -40,6 +40,7 @@ namespace TcPCM_Connect
             this.테스트ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXCEL올리기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXCEL내려받기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.공정라이브러리ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.작업지지서ImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.내보내기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,7 +56,9 @@ namespace TcPCM_Connect
             this.btn_Configuration = new CustomControls.RJControls.RJButton();
             this.dgv_BaicInfo = new System.Windows.Forms.DataGridView();
             this.tv_Bom = new System.Windows.Forms.TreeView();
-            this.공정라이브러리ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bOMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.업로드ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eXCEL다운로드ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.roundBorderPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_Refresh)).BeginInit();
@@ -66,9 +69,10 @@ namespace TcPCM_Connect
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.테스트ToolStripMenuItem,
-            this.공정라이브러리ToolStripMenuItem});
+            this.공정라이브러리ToolStripMenuItem,
+            this.bOMToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(199, 92);
             // 
             // 테스트ToolStripMenuItem
             // 
@@ -76,22 +80,29 @@ namespace TcPCM_Connect
             this.eXCEL올리기ToolStripMenuItem,
             this.eXCEL내려받기ToolStripMenuItem});
             this.테스트ToolStripMenuItem.Name = "테스트ToolStripMenuItem";
-            this.테스트ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.테스트ToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.테스트ToolStripMenuItem.Text = "부품원가계산서";
             // 
             // eXCEL올리기ToolStripMenuItem
             // 
             this.eXCEL올리기ToolStripMenuItem.Name = "eXCEL올리기ToolStripMenuItem";
-            this.eXCEL올리기ToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.eXCEL올리기ToolStripMenuItem.Text = "EXCEL 올리기";
+            this.eXCEL올리기ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eXCEL올리기ToolStripMenuItem.Text = "EXCEL 업로드";
             this.eXCEL올리기ToolStripMenuItem.Click += new System.EventHandler(this.eXCEL올리기ToolStripMenuItem_Click);
             // 
             // eXCEL내려받기ToolStripMenuItem
             // 
             this.eXCEL내려받기ToolStripMenuItem.Name = "eXCEL내려받기ToolStripMenuItem";
-            this.eXCEL내려받기ToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.eXCEL내려받기ToolStripMenuItem.Text = "EXCEL 내려받기";
+            this.eXCEL내려받기ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eXCEL내려받기ToolStripMenuItem.Text = "EXCEL 다운로드";
             this.eXCEL내려받기ToolStripMenuItem.Click += new System.EventHandler(this.eXCEL내려받기ToolStripMenuItem_Click);
+            // 
+            // 공정라이브러리ToolStripMenuItem
+            // 
+            this.공정라이브러리ToolStripMenuItem.Name = "공정라이브러리ToolStripMenuItem";
+            this.공정라이브러리ToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.공정라이브러리ToolStripMenuItem.Text = "공정라이브러리 업로드";
+            this.공정라이브러리ToolStripMenuItem.Click += new System.EventHandler(this.공정라이브러리ToolStripMenuItem_Click);
             // 
             // 작업지지서ImportToolStripMenuItem
             // 
@@ -295,12 +306,27 @@ namespace TcPCM_Connect
             this.tv_Bom.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.tv_Bom_AfterExpand);
             this.tv_Bom.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tv_Bom_MouseDown);
             // 
-            // 공정라이브러리ToolStripMenuItem
+            // bOMToolStripMenuItem
             // 
-            this.공정라이브러리ToolStripMenuItem.Name = "공정라이브러리ToolStripMenuItem";
-            this.공정라이브러리ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.공정라이브러리ToolStripMenuItem.Text = "공정라이브러리";
-            this.공정라이브러리ToolStripMenuItem.Click += new System.EventHandler(this.공정라이브러리ToolStripMenuItem_Click);
+            this.bOMToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.업로드ToolStripMenuItem,
+            this.eXCEL다운로드ToolStripMenuItem});
+            this.bOMToolStripMenuItem.Name = "bOMToolStripMenuItem";
+            this.bOMToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.bOMToolStripMenuItem.Text = "BOM";
+            // 
+            // 업로드ToolStripMenuItem
+            // 
+            this.업로드ToolStripMenuItem.Name = "업로드ToolStripMenuItem";
+            this.업로드ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.업로드ToolStripMenuItem.Text = "EXCEL 업로드";
+            this.업로드ToolStripMenuItem.Click += new System.EventHandler(this.업로드ToolStripMenuItem_Click);
+            // 
+            // eXCEL다운로드ToolStripMenuItem
+            // 
+            this.eXCEL다운로드ToolStripMenuItem.Name = "eXCEL다운로드ToolStripMenuItem";
+            this.eXCEL다운로드ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eXCEL다운로드ToolStripMenuItem.Text = "EXCEL 다운로드";
             // 
             // frmDashboard
             // 
@@ -343,5 +369,8 @@ namespace TcPCM_Connect
         private System.Windows.Forms.ToolStripMenuItem eXCEL내려받기ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem eXCEL올리기ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 공정라이브러리ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bOMToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 업로드ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eXCEL다운로드ToolStripMenuItem;
     }
 }

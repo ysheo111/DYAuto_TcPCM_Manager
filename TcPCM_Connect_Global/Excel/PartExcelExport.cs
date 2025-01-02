@@ -23,28 +23,16 @@ namespace TcPCM_Connect_Global
 
             try
             {
-                File.Copy(Application.StartupPath + $@"\부품원가계산서.xlsx", fileLocation, true);
-
-                //Excel 프로그램 실행
-                application = new Excel.Application();
-                //Excel 화면 띄우기 옵션
-                application.Visible = true;
-                //파일로부터 불러오기                
-                workBook = application.Workbooks.Open(fileLocation);
-                //frmInit = frm;
                 foreach (KeyValuePair<string, Part> part in parts)
                 {
-                    string sheetName = (lang == Bom.ExportLang.Kor ? "Export" : "Quotation");
-                    workBook.Worksheets[sheetName].Copy(Type.Missing, workBook.Sheets[workBook.Sheets.Count]); // copy                    
-                    Excel.Worksheet worksheet = workBook.Sheets[workBook.Sheets.Count];
-
-                    //같은 이름 있는지 체크(코드 추가하기)
-                    worksheet.Name = part.Value.header.partName;        // rename
-                    worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible;
-                    workBook.Worksheets[sheetName].Visible = Excel.XlSheetVisibility.xlSheetHidden;
-                    worksheet.Select();
-
-                    CBDMatching(lang, worksheet, part.Value);
+                    File.Copy($@"{Application.StartupPath}\부품원가계산서.xlsx", $@"{fileLocation}\부품원가계산서_{part.Value.header.partName}.xlsx", true);
+                    //Excel 프로그램 실행
+                    application = new Excel.Application();
+                    //Excel 화면 띄우기 옵션
+                    application.Visible = true;
+                    //파일로부터 불러오기                
+                    workBook = application.Workbooks.Open($@"{fileLocation}\부품원가계산서_{part.Value.header.partName}.xlsx");
+                    CBDMatching(lang, workBook, part.Value);
                 }
             }
             catch (Exception exc)
@@ -71,35 +59,20 @@ namespace TcPCM_Connect_Global
             return null;
         }
 
-        public void CBDMatching(Bom.ExportLang lang, Excel.Worksheet worksheet, Part part)
+        public void CBDMatching(Bom.ExportLang lang, Excel.Workbook workbook, Part part)
         {
             try
             {
+                string sheetName = (lang == Bom.ExportLang.Kor ? "부품원가계산서" : "Quotation");
+                string sheetName2 = (lang == Bom.ExportLang.Kor ? "제조경비 산출근거(변경 기준)" : "Quotation");
+                Excel.Worksheet worksheet = workbook.Sheets[sheetName];
+                Excel.Worksheet worksheet2 = workbook.Sheets[sheetName2];
+                worksheet.Select();
                 //CBD의 기본정보
                 worksheet.get_Range("B1", "B1").Select();
 
                 //Excel의 사용범위를 읽어옴
                 Excel.Range range = worksheet.UsedRange;
-
-                //         public static string modelName = "차종";
-                //public static string partNumber = "품번";
-                //public static string partName = "품명";
-
-                //public static string company = "업체명";
-                //public static string customer = "납품국가";
-                //public static string currency = "화폐";
-                //public static string transport = "물류조건";
-
-                //public static string category = "업종";
-                //public static string suppier = "제조국가";
-                //public static string exchangeRate = "업체적용환율";
-                //public static string exchangeRateCurrency = "업체적용환율단위";
-
-                //public static string author = "작성자";
-                //public static string dateOfCalc = "작성일";
-
-                //public static string guid = "작성일";
-                //public static string partID = "작성일";
 
                 int lastCol = 49;
 
@@ -116,217 +89,125 @@ namespace TcPCM_Connect_Global
                 worksheet.Cells[row++, excelCol].Value = part.header.transport?.Replace("[DYA]", "");
 
                 row = 5; excelCol = 6;
-                worksheet.Cells[row++, excelCol].Value = part.header.company?.Replace("[DYA]", "");
+                string category = part.header.category != null ? part.header.category?.Split('-')[0].Replace(" ", "").Replace("[DYA]", "") : "";
+                worksheet.Cells[row++, excelCol].Value = category;
                 worksheet.Cells[row++, excelCol].Value = part.header.suppier?.Replace("[DYA]", "");
                 worksheet.Cells[row++, excelCol].Value = part.header.exchangeRate;
                 worksheet.Cells[row++, excelCol].Value = part.header.exchangeRateCurrency?.Replace("[DYA]", "");
 
                 row = 2; excelCol = 19;
-                worksheet.Cells[row++, excelCol].Value = part.header.author?.Replace("[DYA]", "");
-                worksheet.Cells[row++, excelCol].Value = part.header.dateOfCalculation;
+                worksheet.Cells[row++, excelCol].Value = part.header.dateOfCalc.ToString("yyyy-MM-dd");
+                worksheet.Cells[row++, excelCol].Value = part.header.author?.Replace("[DYA]", "");                
 
                 //summary
                 row = 13; excelCol = 8;
-                worksheet.Cells[row, excelCol++].Value = part.summary.administrationCosts;
-                worksheet.Cells[row, excelCol++].Value = part.summary.profit;
-                worksheet.Cells[row, excelCol++].Value = part.summary.materialOverhead;
+                worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.administrationCosts);
+                worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.profit);
+                worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.materialOverhead);
+                                                         
+                row = 14; excelCol = 11;                 
+                worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.rnd);
+                worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.packageTransport);
+                worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.etc);
 
-                row = 14; excelCol = 11;
-                worksheet.Cells[row, excelCol++].Value = part.summary.rnd;
-                worksheet.Cells[row, excelCol++].Value = part.summary.packageTransport;
-                worksheet.Cells[row, excelCol++].Value = part.summary.etc;
+                //원/부재료           
+                for (int i = 0; i < part.material.Count; i++)
+                {
+                    row = 25 + i;
+                    excelCol = 2;
+                    Excel.Range cell = worksheet.Cells[row, excelCol] as Excel.Range;
+                    cell.Select();                    
+                    worksheet.Cells[row, excelCol++].Value = i + 1;
+                    worksheet.Cells[row, excelCol++].Value = part.material[i].name?.Replace("[DYA]", "");
+                    excelCol++;
+                    worksheet.Cells[row, excelCol++].Value = part.material[i].itemNumber?.Replace("[DYA]", "");
+                    worksheet.Cells[row, excelCol++].Value = "";//공급기준
+                    worksheet.Cells[row, excelCol++].Value = part.material[i].substance?.Replace("[DYA]", "");
+                    worksheet.Cells[row, excelCol++].Value = "";//두께
+                    worksheet.Cells[row, excelCol++].Value = "";//가로
+                    worksheet.Cells[row, excelCol++].Value = "";//세로
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].netWeight);
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].grossWeight);
+                    worksheet.Cells[row, excelCol++].Value = part.material[i].qunantityUnit;
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].unitCost);
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].quantity);
+                    worksheet.Cells[row, excelCol++].Formula = part.material[i].grossWeight != null ? $"=IFERROR(L{row}*N{row}*O{row}, \"\")" : $"=IFERROR(N{row}*O{row}, \"\")";
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].scrapUnitPrice);
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR((L{row}-K{row})*Q{row}*O{row}, \"\")";
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].trash);
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR(P{row}-R{row}+S{row}, \"\")";
+                }
 
-                //worksheet.Cells[row, excelCol++].Value = part.summary.package;
-                //excelCol += 3;
-                //worksheet.Cells[row, excelCol++].Value = part.summary.transport;
-                //excelCol += 3;
-                //worksheet.Cells[row, excelCol++].Value = part.summary.development;
-                //excelCol += 3;
-                //worksheet.Cells[row, excelCol++].Value = part.summary.etc;
-                //excelCol += 3;
-                //excelOrder++;
-                DataTable material = new DataTable();
+                //가공비        
+                for (int i = 0; i < part.manufacturing.Count; i++)
+                {
+                    row = 57 + i;
+                    int row2 = 8 + i;
+                    excelCol = 2;
+                    Excel.Range cell = worksheet.Cells[row, excelCol] as Excel.Range;
+                    cell.Select();
+                    worksheet.Cells[row, excelCol++].Value = i + 1;
+                    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].partName?.Replace("[DYA]", "");
+                    excelCol++;
+                    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].itemNumber?.Replace("[DYA]", "");
+                    category = part.manufacturing[i].category != null ? part.manufacturing[i].category?.Split('-')[0].Replace(" ", "").Replace("[DYA]", "") : "";
+                    worksheet.Cells[row, excelCol++].Value = category;
+                    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machineName?.Replace("[DYA]", "");
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].workers);
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].cycletime);
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].cavity);
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].quantity);
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].utillization);
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].grossWage);
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR(H{row}*I{row}*K{row}*M{row}/(J{row}*60*60*L{row}), \"\")";
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR('{sheetName2}'!AB{row2}, \"\")";
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR(O{row}*K{row}*I{row}/(60*60*L{row}*J{row}), \"\")";
 
-                //원/부재료
-                MemberInfo[] materialMembers = typeof(Part.Material).GetMembers(BindingFlags.Public);
+                    excelCol = 2;
+                    worksheet2.Cells[row2, excelCol++].Value = i + 1;
+                    worksheet2.Cells[row2, excelCol++].Value = part.manufacturing[i].partName?.Replace("[DYA]", "");
+                    worksheet2.Cells[row2, excelCol++].Value = part.manufacturing[i].category?.Replace("[DYA]", "");
+                    worksheet2.Cells[row2, excelCol++].Value = part.manufacturing[i].machineName?.Replace("[DYA]", "");
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].productionDay);
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].productionTime / part.manufacturing[i].productionDay);
 
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machineCost);
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].amotizingYearOfMachine);
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(H{row2}/I{row2}/F{row2}/G{row2}, \"\")";
 
-                //for (int i = 0; i < part.material.Count; i++)
-                //{
-                //    row = marker[excelOrder] + 4 + i;
-                //    Excel.Range cell = worksheet.Cells[row, excelCol] as Excel.Range;
-                //    cell.Select();
-                //    excelCol = 2;
-                //    worksheet.Cells[row, excelCol++].Value = i + 1;
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].name?.Replace("[LGMagna]", "");
-                //    excelCol++;
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].itemNumber?.Replace("[LGMagna]", "");
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].substance?.Replace("[LGMagna]", "");
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].standard?.Replace("[LGMagna]", "");
-                //    worksheet.Cells[row, excelCol++].Value = $"{part.material[i].qunantityUnit}/{part.material[i].priceUnit}";
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].unitCost;
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].netWeight;
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].quantity;
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].totalQuantity;
-                //    worksheet.Cells[row, excelCol++].Formula = $"=Z{row}";
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].etc;
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].total;
-                //    //worksheet.Cells[row, excelCol++].Value = part.material[i].comment;
-                //    worksheet.Cells[row, excelCol + 5].Value = part.material[i].dross;
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machineArea);
+                    if (part.manufacturing[i].spaceCost != 0)
+                    {
+                        worksheet2.Range[worksheet2.Cells[row2, excelCol], worksheet2.Cells[row2, excelCol + 2]].Merge();
+                        worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].spaceCost);
+                        excelCol += 2;
+                        worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(K{row2}*L{row2}/F{row2}/G{row2}, \"\")";
+                    }
+                    else
+                    {
+                        excelCol += 3;
+                        worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(K{row2}*L{row2}*M{row2}/N{row2}/F{row2}/G{row2}, \"\")";
+                    }
 
-                //    excelCol = 24;
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].returnRatio;
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].scrapUnitPrice;
-                //    worksheet.Cells[row, excelCol++].Value = part.material[i].scrap;
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].ratioOfMachineRepair);
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR((J{row2}+O{row2})*P{row2}, \"\")";
 
-                //}
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machinePower);
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machinePowerCost);
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machinePowerEfficiency);
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(R{row2}*S{row2}*T{row2}, \"\")";
 
-                //excelOrder++;
-                ////가공비
-                //MemberInfo[] manufacturingMembers = typeof(Part.Manufacturing).GetMembers(BindingFlags.Public);
-                //row = marker[excelOrder] + 5;
-                //for (int i = 0; i < part.manufacturing.Count - 10; i++)
-                //{
-                //    Excel.Range rangeToInsert = worksheet.Range["A" + row, "AQ" + row];
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].otherMachineCost);
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].otherYearOfMachine);
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(V{row2}/(W{row2}*F{row2})/G{row2}, \"\")";
 
-                //    // 지정된 범위에 행을 삽입합니다.
-                //    rangeToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, Missing.Value);
-                //    for (int j = excelOrder + 1; j < marker.Count; j++)
-                //    {
-                //        marker[j]++;
-                //    }
-                //}
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(J{row2}+O{row2}+Q{row2}+U{row2}+X{row2}, \"\")";
 
-                //DataTable cycleTime = new DataTable();
-                //double etRow = marker[excelOrder] + 1;
-                //worksheet.Cells[marker[excelOrder] + 1, 16].Value = part.manufacturing[0].et / 100;
-                //worksheet.Cells[marker[excelOrder] + 1, 18].Value = part.header.plc == 0 ? 0 : part.header.plcVolume / part.header.plc;
-                //worksheet.Cells[marker[excelOrder] + 1, 19].Value = part.header.plc;
-                //worksheet.Cells[marker[excelOrder] + 1, 20].Value = part.header.plcVolume;
-                //worksheet.Range["AD4"].Value = part.header.plcVolume;
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].redirectExpenseRatio);
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(Y{row2}*Z{row2}, \"\")";
 
-                //for (int i = 0; i < part.manufacturing.Count; i++)
-                //{
-                //    row = marker[excelOrder] + 4 + i;
-
-                //    string workingTime = "";
-                //    if (type == Bom.ManufacturingType.주조)
-                //    {
-                //        part.manufacturing[i].workingTime = global.ConvertDouble(part.manufacturing[i].sequence);
-                //        workingTime = $"={part.manufacturing[i].workingTime}";
-                //        if (part.manufacturing[i].workingTime == 0)
-                //        {
-                //            part.manufacturing[i].workingTime = part.manufacturing[i].netCycleTime * (2 - part.manufacturing[i].oee / 100) + part.manufacturing[i].prepare * 60 / part.manufacturing[i].lotQty;
-                //            workingTime = $"=U{row}*(2-S{row}/100)+T{row}*60/R{row}";
-                //        }
-
-                //        part.manufacturing[i].laborCosts = part.manufacturing[i].workingTime * part.manufacturing[i].grossWage / 3600;
-
-                //        part.manufacturing[i].machinaryCost = part.manufacturing[i].laborCosts + part.manufacturing[i].workingTime * part.manufacturing[i].machineCostRate / 3600;
-
-                //    }
-                //    else
-                //    {
-                //        part.manufacturing[i].workingTime = part.manufacturing[i].netCycleTime * (2 - part.manufacturing[i].oee / 100) + part.manufacturing[i].prepare * 60 / part.manufacturing[i].lotQty;
-                //        workingTime = $"=U{row}*(2-S{row}/100)+T{row}*60/R{row}";
-                //        part.manufacturing[i].laborCosts = part.manufacturing[i].workingTime * part.manufacturing[i].grossWage / 3600;
-
-                //        part.manufacturing[i].machinaryCost = part.manufacturing[i].laborCosts + part.manufacturing[i].workingTime * part.manufacturing[i].machineCostRate / 3600;
-                //    }
-
-
-                //    excelCol = 2;
-                //    Excel.Range cell = worksheet.Cells[row, excelCol] as Excel.Range;
-                //    cell.Select();
-                //    worksheet.Cells[row, excelCol++].Value = i + 1;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].partName?.Replace("[LGMagna]", "");
-                //    excelCol++;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].itemNumber?.Replace("[LGMagna]", "");
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].manufacturingName?.Replace("[LGMagna]", "");
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machineName?.Replace("[LGMagna]", "");
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].cavity;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].workers;
-
-                //    worksheet.Cells[row, excelCol++].Formula = workingTime;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].usage;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].grossWage;
-                //    worksheet.Cells[row, excelCol++].Formula = $"=I{row}*J{row}*K{row}*L{row}/3600/P{etRow}/H{row}";
-                //    //worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].laborCosts;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machineCostRate;
-                //    worksheet.Cells[row, excelCol++].Formula = $"=(J{row}*K{row}*N{row}/3600)/P{etRow}/H{row}";
-
-                //    excelCol = 18;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].lotQty;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].oee;
-
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].prepare;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].netCycleTime;
-                //    worksheet.Cells[row, excelCol++].Formula = workingTime;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machineCost;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].amotizingYearOfMachine;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machineArea;
-
-                //    string query = $@"SELECT 
-                //        COALESCE(
-                //            t.c.value('(value[@lang=""ko - KR""])[1]', 'nvarchar(max)'),  -- ko-KR 값을 먼저 시도
-                //            t.c.value('(value[@lang=""en-US""])[1]', 'nvarchar(max)')-- ko - KR 값이 없으면 en - US 값 시도
-                //        ) AS TranslatedValue
-                //    FROM
-                //        MDCostFactorDetailComments AS s
-                //        CROSS APPLY s.[Text_LOC].nodes('/translations') AS t(c)
-                //    WHERE
-                //        ParentId = (
-                //            SELECT ID
-                //            FROM dbo.MDCostFactorDetails
-                //            WHERE Id = (
-                //                SELECT SpaceCostFactorDetailId
-                //                FROM Machines
-                //                WHERE Id = 9797
-                //            )
-                //        ); ";
-
-                //    string result = global_DB.ScalarExecute(query, (int)global_DB.connDB.PCMDB);
-                //    //worksheet.Range[worksheet.Cells[row, excelCol], worksheet.Cells[row, excelCol+2]].Merge();
-                //    if (result.Length == 0)
-                //    {
-                //        worksheet.Range[worksheet.Cells[row, excelCol], worksheet.Cells[row, excelCol + 2]].Merge();
-                //        worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].rationForSupplementaryMachine;
-                //    }
-                //    else
-                //    {
-                //        string[] split = result.Split(':');
-                //        worksheet.Cells[row, excelCol++].Value = split[2].Split(' ')[1];
-                //        worksheet.Cells[row, excelCol++].Value = split[1].Split(' ')[1];
-                //        worksheet.Cells[row, excelCol++].Value = split[3].Split(' ')[1];
-                //    }
-
-
-                //    excelCol = 29;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].workingDayPerYear;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].workingTimePerDay;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machinePower;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machinePowerEfficiency;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machinePowerCost;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].ratioOfMachineRepair;
-                //    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].ratioOfIndirectlyMachineryCost;
-
-                //    worksheet.Cells[row, excelCol++].Formula = $"=IF(X{row}=0,0,IF(AC{row}=0,0,IF(AD{row}=0,0,(W{row}/X{row}/AC{row}/AD{row}))))";
-                //    worksheet.Cells[row, excelCol++].Formula = $"=IF(AB{row}=0,0,IF(AC{row}=0,0,IF(AD{row}=0,0,(Y{row}*(Z{row}/100)*AA{row}/AB{row}/AC{row}/AD{row}))))";
-                //    worksheet.Cells[row, excelCol++].Formula = $"=AE{row}*(AF{row}/100)*AG{row}";
-                //    worksheet.Cells[row, excelCol++].Formula = $"=(AP{row}+AQ{row})*(AN{row}/100)";
-                //    worksheet.Cells[row, excelCol++].Formula = $"=SUM(AJ{row}:AM{row})";
-                //    worksheet.Cells[row, excelCol++].Formula = $"=AN{row}*(AI{row}/100)";
-                //    worksheet.Cells[row, excelCol++].Formula = $"=SUM(AN{row}:AO{row})";
-                //    //worksheet.Cells[row, excelCol++].Formula = "=";
-
-                //    //worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].amotizingCostOfMachine;
-                //    //worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].amotizingCostOfFactory;
-                //    //worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].amotizingCostOfPower;
-                //    //worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machineRepairCost;
-                //    //worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].directExpenseRatio;
-                //    //worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].redirectExpenseRatio;
-                //    //worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machineCostRate;
-                //}
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(ROUND(Y{row2}+AA{row2},0), \"\")";
+                }
             }
             catch (Exception e)
             {

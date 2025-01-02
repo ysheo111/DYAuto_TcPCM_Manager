@@ -61,7 +61,7 @@ namespace TcPCM_Connect_Global
             public string exchangeRateCurrency;
 
             public string author;
-            public DateTime dateOfCalculation;
+            public DateTime dateOfCalc;
         }
 
         public class Summary
@@ -123,11 +123,11 @@ namespace TcPCM_Connect_Global
             public string scrapQunantityUnit;//스크랩
             public string dross;//스크랩
             public double unitCost;
-            public double netWeight;
-            public double grossWeight;//Material Price 
+            public double? netWeight;
+            public double? grossWeight;//Material Price 
             public double quantity;//전체 수량
             public double scrap;//스크랩
-            public double etc;//기타비
+            public double trash;//기타비
             public double etcCost;//기타비
             public double total;
             public double totalQuantity;
@@ -172,25 +172,31 @@ namespace TcPCM_Connect_Global
             }
 
             public string partName;
-            public double id;
             public string itemNumber;
-            public string sequence;
-            public string manufacturingName;
+            public string category;
             public string machineName;
-            public double cavity;
-            public double workingTime;
             public double workers;
+            public double cycletime;
+            public double cavity;
             public double quantity;
+            public double utillization;
             public double grossWage;
-            public double laborCosts;
-            public double laborSetupCosts;
-            public double machineCostRate;
-            public double machineSetupCostRate;
-            public double machinaryCost;
-            public string remark;
-            public double machineId;
-            public double laborId;
-            public double total;
+            public double productionDay;
+            public double productionTime;
+            public double machineCost;
+            public double amotizingYearOfMachine;
+            public double machineArea;
+            public double rationForSupplementaryMachine1;
+            public double rationForSupplementaryMachine2;
+            public double rationForSupplementaryMachine3;
+            public double spaceCost;
+            public double machinePower;
+            public double machinePowerCost;
+            public double machinePowerEfficiency;
+            public double otherMachineCost;
+            public double otherYearOfMachine;
+            public double redirectExpenseRatio;
+            public double ratioOfMachineRepair;
 
             public double lotQty;
             public double oee;
@@ -200,26 +206,18 @@ namespace TcPCM_Connect_Global
             public double netCycleTime;
             public string netCycleTimeUnit;
             public double standardCycleTime;
-            public double machineCost;
-            public double amotizingYearOfMachine;
-            public double machineArea;
             public double rationForSupplementaryMachine;
             public double factoryBuildingCost;
             public double amotizingYearOfFactory;
             public double workingDayPerYear;
             public double workingTimePerShift;
             public double workingTimePerDay;
-            public double machinePower;
-            public double machinePowerEfficiency;
-            public double ratioOfMachineRepair;
             public double ratioOfIndirectlyMachineryCost;
             public double amotizingCostOfMachine;
             public double amotizingCostOfFactory;
             public double amotizingCostOfPower;
-            public double machinePowerCost;
             public double machineRepairCost;
             public double directExpenseRatio;
-            public double redirectExpenseRatio;
             public string techology;
             public double usage;
             public string manufacturer;
