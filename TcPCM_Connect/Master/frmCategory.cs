@@ -192,6 +192,13 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("UniqueId", "UniqueId");
                 dgv_Category.Columns["UniqueId"].Visible = false;
             }
+            else if (columnName == "지역")
+            {
+                dgv_Category.Columns.Add("지역", "지역");
+                dgv_Category.Columns.Add("Designation-US", "지역 영문명");
+                dgv_Category.Columns.Add("Designation", "Designation");
+                dgv_Category.Columns["Designation"].Visible = false;
+            }
             else
                 dgv_Category.Columns.Add(columnName, columnName);
 
@@ -238,7 +245,8 @@ namespace TcPCM_Connect
             
             if(dgv_Category.Columns.Contains("Designation") && dgv_Category.Columns[e.ColumnIndex].Name != "Designation")
             {
-                dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
+                if(dgv_Category.Columns[e.ColumnIndex].Name != "Designation-US")
+                    dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
             }
             else if(dgv_Category.Columns[e.ColumnIndex].Name == "UOM Code")
             {
@@ -279,7 +287,8 @@ namespace TcPCM_Connect
 
             //전체 검색
             if (columnName == "지역")
-                searchQeury = $"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+                searchQeury = $"SELECT UniqueKey,Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+                //searchQeury = $"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
             else if (columnName == "업종")
                 searchQeury = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
             else if (columnName == "단위")
@@ -294,11 +303,13 @@ namespace TcPCM_Connect
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
-                if (columnName == "지역" || columnName == "업종")
+                if (columnName == "지역")
                 {
-                    searchQeury = searchQeury + $" And UniqueKey LIKE N'%{inputString}%'";
+                    searchQeury = searchQeury + $" And Cast(Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
-                else if(columnName == "단위")
+                else if (columnName == "업종")
+                    searchQeury = searchQeury + $" And UniqueKey LIKE N'%{inputString}%'";
+                else if (columnName == "단위")
                 {
                     searchQeury = searchQeury + $" where CAST(DisplayName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
                                                 $" or Cast(FullName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
@@ -328,7 +339,7 @@ namespace TcPCM_Connect
         }
         public string NameSplit(string input)
         {
-            List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR", "ru-RU", "ja-JP", "pt-BR", "de-DE" };
+            List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR" , "ru-RU", "ja-JP", "pt-BR", "de-DE" };
             string delimiter = "</split>";
             string[] xmlFiles = input.Split(new string[] { delimiter }, StringSplitOptions.None);
 
@@ -347,14 +358,26 @@ namespace TcPCM_Connect
                                            return lang == null ? int.MaxValue : desiredLanguages.IndexOf(lang);
                                        })
                                        .ToDictionary(v => (string)v.Attribute("lang") ?? string.Empty, v => (string)v);
-
-                    foreach (var lang in desiredLanguages)
+                    string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+                    if(columnName == "지역")
                     {
-                        if (translations.ContainsKey(lang))
+                        if (translations.ContainsKey("en-US"))
+                            input = $"{translations["en-US"]}";
+                        else
+                            input = null;
+
+                        break;
+                    }
+                    else
+                    {
+                        foreach (var lang in desiredLanguages)
                         {
-                            if (i == xmlFiles.Length - 1)
-                                name = $"{translations[lang]}";
-                            break;
+                            if (translations.ContainsKey(lang))
+                            {
+                                if (i == xmlFiles.Length - 1)
+                                    name = $"{translations[lang]}";
+                                break;
+                            }
                         }
                     }
                 }
