@@ -69,6 +69,7 @@
     <Compile Include="Dashboard\CustomChart.cs" />
     <Compile Include="Dashboard\DGVColumns.cs" />
     <Compile Include="Dashboard\PartExport.cs" />
+    <Compile Include="Excel\BOMExcel.cs" />
     <Compile Include="Excel\frmMachineSelect.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,8 +83,7 @@
     <Compile Include="Excel\frmPartWorkSheetSelect.Designer.cs">
       <DependentUpon>frmPartWorkSheetSelect.cs</DependentUpon>
     </Compile>
-    <Compile Include="Excel\PartExcelExport.cs" />
-    <Compile Include="Excel\PartImport.cs" />
+    <Compile Include="Excel\PartExcel.cs" />
     <Compile Include="Global\Part.cs" />
     <Compile Include="Dashboard\ExportCBD.cs" />
     <Compile Include="Excel\ExcelCommon.cs" />

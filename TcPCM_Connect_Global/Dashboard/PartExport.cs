@@ -20,7 +20,7 @@ namespace TcPCM_Connect_Global
             if (partList.Count <= 0) return "부품이 존재하지 않습니다.";
             else if (partList.Count == 1 && partList.First().Value == new Part()) return $"{partList.First().Key }";
 
-            PartExcelExport export = new PartExcelExport();           
+            PartExcel export = new PartExcel();           
             string err = export.Export(lang, fileLocation, partList);
 
             return err;
