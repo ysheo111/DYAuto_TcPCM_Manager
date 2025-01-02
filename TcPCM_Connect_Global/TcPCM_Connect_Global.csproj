@@ -83,6 +83,7 @@
       <DependentUpon>frmPartWorkSheetSelect.cs</DependentUpon>
     </Compile>
     <Compile Include="Excel\PartExcelExport.cs" />
+    <Compile Include="Excel\PartImport.cs" />
     <Compile Include="Global\Part.cs" />
     <Compile Include="Dashboard\ExportCBD.cs" />
     <Compile Include="Excel\ExcelCommon.cs" />
