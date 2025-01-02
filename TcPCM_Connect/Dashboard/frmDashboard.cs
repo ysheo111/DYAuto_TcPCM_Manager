@@ -218,7 +218,7 @@ namespace TcPCM_Connect
 
         private void eXCEL올리기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExcelImport import = new ExcelImport();
+            PartImport import = new PartImport();
             Dictionary<string,string> id= GetTargetTypeID();
             string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]));
 

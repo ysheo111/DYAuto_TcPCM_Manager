@@ -179,6 +179,7 @@ namespace TcPCM_Connect_Global
                         material.substance = values[Report.Material.substance]?.ToString();
                         material.quantity = global.ConvertDouble(values[Report.Material.quantity]);
                         material.trash = global.ConvertDouble(values[Report.Material.trash]);
+                        material.transport = values[Report.Material.transport]?.ToString();
                         if (values[Report.LineType.method]?.ToString().Contains("rough") == true)
                         {
                             material.unitCost = global.ConvertDouble(values[Report.Material.rawMaterial]);
