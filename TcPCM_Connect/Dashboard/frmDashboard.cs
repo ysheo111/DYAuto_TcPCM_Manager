@@ -207,8 +207,8 @@ namespace TcPCM_Connect
                 return;
             }
 
-            PartBomExport bom = new PartBomExport();
-            string err= bom.ExportPartBom(selectItem);
+            PartExport bom = new PartExport();
+            string err= bom.ExportPartBom(selectItem, dialog.FileName, mode);
             if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -220,7 +220,6 @@ namespace TcPCM_Connect
         {
             ExcelImport import = new ExcelImport();
             Dictionary<string,string> id= GetTargetTypeID();
-
             string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]));
 
             if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -265,6 +264,11 @@ namespace TcPCM_Connect
             pairs.Add("TargetType", targetType);
 
             return pairs;
+        }
+
+        private void 업로드ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

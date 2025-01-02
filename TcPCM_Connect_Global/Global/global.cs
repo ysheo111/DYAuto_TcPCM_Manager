@@ -29,6 +29,13 @@ namespace TcPCM_Connect_Global
             return double.TryParse(string.Concat(obj?.ToString().Where(c => !char.IsWhiteSpace(c))) ,out double result) ? ValidDoubleCheck(result) : 0;
         }
 
+        public static string ZeroToNull(double? obj)
+        {
+            string test = obj?.ToString();
+            if (ConvertDouble( obj) == 0) test = "";
+            return test;
+        }
+
         public static string dgv_Category_DataError(DataGridView dgv, DataGridViewDataErrorEventArgs e)
         {
             dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "ZAR";

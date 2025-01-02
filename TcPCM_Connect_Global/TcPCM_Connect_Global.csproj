@@ -68,7 +68,7 @@
     <Compile Include="Dashboard\BomExport.cs" />
     <Compile Include="Dashboard\CustomChart.cs" />
     <Compile Include="Dashboard\DGVColumns.cs" />
-    <Compile Include="Dashboard\PartBomExport.cs" />
+    <Compile Include="Dashboard\PartExport.cs" />
     <Compile Include="Excel\frmMachineSelect.cs">
       <SubType>Form</SubType>
     </Compile>
