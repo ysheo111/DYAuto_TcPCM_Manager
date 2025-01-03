@@ -197,6 +197,7 @@ namespace TcPCM_Connect_Global
             public double otherYearOfMachine;
             public double redirectExpenseRatio;
             public double ratioOfMachineRepair;
+            public double price;
 
             public double lotQty;
             public double oee;

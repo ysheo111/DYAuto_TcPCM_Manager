@@ -25,6 +25,49 @@ namespace TcPCM_Connect_Global
     /// </summary>
     public class ExportCBD
     {
+        public List<string> AllRootCalcId(List<string> nodes)
+        {
+            var projects = nodes.Where(n => n.StartsWith("p")).Select(n => n.Substring(1)).ToList();
+            var folders = nodes.Where(n => n.StartsWith("f")).Select(n => n.Substring(1)).ToList();
+            var calculations = nodes.Where(n => !n.StartsWith("p") && !n.StartsWith("f")).ToList();
+
+            var query = $@"Select Id as name 
+                        from 
+                            (select PartId 
+                             from FolderEntries 
+                             where FolderId in ({(folders.Count == 0 ? "''" : string.Join(",", folders))})
+                             Union All
+                             select PartId 
+                             from ProjectPartEntries 
+                             where ProjectId in ({(projects.Count == 0 ? "''" : string.Join(",", projects))})) as a
+                        Left Join Calculations as b 
+                        on a.PartID = b.PartID 
+                        where Master = 1";
+
+            return global_DB.ListSelect(query, (int)global_DB.connDB.PCMDB).Concat(calculations).ToList();
+        }
+
+        public JObject LoadCalc(List<string> calcList, string config)
+        {
+            if (calcList?.Count <= 0) return null;
+
+            String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Export";
+
+            JObject postData = new JObject();
+            postData.Add("CalculationIds", JArray.FromObject(calcList));
+            postData.Add("ConfigurationGuid", global_iniLoad.GetConfig("CBD", config));
+            var apiResult = WebAPI.POST(callUrl, postData);
+
+            if (apiResult?.Length <= 0) return null;
+            JObject r = JObject.Parse(apiResult);
+            if (!r.ContainsKey("data"))
+            {
+                return null;
+            }
+
+            //var chartData = bomExport.SimpleDataSort(apiResult);
+            return r;
+        }
         /// <summary>
         /// 
         /// </summary>

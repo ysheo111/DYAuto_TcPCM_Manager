@@ -268,7 +268,34 @@ namespace TcPCM_Connect
 
         private void 업로드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            BOMExcel import = new BOMExcel();
+            Dictionary<string, string> id = GetTargetTypeID();
+            string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]));
 
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void eXCEL다운로드ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selectItem.Count == 0)
+            {
+                CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            }
+
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+            {
+                CustomMessageBox.RJMessageBox.Show($"폴더 오픈을 실패하였습니다", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            BOMExcel bom = new BOMExcel();
+            string err = bom.ExportPartBom(selectItem, dialog.FileName, mode);
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

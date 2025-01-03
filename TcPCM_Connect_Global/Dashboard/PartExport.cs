@@ -12,62 +12,19 @@ namespace TcPCM_Connect_Global
     {
         public string ExportPartBom(List<string> nodes, string fileLocation, Bom.ExportLang lang)
         {
-            List<string> calcList = AllRootCalcId(nodes);
-            JObject apiResult = LoadCalc(calcList);
+            ExportCBD export = new ExportCBD();
+            List<string> calcList = export.AllRootCalcId(nodes);
+            JObject apiResult = export.LoadCalc(calcList,"Export");
             if (apiResult == null) return "데이터 조회 시 오류가 발생하였습니다.";
 
             Dictionary<string, Part> partList = PartBomSorting(apiResult);
             if (partList.Count <= 0) return "부품이 존재하지 않습니다.";
             else if (partList.Count == 1 && partList.First().Value == new Part()) return $"{partList.First().Key }";
 
-            PartExcel export = new PartExcel();           
-            string err = export.Export(lang, fileLocation, partList);
+            PartExcel excel = new PartExcel();
+            string err = excel.Export(lang, fileLocation, partList);
 
             return err;
-        }
-
-        private List<string> AllRootCalcId(List<string> nodes)
-        {
-            var projects = nodes.Where(n => n.StartsWith("p")).Select(n => n.Substring(1)).ToList();
-            var folders = nodes.Where(n => n.StartsWith("f")).Select(n => n.Substring(1)).ToList();
-            var calculations = nodes.Where(n => !n.StartsWith("p") && !n.StartsWith("f")).ToList();
-
-            var query = $@"Select Id as name 
-                        from 
-                            (select PartId 
-                             from FolderEntries 
-                             where FolderId in ({(folders.Count==0? "''" : string.Join(",", folders))})
-                             Union All
-                             select PartId 
-                             from ProjectPartEntries 
-                             where ProjectId in ({(projects.Count == 0 ? "''" : string.Join(",", projects))})) as a
-                        Left Join Calculations as b 
-                        on a.PartID = b.PartID 
-                        where Master = 1";
-
-            return global_DB.ListSelect(query, (int)global_DB.connDB.PCMDB).Concat(calculations).ToList();
-        }
-
-        private JObject LoadCalc(List<string> calcList)
-        {
-            if (calcList?.Count <= 0) return null;
-
-            String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Export";
-
-            JObject postData = new JObject();
-            postData.Add("CalculationIds", JArray.FromObject(calcList));
-            postData.Add("ConfigurationGuid", global_iniLoad.GetConfig("CBD", "Export"));
-            var apiResult = WebAPI.POST(callUrl, postData);
-
-            if (apiResult?.Length <= 0) return null;
-            JObject r = JObject.Parse(apiResult);
-            if (!r.ContainsKey("data"))
-            {
-                return null;
-            }
-
-            //var chartData = bomExport.SimpleDataSort(apiResult);
-            return r;
         }
 
 
@@ -189,12 +146,18 @@ namespace TcPCM_Connect_Global
                         else material.netWeight = 0;
                         part.material.Add(material);
                     }
+                    else if (values[Report.LineType.lineType]?.ToString().Contains("Process manufacturing step") == true)
+                    {
+                        Part.Manufacturing manufacturing = new Part.Manufacturing();
+                        manufacturing.quantity = global.ConvertDouble( values["Quantity, direct input value (Manufacturing Step)"]);
+                        manufacturing.price = global.ConvertDouble(values["Price (Manufacturing Step)"]);
+                    }
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Detailed manufacturing step") == true)
                     {
                         Part.Manufacturing manufacturing = new Part.Manufacturing();
                         MemberInfo[] manufacturingMember = typeof(Report.Manufacturing).GetMembers(BindingFlags.Static | BindingFlags.Public);
                         SetMembers(manufacturingMember, values, typeof(Part.Manufacturing), manufacturing);
-                        manufacturing.quantity = global.ConvertDouble( values["Q'TY 공정[1]"]);
+                        manufacturing.quantity = global.ConvertDouble(values["Q'TY 공정[1]"]);
                         //manufacturing.manufacturingName = 
                         part.manufacturing.Add(manufacturing);
                     }
@@ -202,8 +165,8 @@ namespace TcPCM_Connect_Global
                     {
                         if (part.manufacturing[part.manufacturing.Count - 1].machineCost != 0)
                         {
-                            part.manufacturing[part.manufacturing.Count - 1].otherMachineCost = global.ConvertDouble( values[Report.Manufacturing.machineCost]);
-                            part.manufacturing[part.manufacturing.Count - 1].otherYearOfMachine = global.ConvertDouble(values[Report.Manufacturing.amotizingYearOfMachine+ "[Year(s)]"]);
+                            part.manufacturing[part.manufacturing.Count - 1].otherMachineCost = global.ConvertDouble(values[Report.Manufacturing.machineCost]);
+                            part.manufacturing[part.manufacturing.Count - 1].otherYearOfMachine = global.ConvertDouble(values[Report.Manufacturing.amotizingYearOfMachine + "[Year(s)]"]);
                         }
                         else
                         {
@@ -211,7 +174,7 @@ namespace TcPCM_Connect_Global
                             SetMembers(manufacturingMember, values, typeof(Part.Manufacturing), part.manufacturing[part.manufacturing.Count - 1]);
                         }
                     }
-                    else if( values[Report.LineType.lineType]?.ToString().Contains("Labor") == true)
+                    else if (values[Report.LineType.lineType]?.ToString().Contains("Labor") == true)
                     {
                         MemberInfo[] manufacturingMember = typeof(Report.Manufacturing).GetMembers(BindingFlags.Static | BindingFlags.Public);
                         SetMembers(manufacturingMember, values, typeof(Part.Manufacturing), part.manufacturing[part.manufacturing.Count - 1]);
