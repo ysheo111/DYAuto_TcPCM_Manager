@@ -36,9 +36,10 @@ namespace TcPCM_Connect_Global
             // btn_OK
             // 
             this.btn_OK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_OK.Location = new System.Drawing.Point(230, 315);
+            this.btn_OK.Location = new System.Drawing.Point(201, 252);
+            this.btn_OK.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btn_OK.Name = "btn_OK";
-            this.btn_OK.Size = new System.Drawing.Size(75, 23);
+            this.btn_OK.Size = new System.Drawing.Size(66, 18);
             this.btn_OK.TabIndex = 0;
             this.btn_OK.Text = "확인";
             this.btn_OK.UseVisualStyleBackColor = true;
@@ -47,9 +48,10 @@ namespace TcPCM_Connect_Global
             // btn_Cancel
             // 
             this.btn_Cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Cancel.Location = new System.Drawing.Point(311, 315);
+            this.btn_Cancel.Location = new System.Drawing.Point(272, 252);
+            this.btn_Cancel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btn_Cancel.Name = "btn_Cancel";
-            this.btn_Cancel.Size = new System.Drawing.Size(75, 23);
+            this.btn_Cancel.Size = new System.Drawing.Size(66, 18);
             this.btn_Cancel.TabIndex = 1;
             this.btn_Cancel.Text = "취소";
             this.btn_Cancel.UseVisualStyleBackColor = true;
@@ -57,11 +59,12 @@ namespace TcPCM_Connect_Global
             // 
             // frmMachineSelect
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(398, 350);
+            this.ClientSize = new System.Drawing.Size(348, 280);
             this.Controls.Add(this.btn_Cancel);
             this.Controls.Add(this.btn_OK);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "frmMachineSelect";
             this.Text = "기계 선택";
             this.ResumeLayout(false);

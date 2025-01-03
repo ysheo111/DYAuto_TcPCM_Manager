@@ -20,7 +20,7 @@ namespace TcPCM_Connect_Global
         {
             Microsoft.Office.Interop.Excel.Application application = null;
             Excel.Workbook workBook = null;
-
+            string err = "";
             try
             {
                 foreach (KeyValuePair<string, Part> part in parts)
@@ -32,7 +32,9 @@ namespace TcPCM_Connect_Global
                     application.Visible = true;
                     //파일로부터 불러오기                
                     workBook = application.Workbooks.Open($@"{fileLocation}\부품원가계산서_{part.Value.header.partName}.xlsx");
-                    CBDMatching(lang, workBook, part.Value);
+
+                    string e = CBDMatching(lang, workBook, part.Value);
+                    if (e != null) err += e;
                 }
             }
             catch (Exception exc)
@@ -56,10 +58,10 @@ namespace TcPCM_Connect_Global
                 }
             }
 
-            return null;
+            return err.Length > 0 ? err : null;
         }
 
-        public void CBDMatching(Bom.ExportLang lang, Excel.Workbook workbook, Part part)
+        public string CBDMatching(Bom.ExportLang lang, Excel.Workbook workbook, Part part)
         {
             try
             {
@@ -153,6 +155,14 @@ namespace TcPCM_Connect_Global
                     category = part.manufacturing[i].category != null ? part.manufacturing[i].category?.Split('-')[0].Replace(" ", "").Replace("[DYA]", "") : "";
                     worksheet.Cells[row, excelCol++].Value = category;
                     worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machineName?.Replace("[DYA]", "");
+
+                    if (part.manufacturing[i].price != 0)
+                    {
+                        worksheet.Cells[row, 16].Value = global.ZeroToNull(part.manufacturing[i].price);
+                        worksheet.Cells[row, 11].Value = global.ZeroToNull(part.manufacturing[i].quantity);
+                        continue;
+                    }
+
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].workers);
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].cycletime);
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].cavity);
@@ -211,8 +221,9 @@ namespace TcPCM_Connect_Global
             }
             catch (Exception e)
             {
-                MessageBox.Show($"{e.Message}\n{e.StackTrace}");
+                 return $"{e.Message}";
             }
+            return null;
         }
 
 
@@ -630,6 +641,7 @@ namespace TcPCM_Connect_Global
                         }
 
                     }
+
                     double rationForSupplementaryMachine = global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine3]) != 0 ?
                         global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine1])
                     * global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine2])
@@ -643,6 +655,7 @@ namespace TcPCM_Connect_Global
                     manufacturings.Add(manufacturing);
                     manufacturings.Add(labor);
                     manufacturings.Add(machine);
+
                     if (global.ConvertDouble(otherMachine[Report.Manufacturing.otherMachineCost]) != 0)
                     {
                         otherMachine.Add(Report.Manufacturing.sequence, j * 10);

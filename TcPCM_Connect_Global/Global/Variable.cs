@@ -243,6 +243,7 @@ namespace TcPCM_Connect_Global
             public static string trash = "폐기물처리비";
 
             public static string materials = "Materials";
+            public static string harmful = "유해물질";
 
             public static string qunantityUnit = "Quantity unit (Blanks / assembly part)";//Material Price 
             public static string scrapQunantityUnit = "Quantity unit (Scrap)";//스크랩
