@@ -348,8 +348,16 @@ namespace TcPCM_Connect_Global
                     {
                         if (xlRng[firstRow, col] == null) continue;
                         if (firstCol == 0) firstCol = col;
-
-                        keys[col] = xlRng[firstRow, col]?.ToString();
+                        
+                        string key = xlRng[firstRow, col]?.ToString();
+                        if(worksheetName == "재료관리비")
+                        {
+                            if (key.Contains("재료") && key.Contains("Loss") && key.Contains("율"))
+                                key = "재료 관리비율";
+                            if (key.Contains("나라"))
+                                key = "지역";
+                        }
+                        keys[col] = key;
                     }
 
                     if (!keys.All(x => x == null)) break;
@@ -381,7 +389,7 @@ namespace TcPCM_Connect_Global
                                 flag = true;
 
                                 dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue;
-                                if (new List<string>() { "지역", "공정", "업종", "설비명", "설비구분", "통화", "Valid From", "구분자", "재료명", "메이커", "구분", "비중", "비중 단위", "가격 단위", "스크랩 비용 단위", "이름", "ISO", "UOM Code", "UOM 명" }.Contains(col.Name)) continue;
+                                if (new List<string>() { "지역", "공정", "업종", "설비명", "설비구분", "통화", "Valid From", "구분자", "재료명", "메이커", "구분", "비중", "비중 단위", "가격 단위", "스크랩 비용 단위", "이름", "ISO", "UOM Code", "UOM 명", "Plant" }.Contains(col.Name)) continue;
 
                                 if ((((col.Name.Contains("율") || col.Name.Contains("률")) && !col.Name.Contains("임률") && !col.Name.Contains("환율"))) && !col.Name.Contains("수선비율"))
                                 {

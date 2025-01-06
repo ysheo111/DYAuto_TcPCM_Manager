@@ -269,7 +269,7 @@ namespace TcPCM_Connect_Global
 
         public string Import(string className, string targetType, string targetId)
         {
-            String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/MasterData/Import";
+            String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Import";
             string err = null;
 
             JObject postData = new JObject

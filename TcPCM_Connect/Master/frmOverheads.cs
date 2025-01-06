@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using TcPCM_Connect_Global;
 
 namespace TcPCM_Connect
@@ -36,13 +37,28 @@ namespace TcPCM_Connect
         {
             ExcelImport excel = new ExcelImport();            
             string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "재료관리비" : cb_Classification.SelectedItem.ToString(),dgv_Overheads);
-           
+
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else
+                ImportMethod();
+        }
+        private void btn_ExcelCreate_Click(object sender, EventArgs e)
+        {
+            ExcelExport excel = new ExcelExport();
+            string columnName = cb_Classification.SelectedItem == null ? "재료관리비" : cb_Classification.SelectedItem.ToString();
+            string err = excel.ExportLocationGrid(dgv_Overheads, columnName);
 
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"Export 실패하였습니다\n{err}", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("Export 완료 되었습니다.", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btn_Save_Click(object sender, EventArgs e)
+        {
+            ImportMethod();
+        }
+
+        private void ImportMethod()
         {
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
@@ -87,10 +103,12 @@ namespace TcPCM_Connect
             if (columnName == "재료관리비")
             {
                 ValidFromAdd("Valid From");
-                dgv_Overheads.Columns.Add("지역", "지역");                
+                dgv_Overheads.Columns.Add("지역", "지역");
+                dgv_Overheads.Columns.Add("Plant", "Plant");
                 dgv_Overheads.Columns.Add("업종", "업종");
                 dgv_Overheads.Columns.Add("재료 관리비율", "재료 관리비율");
-                dgv_Overheads.Columns["재료 관리비율"].Tag = "Siemens.TCPCM.CostType.Materialoverheadcosts";
+                dgv_Overheads.Columns["재료 관리비율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC";
+                //"Siemens.TCPCM.CostType.Materialoverheadcosts";
                 //dgv_Overheads.Columns.Add("외주 재료 관리비율", "외주 재료 관리비율");
                 //dgv_Overheads.Columns["외주 재료 관리비율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC";
             }
@@ -144,12 +162,70 @@ namespace TcPCM_Connect
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
+            if (dgv_Overheads.Columns[e.ColumnIndex].Name == "재료 관리비율" && !dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().Contains("%"))
+            {
+                string percent = $"{dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}%";
+                dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = percent;
+            }
+
             global.MasterDataValiding((DataGridView)sender, e);
         }
 
         private void dgv_Overheads_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             CustomMessageBox.RJMessageBox.Show(global.dgv_Category_DataError((DataGridView)sender, e), "DataError", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void searchButton1_SearchButtonClick(object sender, EventArgs e)
+        {
+            dgv_Overheads.Rows.Clear();
+
+            string columnName = cb_Classification.SelectedItem == null ? "재료관리비" : cb_Classification.SelectedItem.ToString();
+            string inputString = "", searchQeury = "";
+            inputString = searchButton1.text;
+
+            //전체 검색
+            searchQeury = $@"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, BDSegments.UniqueKey, Value
+                            as name FROM MDOverheadDetails
+                            LEFT join BDRegions ON RegionId = BDRegions.Id
+                            LEFT join BDSegments ON SegmentId = BDSegments.Id
+                            LEFT join BDPlants ON MDOverheadDetails.PlantId = BDPlants.Id
+                            where OverheadHeaderID
+                            IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%재료 관리비%')
+                            And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
+
+            //입력값 검색
+            if (!string.IsNullOrEmpty(inputString))
+            {
+                searchQeury = searchQeury + $@" AND( CAST(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                                OR CAST(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                                OR CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
+            }
+
+            DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+            if (dataTable == null) return;
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                dgv_Overheads.Rows.Add();
+                int i = 0;
+                foreach (DataColumn col in dataTable.Columns)
+                {
+                    string result = row[col].ToString();
+                    if(columnName == "재료관리비" && double.TryParse(result, out double parseResult) && parseResult < 1)
+                    {
+                        result = $"{(parseResult * 100).ToString()}%";
+                    }
+                    int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
+                    dgv_Overheads.Rows[dgv_Overheads.Rows.Count - 2].Cells[count].Value = result;
+                }
+            }
+        }
+
+        private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
+        {
+            Select select = new Select();
+            select.ShowDialog();
         }
     }
 }
