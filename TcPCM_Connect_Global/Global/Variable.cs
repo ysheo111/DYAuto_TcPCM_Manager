@@ -85,7 +85,7 @@ namespace TcPCM_Connect_Global
             {(22, 6),  Report.Material.transport },
             {(22, 7),  Report.Material.substance },
 
-            {(22, 8),  Report.Material.thinckness },
+            {(22, 8),  Report.Material.thickness },
             {(22, 9),  Report.Material.length },
             {(22, 10), Report.Material.width },
             {(22, 11), Report.Material.netWeight },
@@ -230,7 +230,7 @@ namespace TcPCM_Connect_Global
             public static string transport = "공급기준";
             public static string substance = "재질";
 
-            public static string thinckness = "두께";
+            public static string thickness = "두께";
             public static string length = "가로";
             public static string width = "세로";
             public static string netWeight = "Net중량";
