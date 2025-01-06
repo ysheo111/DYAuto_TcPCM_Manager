@@ -203,16 +203,17 @@ namespace TcPCM_Connect_Global
                     if (values[Report.LineType.view]?.ToString().Contains("Buyer view") == true) continue;
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Raw material") == true) continue;
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Part") != true) continue;
+                    else if (global.ConvertDouble(values[Report.LineType.level]) <= 1) continue;
 
                     row++;
                     worksheet.get_Range($"K{row}", $"K{row}").Select();
-                    int level = ((int)(global.ConvertDouble(values[Report.LineType.level]) / 2)) + 1;
+                    int level = ((int)(global.ConvertDouble(values[Report.LineType.level]) / 2));                    
                     worksheet.Cells[row, level].Value = level;
 
                     // Get the range of the filled cells
                     Excel.Range usedRange = worksheet.Range[
                         worksheet.Cells[row, 11],
-                        worksheet.Cells[row,20]
+                        worksheet.Cells[row,21]
                     ];
 
                     // Add borders to all cells in the used range

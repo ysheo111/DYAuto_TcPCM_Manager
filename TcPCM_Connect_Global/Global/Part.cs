@@ -123,6 +123,9 @@ namespace TcPCM_Connect_Global
             public string scrapQunantityUnit;//스크랩
             public string dross;//스크랩
             public double unitCost;
+            public double length;
+            public double width;
+            public double thickness;
             public double? netWeight;
             public double? grossWeight;//Material Price 
             public double quantity;//전체 수량

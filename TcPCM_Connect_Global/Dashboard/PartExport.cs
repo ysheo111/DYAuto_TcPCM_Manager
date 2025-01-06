@@ -75,6 +75,7 @@ namespace TcPCM_Connect_Global
                     else if (values.ContainsKey(key + "[/h]")) additional = "[/h]";
                     else if (values.ContainsKey(key + "[m²]")) additional = "[m²]";
                     else if (values.ContainsKey(key + "[Year(s)]")) additional = "[Year(s)]";
+                    else if (values.ContainsKey(key + "[mm]")) additional = "[mm]";
                     else if (values.ContainsKey(key + "[/Year(s)]")) additional = "[/Year(s)]";
                     else if (values.ContainsKey(key + "[/(m²*year)]")) additional = "[/(m²*year)]";
                     else if (values.ContainsKey(key + "[h]")) additional = "[h]";
@@ -131,12 +132,18 @@ namespace TcPCM_Connect_Global
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Part") == true)
                     {
                         Part.Material material = new Part.Material();
-                        material.name = values[Report.Material.name]?.ToString();
-                        material.itemNumber = values[Report.Material.itemNumber]?.ToString();
-                        material.substance = values[Report.Material.substance]?.ToString();
-                        material.quantity = global.ConvertDouble(values[Report.Material.quantity]);
-                        material.trash = global.ConvertDouble(values[Report.Material.trash]);
-                        material.transport = values[Report.Material.transport]?.ToString();
+                        //material.name = values[Report.Material.name]?.ToString();
+                        //material.itemNumber = values[Report.Material.itemNumber]?.ToString();
+                        //material.substance = values[Report.Material.substance]?.ToString();
+                        //material.quantity = global.ConvertDouble(values[Report.Material.quantity]);
+                        //material.trash = global.ConvertDouble(values[Report.Material.trash]);
+                        //material.transport = values[Report.Material.transport]?.ToString();
+                        //material.width = global.ConvertDouble(values[Report.Material.width]);
+                        //material.length = global.ConvertDouble(values[Report.Material.length]);
+                        //material.thickness = global.ConvertDouble(values[Report.Material.thickness]);
+
+                        MemberInfo[] memberInfos = typeof(Report.Material).GetMembers(BindingFlags.Static | BindingFlags.Public);
+                        SetMembers(memberInfos, values, typeof(Part.Material), material);
                         if (values[Report.LineType.method]?.ToString().Contains("rough") == true)
                         {
                             material.unitCost = global.ConvertDouble(values[Report.Material.rawMaterial]);

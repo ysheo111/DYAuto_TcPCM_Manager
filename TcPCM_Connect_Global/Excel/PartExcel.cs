@@ -123,11 +123,11 @@ namespace TcPCM_Connect_Global
                     worksheet.Cells[row, excelCol++].Value = part.material[i].name?.Replace("[DYA]", "");
                     excelCol++;
                     worksheet.Cells[row, excelCol++].Value = part.material[i].itemNumber?.Replace("[DYA]", "");
-                    worksheet.Cells[row, excelCol++].Value = "";//공급기준
+                    worksheet.Cells[row, excelCol++].Value = part.material[i].transport;//공급기준
                     worksheet.Cells[row, excelCol++].Value = part.material[i].substance?.Replace("[DYA]", "");
-                    worksheet.Cells[row, excelCol++].Value = "";//두께
-                    worksheet.Cells[row, excelCol++].Value = "";//가로
-                    worksheet.Cells[row, excelCol++].Value = "";//세로
+                    worksheet.Cells[row, excelCol++].Value = part.material[i].thickness;//두께
+                    worksheet.Cells[row, excelCol++].Value = part.material[i].width;//가로
+                    worksheet.Cells[row, excelCol++].Value = part.material[i].length;//세로
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].netWeight);
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].grossWeight);
                     worksheet.Cells[row, excelCol++].Value = part.material[i].qunantityUnit;
