@@ -65,7 +65,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dashboard\BomExport.cs" />
     <Compile Include="Dashboard\CustomChart.cs" />
     <Compile Include="Dashboard\DGVColumns.cs" />
     <Compile Include="Dashboard\PartExport.cs" />
@@ -85,7 +84,7 @@
     </Compile>
     <Compile Include="Excel\PartExcel.cs" />
     <Compile Include="Global\Part.cs" />
-    <Compile Include="Dashboard\ExportCBD.cs" />
+    <Compile Include="Dashboard\Interface.cs" />
     <Compile Include="Excel\ExcelCommon.cs" />
     <Compile Include="Excel\ExcelExport.cs" />
     <Compile Include="Excel\ExcelImport.cs" />

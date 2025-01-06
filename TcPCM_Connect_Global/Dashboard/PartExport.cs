@@ -12,7 +12,7 @@ namespace TcPCM_Connect_Global
     {
         public string ExportPartBom(List<string> nodes, string fileLocation, Bom.ExportLang lang)
         {
-            ExportCBD export = new ExportCBD();
+            Interface export = new Interface();
             List<string> calcList = export.AllRootCalcId(nodes);
             JObject apiResult = export.LoadCalc(calcList,"Export");
             if (apiResult == null) return "데이터 조회 시 오류가 발생하였습니다.";

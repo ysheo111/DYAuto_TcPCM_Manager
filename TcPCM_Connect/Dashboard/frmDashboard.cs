@@ -17,7 +17,7 @@ namespace TcPCM_Connect
     public partial class frmDashboard : Form
     {
         public string privateFolder;
-        ExportCBD export = new ExportCBD();
+        Interface export = new Interface();
         Dictionary<string, Dictionary<string, Part>> partData;
         Bom.ExportLang mode = Bom.ExportLang.Kor;
 
@@ -63,7 +63,7 @@ namespace TcPCM_Connect
             string query = $@"select CONCAT('f&',Id, '&',STRING_AGG(CONCAT(m.c.value('@lang', 'varchar(max)'), ':', m.c.value('.', 'nvarchar(max)')), '|'))  as name
             from Folders
             OUTER APPLY Folders.Name_LOC.nodes('/translations/value') as m(c)
-            where m.c.value('.', 'nvarchar(max)')  like '%Private folder%' or m.c.value('.', 'nvarchar(max)')  like '%Public folder%'
+            where m.c.value('.', 'nvarchar(max)')  like '%Private folder%' or m.c.value('.', 'nvarchar(max)')  like '%Public folder%' or m.c.value('.', 'nvarchar(max)')  like '%Knowledge domain%'
             GROUP BY Id";
             List<string> init = global_DB.ListSelect(query, (int)global_DB.connDB.PCMDB);
             export.ExploreNodeAdd(tv_Bom.Nodes, init);
