@@ -164,6 +164,7 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("지역", "지역");
                 CurrencyAdd("통화");
                 dgv_Category.Columns.Add("전력단가", "전력단가");
+                //dgv_Category.Columns.Add("탄소배출량", "탄소배출량");
             }
             else if (columnName == "임률")
             {
@@ -294,12 +295,13 @@ namespace TcPCM_Connect
             else if (columnName == "단위")
                 searchQeury = $"SELECT DisplayName_LOC,FullName_LOC as name FROM Units";
             else if (columnName == "전력단가")
-                searchQeury = $"SELECT DateValidFrom,BDRegions.Name_LOC,Currencies.IsoCode,Value" +
-                                $" FROM MDCostFactorDetails" +
-                                $" JOIN BDRegions ON RegionId = BDRegions.Id JOIN Currencies" +
-                                $" ON CurrencyId = Currencies.Id" +
-                                $" WHERE CostFactorHeaderId in (" +
-                                $" select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ElectricityPrice')";
+                searchQeury = $@"SELECT DateValidFrom,BDRegions.UniqueKey,Currencies.IsoCode,Value
+                                 as name FROM MDCostFactorDetails
+                                 JOIN BDRegions ON RegionId = BDRegions.Id
+                                 JOIN Currencies ON CurrencyId = Currencies.Id
+                                 WHERE CostFactorHeaderId in (
+                                 select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ElectricityPrice')
+                                 And Cast(BDRegions.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
@@ -330,6 +332,12 @@ namespace TcPCM_Connect
                 {
                     string result = row[col].ToString();
                     result = NameSplit(result);
+                    if (columnName == "전력단가" && double.TryParse(result, out double numResult))
+                    {
+                        result = (double.Parse(result) * 3600 * 1000).ToString();
+                        //int dotIndex = result.IndexOf('.');
+                        //result = result.Substring(0, dotIndex + 3);
+                    }
                     int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
                     dgv_Category.Rows[dgv_Category.Rows.Count-2].Cells[count].Value = result;
                 }
