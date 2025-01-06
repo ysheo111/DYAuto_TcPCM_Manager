@@ -1,6 +1,6 @@
 ﻿namespace TcPCM_Connect
 {
-    partial class Select
+    partial class frmDetailSearch
     {
         /// <summary>
         /// Required designer variable.
@@ -169,7 +169,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 24);
+            this.label1.Location = new System.Drawing.Point(23, 24);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(53, 12);
             this.label1.TabIndex = 0;
@@ -219,7 +219,7 @@
             this.btn_Create.UseVisualStyleBackColor = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
             // 
-            // Select
+            // frmDetailSearch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -228,7 +228,7 @@
             this.Controls.Add(this.panelBody);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.Name = "Select";
+            this.Name = "frmDetailSearch";
             this.Text = "ConfigSetting";
             this.Load += new System.EventHandler(this.ConfigSetting_Load);
             this.panelTitleBar.ResumeLayout(false);

@@ -23,7 +23,7 @@ namespace TcPCM_Connect_Global
     /// <summary>
     /// 
     /// </summary>
-    public class ExportCBD
+    public class Interface
     {
         public List<string> AllRootCalcId(List<string> nodes)
         {

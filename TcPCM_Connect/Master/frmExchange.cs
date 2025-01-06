@@ -110,7 +110,7 @@ namespace TcPCM_Connect
 
         private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
         {
-            Select select = new Select();
+            frmDetailSearch select = new Select();
             select.ShowDialog();
         }
 
