@@ -105,6 +105,12 @@ namespace TcPCM_Connect
                         }
                     }
                 }
+                else if(columnName == "전력단가")
+                {
+                    err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
+                    if (err == null)
+                        err = costFactor.Import("Category", "탄소배출량", dgv_Category);
+                }
                 else
                     err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
 
@@ -163,8 +169,9 @@ namespace TcPCM_Connect
                 ValidFromAdd("Valid From");
                 dgv_Category.Columns.Add("지역", "지역");
                 CurrencyAdd("통화");
+                dgv_Category.Columns.Add("Plant", "Plant");
                 dgv_Category.Columns.Add("전력단가", "전력단가");
-                //dgv_Category.Columns.Add("탄소배출량", "탄소배출량");
+                dgv_Category.Columns.Add("탄소배출량", "탄소배출량");
             }
             else if (columnName == "임률")
             {
@@ -283,25 +290,55 @@ namespace TcPCM_Connect
             dgv_Category.Rows.Clear();
 
             string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
-            string inputString = "", searchQeury = "";
+            string inputString = "", searchQeury = "", Aselect = "", Bselect = "", FullJoin = "";
             inputString = searchButton1.text;
 
             //전체 검색
             if (columnName == "지역")
                 searchQeury = $"SELECT UniqueKey,Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
-                //searchQeury = $"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+            //searchQeury = $"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
             else if (columnName == "업종")
                 searchQeury = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
             else if (columnName == "단위")
                 searchQeury = $"SELECT DisplayName_LOC,FullName_LOC as name FROM Units";
             else if (columnName == "전력단가")
-                searchQeury = $@"SELECT DateValidFrom,BDRegions.UniqueKey,Currencies.IsoCode,Value
-                                 as name FROM MDCostFactorDetails
-                                 JOIN BDRegions ON RegionId = BDRegions.Id
-                                 JOIN Currencies ON CurrencyId = Currencies.Id
-                                 WHERE CostFactorHeaderId in (
-                                 select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ElectricityPrice')
-                                 And Cast(BDRegions.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
+            {
+                Aselect = $@"With A AS(
+	                        SELECT DateValidFrom,BDRegions.UniqueKey As region,Currencies.IsoCode,BDPlants.UniqueKey As plant,Value * 3600 * 1000 as value
+                            from MDCostFactorDetails
+	                        JOIN BDRegions ON RegionId = BDRegions.Id
+	                        LEFT JOIN Currencies ON CurrencyId = Currencies.Id
+	                        LEFT JOIN BDPlants ON PlantId = BDPlants.Id
+	                        where CostFactorHeaderId in (
+		                        select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ElectricityPrice' )
+	                        And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
+                Bselect = $@"), B As(
+	                        select DateValidFrom,BDRegions.UniqueKey As region,BDPlants.UniqueKey As plant,ComplexUnitValue*3600*1000 As value
+                            from MDCostFactorDetails
+	                        LEFT join BDRegions ON RegionId = BDRegions.Id
+	                        LEFT JOIN BDPlants ON PlantId = BDPlants.Id
+	                        where CostFactorHeaderId in(
+		                        select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Carbon.RateForEnergy.Electricity' )
+	                        And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
+                FullJoin = $@") SELECT COALESCE(A.DateValidFrom, B.DateValidFrom) As 'Valid From',
+	                                    COALESCE(A.region, B.region) As '지역',
+	                                    IsoCode As '통화',
+	                                    COALESCE(A.plant, B.plant) As 'Plant',
+	                                    A.Value As '전력단가',
+	                                    B.Value As '탄소배출량'
+                                    From A
+                                    Full Outer Join B ON A.DateValidFrom = B.DateValidFrom And A.region = B.region";
+                searchQeury = Aselect + Bselect + FullJoin;
+            }
+
+                //searchQeury = $@"SELECT DateValidFrom,BDRegions.UniqueKey,Currencies.IsoCode,Value
+                //                 as name FROM MDCostFactorDetails
+                //                 JOIN BDRegions ON RegionId = BDRegions.Id
+                //                 JOIN Currencies ON CurrencyId = Currencies.Id
+                //                 WHERE CostFactorHeaderId in (
+                //                 select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ElectricityPrice')
+                //                 And Cast(BDRegions.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
+
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
@@ -318,7 +355,8 @@ namespace TcPCM_Connect
                 }
                 else if (columnName == "전력단가")
                 {
-                    searchQeury = searchQeury + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                    searchQeury = Aselect + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'"
+                                + Bselect + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" + FullJoin;
                 }
             }
             DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
@@ -332,12 +370,12 @@ namespace TcPCM_Connect
                 {
                     string result = row[col].ToString();
                     result = NameSplit(result);
-                    if (columnName == "전력단가" && double.TryParse(result, out double numResult))
-                    {
-                        result = (double.Parse(result) * 3600 * 1000).ToString();
-                        //int dotIndex = result.IndexOf('.');
-                        //result = result.Substring(0, dotIndex + 3);
-                    }
+                    //if (columnName == "전력단가" && double.TryParse(result, out double numResult))
+                    //{
+                    //    result = (double.Parse(result) * 3600 * 1000).ToString();
+                    //    //int dotIndex = result.IndexOf('.');
+                    //    //result = result.Substring(0, dotIndex + 3);
+                    //}
                     int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
                     dgv_Category.Rows[dgv_Category.Rows.Count-2].Cells[count].Value = result;
                 }
