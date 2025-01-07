@@ -237,14 +237,14 @@ namespace TcPCM_Connect
             string err = library.ExcelOpen();
 
             if (err != null)
-                CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "공정 라이브러리", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else
             {
                 err = library.Import("CBD", id["TargetType"], id["ID"]);
                 if (err != null)
-                    CustomMessageBox.RJMessageBox.Show($"저장에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    CustomMessageBox.RJMessageBox.Show($"저장에 실패하였습니다\nError : {err}", "공정 라이브러리", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 else
-                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "공정 라이브러리", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             LoadingScreen.CloseSplashScreen();
         }

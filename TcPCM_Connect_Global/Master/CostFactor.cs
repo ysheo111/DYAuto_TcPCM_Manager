@@ -32,7 +32,7 @@ namespace TcPCM_Connect_Global
                 {
                     if (row.Cells[col.Name].Value != null && !col.Name.ToLower().Contains("valid")) nullCheck = true;
 
-                    if (name == "Plant")// && col.Name.Contains("지역"))
+                    if (name == "Plant")
                     {
                         item.Add("지역", row.Cells["지역"].Value?.ToString());
                         item.Add("Designation", row.Cells["Designation"].Value?.ToString());
