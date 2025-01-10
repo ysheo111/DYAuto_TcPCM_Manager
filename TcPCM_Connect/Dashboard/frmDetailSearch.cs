@@ -15,7 +15,9 @@ namespace TcPCM_Connect
 {
     public partial class frmDetailSearch : Form
     {
-        public string className = "";
+        public string ReturnValue1 { get; set; }
+        public string ReturnValue2 { get; set; }
+        public string ReturnValue3 { get; set; }
         public frmDetailSearch()
         {
             InitializeComponent();
@@ -27,9 +29,24 @@ namespace TcPCM_Connect
 
         private void btn_Create_Click(object sender, EventArgs e)
         {
-            //string query = "";
+            string partCaseQuery="", folderCaseQuery = "", projectCaseQuery = "";
 
-            //foreach (DataGridViewRow row in dgv_Config.Rows)
+            if(cb_date.Checked)
+            {
+                folderCaseQuery += $"ModificationDate between '{dt_start.Value.ToString("YYYY-MM-DD hh:mm:ss")}' and '{dt_end.Value.ToString("YYYY-MM-DD hh:mm:ss")}'";
+                projectCaseQuery = folderCaseQuery+ $" or CreationDate between '{dt_start.Value.ToString("YYYY-MM-DD hh:mm:ss")}' and '{dt_end.Value.ToString("YYYY-MM-DD hh:mm:ss")}'";
+                partCaseQuery = projectCaseQuery+ $" or CalculationTime between '{dt_start.Value.ToString("YYYY-MM-DD hh:mm:ss")}' and '{dt_end.Value.ToString("YYYY-MM-DD hh:mm:ss")}'";
+            }
+
+            if(cb_manufacturing.Checked)
+            {
+                partCaseQuery += $" {(partCaseQuery.Length > 0 ? " and " : "")} id in (select calculationid from ManufacturingSteps cast(Name_LOC as nvarchar(MAX)) Like '%{tb_manufacturing.Texts}%')";
+            }
+
+            ReturnValue1 = folderCaseQuery;
+            ReturnValue2 = projectCaseQuery;
+            ReturnValue3 = partCaseQuery;
+            //foreach (projectCaseQuery row in dgv_Config.Rows)
             //{
             //    if (row.Cells["Name"].Value == null || row.Cells["GUID"].Value==null) continue;
             //    query += $@"Update Configuration 
@@ -77,28 +94,28 @@ namespace TcPCM_Connect
 
         private void combo_date_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            rjDatePicker2.Value = DateTime.Now;
+            dt_end.Value = DateTime.Now;
             string DateType = combo_date.SelectedItem.ToString();
             switch (DateType)
             {
                 case "오늘":
-                    rjDatePicker1.Value = DateTime.Now;
+                    dt_start.Value = DateTime.Now;
                     break;
                 case "당월":
-                    rjDatePicker1.Value = DateTime.Now.AddDays(1 - DateTime.Now.Day);
-                    rjDatePicker2.Value = DateTime.Now.AddMonths(1).AddDays(-DateTime.Now.Day);
+                    dt_start.Value = DateTime.Now.AddDays(1 - DateTime.Now.Day);
+                    dt_end.Value = DateTime.Now.AddMonths(1).AddDays(-DateTime.Now.Day);
                     break;
                 case "전월":
-                    rjDatePicker1.Value = DateTime.Now.AddMonths(-1);
+                    dt_start.Value = DateTime.Now.AddMonths(-1);
                     break;
                 case "3개월":
-                    rjDatePicker1.Value = DateTime.Now.AddMonths(-3);
+                    dt_start.Value = DateTime.Now.AddMonths(-3);
                     break;
                 case "6개월":
-                    rjDatePicker1.Value = DateTime.Now.AddMonths(-6);
+                    dt_start.Value = DateTime.Now.AddMonths(-6);
                     break;
                 case "1년":
-                    rjDatePicker1.Value = DateTime.Now.AddYears(-1);
+                    dt_start.Value = DateTime.Now.AddYears(-1);
                     break;
             }
         }

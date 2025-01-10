@@ -145,7 +145,9 @@ namespace TcPCM_Connect_Global
                 string[] info = item.Split('&');
                 string[] name = info[2].Split('|');
 
-                TreeNode node = new TreeNode();
+                if (parent.ContainsKey(info[0] + info[1])) return;
+
+                TreeNode node = new TreeNode();                
                 node.Name = info[0] + info[1];
 
                 if (info[0] == "f")
@@ -175,13 +177,13 @@ namespace TcPCM_Connect_Global
                     if (index > -1) node.Text = name[index].Split(':')[1];
                     else node.Text = name[0].Split(':')[1];
                 }
-
                 parent.Add(node);
             }
         }
 
-        public void FindDashboard(string searchString, ImageList image, DataGridView dgv)
+        public void FindDashboard(List<string> search, ImageList image, DataGridView dgv)
         {
+            //searchString  partQuery, projectQuery, folderQuery
             string query = $@"WITH RecursiveParents AS (
                 SELECT 
                     cs.CurrentCalcId,
@@ -192,7 +194,7 @@ namespace TcPCM_Connect_Global
 		            p.id as partID
 		            FROM CalculationStructureView cs
 		            INNER JOIN Parts p ON p.Id = (select PartId from Calculations as c where cs.CurrentCalcId=c.id)
-		            WHERE p.Name_LOC_Extracted LIKE '%{searchString}%' 
+		            WHERE p.Name_LOC_Extracted LIKE '%{search[0]}%' {(search[1].Length>0 ? " and "+search[1]:"") } 
 
                 UNION ALL
 
@@ -236,7 +238,7 @@ namespace TcPCM_Connect_Global
                 FROM 
                 (
 		            select id as projectID, null as partPath, null as partInit, null as partName, null as partID from Projects 
-                    where Name_LOC_Extracted LIKE '%{searchString}%' and Deleted is null
+                    where Name_LOC_Extracted LIKE '%{search[0]}%' and Deleted is null {(search[2].Length > 0 ? " and " + search[2] : "") }
 		            union all select projectID as projectID, Path as partPath, init as partInit, name as partName, partID as partID from PartResult
 	            ) as dataRow
                 left JOIN Projects p ON dataRow.projectID = p.Id  -- folderID와 ProjectId를 연결
@@ -276,7 +278,7 @@ namespace TcPCM_Connect_Global
 	            FROM 
 	                (
 		            select id as folderid, null as ProjectId,null as ProjectName,null as ProjectPath, null as init, null as name, null as Path,null as  partID  from Folders 
-                    where CAST(Name_LOC AS NVARCHAR(MAX)) like '%{searchString}%' and Deleted is null
+                    where CAST(Name_LOC AS NVARCHAR(MAX)) like '%{search[0]}%' and Deleted is null {(search[3].Length > 0 ? " and " + search[3] : "") }
 		            union all select folderID, null as ProjectId,null as ProjectName,null as ProjectPath, init, name, Path, partID from PartResult where projectID is null
 		            union all select * from ProjectFinalResult
 	            ) as dataRow

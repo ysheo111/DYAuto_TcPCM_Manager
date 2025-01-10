@@ -24,7 +24,8 @@ namespace TcPCM_Connect_Global
         public enum ExportLang
         {
             Kor,
-            Eng
+            Eng,
+            CHN
         }
         public enum ManufacturingType
         {
@@ -234,6 +235,7 @@ namespace TcPCM_Connect_Global
             public static string length = "가로";
             public static string width = "세로";
             public static string netWeight = "Net중량";
+            public static string designWeight = "설계중량";
             public static string grossWeight = "투입중량";
             public static string unit = "단위";
 
