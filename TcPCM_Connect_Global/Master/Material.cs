@@ -99,13 +99,20 @@ namespace TcPCM_Connect_Global
                             scrapItem.Add("Designation", $"{item["Designation"]}_SCRAP");
                         }
                     }
+                    else if (category.Contains("원재료 단위"))
+                        item.Add("단위", row.Cells[category].Value?.ToString().ToLower());
+                    else if (category.Contains("스크랩 단위"))
+                        scrapItem.Add("단위", row.Cells[category].Value?.ToString().ToLower());
+                    else if (category.Contains("원재료 단가"))
+                        item.Add("단가", row.Cells[category].Value?.ToString().ToLower());
+                    else if (category.Contains("스크랩 단가"))
+                        scrapItem.Add("단가", row.Cells[category].Value?.ToString().ToLower());
                     else
                     {
                         item.Add(category, row.Cells[category].Value?.ToString());
                         scrapItem.Add(category, row.Cells[category].Value?.ToString());
                     } 
                 }
-
                 substance.Add(item);
                 scrap.Add(scrapItem);
             }
