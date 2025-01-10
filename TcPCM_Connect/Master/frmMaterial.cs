@@ -166,5 +166,16 @@ namespace TcPCM_Connect
         {
             CustomMessageBox.RJMessageBox.Show(global.dgv_Category_DataError((DataGridView)sender, e), "DataError", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
+
+        private void dgv_Material_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (!dgv_Material.Columns[e.ColumnIndex].Name.Contains("Valid")) return;
+
+            DataGridViewRow row = dgv_Material.Rows[e.RowIndex];
+
+            if (row.Cells[e.ColumnIndex].Value == null) return;
+            row.Cells[e.ColumnIndex].Value = !DateTime.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out DateTime dt) ?
+                row.Cells[e.ColumnIndex].Value : dt.ToString("yyyy-MM-dd");
+        }
     }
 }

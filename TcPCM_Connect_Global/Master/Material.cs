@@ -38,56 +38,76 @@ namespace TcPCM_Connect_Global
                 materialCategory = "Press";
             }
             else if(type == "원소재 단가")
-            {
                 materialType = MasterData.Material.price;
-            }
             else
-            {
                 materialType = MasterData.Material.material;
-            }
 
             JArray substance = new JArray();
+            JArray scrap = new JArray();
             foreach (DataGridViewRow row in dgv.Rows)
             {
                 JObject item = new JObject();
+                JObject scrapItem = new JObject();
+                string materialName = null;
                 if (row.Cells["재질명"].Value == null || row.Cells["재질명"].Value?.ToString().Length <= 0) continue;
                 foreach (string category in materialType) 
                 {
-                    if (category.Contains("재질명"))
+                    if (category.Contains("소재명"))
+                    {
+                        materialName = row.Cells[category].Value?.ToString();
+                        if(materialName == "알루미늄")
+                            materials = "Siemens.TCPCM.Classification.Material.RawMaterial.CastingMaterial";
+                        else if (materialName == "플라스틱")
+                            materials = "Siemens.TCPCM.Classification.Material.RawMaterial.Plastic";
+                        else if (materialName == "철판" || materialName == "철강" || materialName == "특수강")
+                             materials = "Siemens.TCPCM.Classification.Material.SemiFinished.SheetMetal.Coil";
+                        else
+                            materials = "";
+                        item.Add("Materials", $"{materials}");
+                        scrapItem.Add("Materials", $"Siemens.TCPCM.Classification.Material.Scrap");
+                        item.Add("Designation", $"[DYA]{row.Cells[category].Value}");
+                    }
+                    else if (category.Contains("재질명"))
                     {
                         if (type != "원소재 단가")
-                            item.Add("재질명", $"{row.Cells[category].Value}");
+                        {
+                            item.Add(category, $"{row.Cells[category].Value}");
+                            item.Add("Designation", $"[DYA]{row.Cells[category].Value}");
+                        }
                         else
+                        {
+                            item["Designation"] = $"{item["Designation"]}_{row.Cells[category].Value}";
                             item.Add("substance", $"{row.Cells[category].Value}");
-                        item.Add("Designation", $"[DYA]{row.Cells[category].Value}");
+                        }
                     }
                     else if (category.Contains("GRADE"))
                     {
                         item["Designation"] = $"{item["Designation"]}_{row.Cells[category].Value}";
+                        
                         if (type != "원소재 단가")
                             item["재질명"] = $"{item["재질명"]}_{row.Cells[category].Value}";
                         else
                         {
                             item["substance"] = $"{item["substance"]}_{row.Cells[category].Value}";
-                            item["Item number"] = $"{item["substance"]}_{row.Cells[category].Value}_SCRAP";
-                            item["revision"] = $"{item["substance"]}_{row.Cells[category].Value}_SCRAP||";
-                            item["Designation"] = $"{item["Designation"]}_SCRAP";
+                            scrapItem.Add("substance", item["substance"]);
+
+                            item["Item number"] = $"{item["substance"]}";
+                            scrapItem.Add("Item number", $"{item["substance"]}_SCRAP");
+
+                            item["revision"] = $"{item["substance"]} ||";
+                            scrapItem.Add("revision", $"{item["substance"]}_SCRAP ||");
+                            scrapItem.Add("Designation", $"{item["Designation"]}_SCRAP");
                         }
                     }
-                    else item.Add(category, row.Cells[category].Value?.ToString());
-                }
-                if (type == "코어")
-                {
-                    for (int i = 1; i <= 3; i++)
+                    else
                     {
-                        item["구분"] = $"{(i == 1 ? "원형2" : i == 2 ? "Ear-31" : "Ear-41")}";
-                        item["Column1"] =  $"{item["재질명"]}{item["구분"]}";
-                        substance.Add(new JObject(item));
-                    }
-
+                        item.Add(category, row.Cells[category].Value?.ToString());
+                        scrapItem.Add(category, row.Cells[category].Value?.ToString());
+                    } 
                 }
 
                 substance.Add(item);
+                scrap.Add(scrapItem);
             }
 
             JObject postData = new JObject
@@ -109,11 +129,28 @@ namespace TcPCM_Connect_Global
                     {
                         postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Detail");
                         err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                        if (scrap.Count != 0 && err == null)
+                        {
+                            postData["Data"] = scrap;
+                            postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Header");
+                            err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                            if (err == null)
+                            {
+                                postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Revision");
+                                err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                                if (err == null)
+                                {
+                                    postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Detail");
+                                    err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                                }
+                            }
+                        }
                     }
                 }
             }
             else
                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+
 
             return err;
           

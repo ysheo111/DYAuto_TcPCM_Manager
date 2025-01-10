@@ -210,6 +210,7 @@
             this.dgv_Material.RowTemplate.Height = 32;
             this.dgv_Material.Size = new System.Drawing.Size(995, 500);
             this.dgv_Material.TabIndex = 61;
+            this.dgv_Material.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_Material_CellFormatting);
             this.dgv_Material.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Material_CellValueChanged);
             this.dgv_Material.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Material_DataError);
             // 
