@@ -594,11 +594,11 @@ namespace TcPCM_Connect_Global
     {
         public class Material
         {
-            public static List<string> casting = new List<string>() { "재료명", "구분", "비중", "주조 온도 최소(℃)", "주조 온도 최대(℃)", "T-factor" };
-            public static List<string> injection = new List<string>() { "재료명", "계열", "구분", "비중", "탈형 온도(℃)", "사출 온도(℃)", "금형 온도(℃)", "내부 탈형 압력 계수", "열확산도(mm²/s)" };
-            public static List<string> plate = new List<string>() { "재료명", "구분", "비중", "인장 강도(N/mm²)", "전단 강도(N/mm²)" ,"생산 계수"};
-            public static List<string> process = new List<string>() { "재료명", "구분", "비중" };
-            public static List<string> material = new List<string>() { "Valid From", "지역", "구분", "재료명",  "비중", "통화", "가격", "가격 단위", "스크랩 비용", "스크랩 비용 단위"};
+            public static List<string> casting = new List<string>() { "재질명", "GRADE", "비중", "주조 온도 최소(℃)", "주조 온도 최대(℃)", "T-factor" };//{ "재료명", "구분", "비중", "주조 온도 최소(℃)", "주조 온도 최대(℃)", "T-factor" };
+            public static List<string> injection = new List<string>() { "재질명", "GRADE", "비중", "탈형 온도(℃)", "사출 온도(℃)", "금형 온도(℃)", "열확산도(mm²/s)" }; //{ "재질명", "계열", "구분", "비중", "탈형 온도(℃)", "사출 온도(℃)", "금형 온도(℃)", "내부 탈형 압력 계수", "열확산도(mm²/s)" };
+            public static List<string> plate = new List<string>() { "재질명", "GRADE", "비중", "인장 강도(N/mm²)", "전단 강도(N/mm²)"};//{ "재료명", "구분", "비중", "인장 강도(N/mm²)", "전단 강도(N/mm²)" ,"생산 계수"};
+            public static List<string> price = new List<string>() { "Valid From", "소재명", "재질명", "GRADE", "통화", "지역", "원재료 단가" };
+            public static List<string> material = new List<string>() { "재질명", "GRADE", "비중"};//{ "Valid From", "지역", "구분", "재료명", "비중", "통화", "가격", "가격 단위", "스크랩 비용", "스크랩 비용 단위"};
         }
 
         public class Machine

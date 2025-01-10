@@ -28,8 +28,8 @@ namespace TcPCM_Connect
         private void frmExchange_Load(object sender, EventArgs e)
         {
             dgv_Material.AllowUserToAddRows= true;
-            Material();
-            InjectionColumn();
+            Material(MasterData.Material.injection);
+            //InjectionColumn();
             dgv_Material.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
@@ -37,13 +37,18 @@ namespace TcPCM_Connect
         {
             ExcelImport excel = new ExcelImport();            
             string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString(),dgv_Material);
-           
-            if (err != null)
-                CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Material",MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
+            if (err != null)
+                CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else
+                ImportMethod();
         }
 
         private void btn_Save_Click(object sender, EventArgs e)
+        {
+            ImportMethod();
+        }
+        private void ImportMethod()
         {
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
@@ -79,18 +84,24 @@ namespace TcPCM_Connect
             System.Windows.Forms.ComboBox combo = (System.Windows.Forms.ComboBox)sender;
             if (combo.SelectedIndex < 0) return;
 
-            Material();
-            if (combo.SelectedItem?.ToString()== "다이캐스팅") DieCastingColumn();
-            else if(combo.SelectedItem?.ToString()== "사출") InjectionColumn();
-            else if(combo.SelectedItem?.ToString()== "프레스" || combo.SelectedItem?.ToString() == "코어") PlateColumn();
+            if (combo.SelectedItem?.ToString()== "다이캐스팅")
+                Material(MasterData.Material.casting); //DieCastingColumn();
+            else if(combo.SelectedItem?.ToString()== "사출")
+                Material(MasterData.Material.injection); //InjectionColumn();
+            else if(combo.SelectedItem?.ToString()== "프레스")
+                Material(MasterData.Material.plate); //PlateColumn();
+            else if (combo.SelectedItem?.ToString() == "원소재 단가")
+                Material(MasterData.Material.price); //PriceColumn();
+            else
+                Material(MasterData.Material.material);
 
-            dgv_Material.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;            
+            dgv_Material.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
-        private void Material()
+        private void Material(List<string> variable)
         {
             dgv_Material.Columns.Clear();
 
-            foreach(string item in MasterData.Material.material)
+            foreach(string item in variable)
             {
                 if (item.Contains("Valid"))
                 {
@@ -112,31 +123,37 @@ namespace TcPCM_Connect
             }
         }
 
-        private void DieCastingColumn()
-        {
-            dgv_Material.Columns.Add("DROSS 비용", "DROSS 비용");
-            dgv_Material.Columns.Add("DROSS 비용 단위", "DROSS 비용 단위");
-            dgv_Material.Columns.Add("주조 온도 최소(℃)", "주조 온도 최소(℃)");
-            dgv_Material.Columns.Add("주조 온도 최대(℃)", "주조 온도 최대(℃)");
-            dgv_Material.Columns.Add("T-factor", "T-factor");
-        }
+        //private void DieCastingColumn()
+        //{
+        //    //dgv_Material.Columns.Add("DROSS 비용", "DROSS 비용");
+        //    //dgv_Material.Columns.Add("DROSS 비용 단위", "DROSS 비용 단위");
+        //    dgv_Material.Columns.Add("주조 온도 최대(℃)", "주조 온도 최대(℃)");
+        //    dgv_Material.Columns.Add("주조 온도 최소(℃)", "주조 온도 최소(℃)");
+        //    dgv_Material.Columns.Add("T-factor", "T-factor");
+        //}
 
-        private void InjectionColumn()
-        {
-            dgv_Material.Columns.Add("계열", "계열");
-            dgv_Material.Columns.Add("탈형 온도(℃)", "탈형 온도(℃)");
-            dgv_Material.Columns.Add("사출 온도(℃)", "사출 온도(℃)");
-            dgv_Material.Columns.Add("금형 온도(℃)", "금형 온도(℃)");
-            dgv_Material.Columns.Add("내부 탈형 압력 계수", "내부 탈형 압력 계수");
-            dgv_Material.Columns.Add("열확산도(mm²/s)", "열확산도(mm²/s)");
-        }
+        //private void InjectionColumn()
+        //{
+        //    //dgv_Material.Columns.Add("계열", "계열");
+        //    dgv_Material.Columns.Add("탈형 온도(℃)", "탈형 온도(℃)");
+        //    dgv_Material.Columns.Add("사출 온도(℃)", "사출 온도(℃)");
+        //    dgv_Material.Columns.Add("금형 온도(℃)", "금형 온도(℃)");
+        //    //dgv_Material.Columns.Add("내부 탈형 압력 계수", "내부 탈형 압력 계수");
+        //    dgv_Material.Columns.Add("열확산도(mm²/s)", "열확산도(mm²/s)");
+        //}
 
-        private void PlateColumn()
-        {
-            dgv_Material.Columns.Add("인장 강도(N/mm²)", "인장 강도(N/mm²)");
-            dgv_Material.Columns.Add("전단 강도(N/mm²)", "전단 강도(N/mm²)");
-            dgv_Material.Columns.Add("생산 계수", "생산 계수");
-        }
+        //private void PlateColumn()
+        //{
+        //    dgv_Material.Columns.Add("인장 강도(N/mm²)", "인장 강도(N/mm²)");
+        //    dgv_Material.Columns.Add("전단 강도(N/mm²)", "전단 강도(N/mm²)");
+        //    //dgv_Material.Columns.Add("생산 계수", "생산 계수");
+        //}
+
+        //private void PriceColumn()
+        //{
+        //    dgv_Material.Columns.Add("지역", "지역");
+        //    dgv_Material.Columns.Add("원재료 단가", "원재료 단가");
+        //}
 
         private void dgv_Material_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
@@ -148,6 +165,17 @@ namespace TcPCM_Connect
         private void dgv_Material_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             CustomMessageBox.RJMessageBox.Show(global.dgv_Category_DataError((DataGridView)sender, e), "DataError", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void dgv_Material_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (!dgv_Material.Columns[e.ColumnIndex].Name.Contains("Valid")) return;
+
+            DataGridViewRow row = dgv_Material.Rows[e.RowIndex];
+
+            if (row.Cells[e.ColumnIndex].Value == null) return;
+            row.Cells[e.ColumnIndex].Value = !DateTime.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out DateTime dt) ?
+                row.Cells[e.ColumnIndex].Value : dt.ToString("yyyy-MM-dd");
         }
     }
 }

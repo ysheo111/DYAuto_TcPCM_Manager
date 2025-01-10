@@ -111,6 +111,16 @@ namespace TcPCM_Connect
                     if (err == null)
                         err = costFactor.Import("Category", "탄소배출량", dgv_Category);
                 }
+                else if (columnName == "임률")
+                {
+                    err = costFactor.Import("Category", $"직접{columnName.Replace("4", "")}", dgv_Category);
+                    if (err == null)
+                    {
+                        err = costFactor.Import("Category", $"간접{columnName.Replace("4", "")}", dgv_Category);
+                        if (err == null)
+                            err = costFactor.Import("Category", "경비", dgv_Category);
+                    }
+                }
                 else
                     err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
 
@@ -175,15 +185,19 @@ namespace TcPCM_Connect
             }
             else if (columnName == "임률")
             {
+                ValidFromAdd("Valid From");
                 dgv_Category.Columns.Add("지역", "지역");
                 //dgv_Category.Columns.Add("구분4", "구분4");
+                //dgv_Category.Columns.Add("업종", "업종");
+                dgv_Category.Columns.Add("Plant", "Plant");
                 dgv_Category.Columns.Add("업종", "업종");
                 CurrencyAdd("통화");
-                ValidFromAdd("Valid From");
-                dgv_Category.Columns.Add("임률", "임률");
-                dgv_Category.Columns.Add("Labor burden (1Shift)", "Labor burden (1Shift)");
-                dgv_Category.Columns.Add("Labor burden (2Shift)", "Labor burden (2Shift)");
-                dgv_Category.Columns.Add("Labor burden (3Shift)", "Labor burden (3Shift)");
+                dgv_Category.Columns.Add("간접임률", "간접임률");
+                dgv_Category.Columns.Add("직접임률", "직접임률");
+                dgv_Category.Columns.Add("경비", "경비");
+                //dgv_Category.Columns.Add("Labor burden (1Shift)", "Labor burden (1Shift)");
+                //dgv_Category.Columns.Add("Labor burden (2Shift)", "Labor burden (2Shift)");
+                //dgv_Category.Columns.Add("Labor burden (3Shift)", "Labor burden (3Shift)");
             }
             else if (columnName == "업종")
             {
@@ -260,6 +274,11 @@ namespace TcPCM_Connect
             {
                 dgv_Category.Rows[e.RowIndex].Cells["UniqueId"].Value = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null ? null : dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().ToLower();
             }
+            //var cell = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            //if (cell.Value != null && decimal.TryParse(cell.Value.ToString(), out decimal number))
+            //{
+            //    cell.Value = number.ToString("#,##0");
+            //}
 
             global.MasterDataValiding((DataGridView)sender, e);
         }
@@ -330,14 +349,36 @@ namespace TcPCM_Connect
                                     Full Outer Join B ON A.DateValidFrom = B.DateValidFrom And A.region = B.region";
                 searchQeury = Aselect + Bselect + FullJoin;
             }
-
-                //searchQeury = $@"SELECT DateValidFrom,BDRegions.UniqueKey,Currencies.IsoCode,Value
-                //                 as name FROM MDCostFactorDetails
-                //                 JOIN BDRegions ON RegionId = BDRegions.Id
-                //                 JOIN Currencies ON CurrencyId = Currencies.Id
-                //                 WHERE CostFactorHeaderId in (
-                //                 select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ElectricityPrice')
-                //                 And Cast(BDRegions.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
+            else if(columnName == "임률")
+            {
+                searchQeury = $@"With A as(
+	                        select DateValidFrom,RegionId,CurrencyId,Value*3600 as value,PlantId,SegmentId
+		                        from MDCostFactorDetails where CostFactorHeaderId in
+		                        (select Id from MDCostFactorHeaders where UniqueKey = N'직접노무비') 
+                            ),B as(
+	                        select DateValidFrom,RegionId,CurrencyId,Value*3600 as value,PlantId,SegmentId
+		                        from MDCostFactorDetails where CostFactorHeaderId in
+		                        ( select Id from MDCostFactorHeaders where UniqueKey = N'간접노무비' )
+                            ),C as(
+	                        select DateValidFrom,RegionId,PlantId,CurrencyId,MachineHourlyRate from MDAssetDetails
+		                        where AssetHeaderId in (select Id from MDAssetHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%경비%') )
+                            select
+                            COALESCE(A.DateValidFrom, B.DateValidFrom) As ValidDate,
+                            BDRegions.UniqueKey As Region,
+                            BDPlants.UniqueKey As Plant,
+                            BDSegments.UniqueKey As Segment,
+                            Currencies.IsoCode,
+                            B.value As N'간접임률',
+                            A.value As N'직접임률',
+                            C.MachineHourlyRate
+                            From A
+                            Full outer join B on A.DateValidFrom = B.DateValidFrom And A.RegionId = B.RegionId And A.CurrencyId = B.CurrencyId And A.PlantId = B.PlantId
+                            Full outer join C on COALESCE(A.DateValidFrom, B.DateValidFrom) = C.DateValidFrom And COALESCE(A.CurrencyId, B.CurrencyId) = C.CurrencyId And COALESCE(A.RegionId, B.RegionId) = C.RegionId And COALESCE(A.PlantId, B.PlantId) = C.PlantId
+                            join BDRegions ON COALESCE(A.RegionId, B.RegionId) = BDRegions.Id
+                            join BDPlants ON COALESCE(A.PlantId, B.PlantId) = BDPlants.Id
+                            join Currencies ON COALESCE(A.CurrencyId, B.CurrencyId) = Currencies.Id
+                            join BDSegments ON COALESCE(A.SegmentId, B.SegmentId) = BDSegments.Id";
+            }
 
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
@@ -357,6 +398,11 @@ namespace TcPCM_Connect
                 {
                     searchQeury = Aselect + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'"
                                 + Bselect + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" + FullJoin;
+                }
+                else if (columnName == "임률")
+                {
+                    searchQeury = searchQeury + $@" where CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                                or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
             }
             DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
