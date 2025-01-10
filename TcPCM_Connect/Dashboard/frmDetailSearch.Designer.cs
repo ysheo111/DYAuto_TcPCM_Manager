@@ -33,12 +33,16 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.panelBody = new System.Windows.Forms.Panel();
             this.panel_Select = new System.Windows.Forms.Panel();
-            this.rjDatePicker2 = new CustomControls.RJControls.RJDatePicker();
+            this.dt_end = new CustomControls.RJControls.RJDatePicker();
             this.combo_date = new CustomControls.RJControls.RJComboBox();
-            this.rjDatePicker1 = new CustomControls.RJControls.RJDatePicker();
+            this.dt_start = new CustomControls.RJControls.RJDatePicker();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_Cancel = new CustomControls.RJControls.RJButton();
             this.btn_Create = new CustomControls.RJControls.RJButton();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tb_manufacturing = new CustomControls.RJControls.RJTextBox();
+            this.cb_date = new System.Windows.Forms.CheckBox();
+            this.cb_manufacturing = new System.Windows.Forms.CheckBox();
             this.panelTitleBar.SuspendLayout();
             this.panelBody.SuspendLayout();
             this.panel_Select.SuspendLayout();
@@ -101,9 +105,13 @@
             this.panel_Select.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel_Select.Controls.Add(this.rjDatePicker2);
+            this.panel_Select.Controls.Add(this.cb_manufacturing);
+            this.panel_Select.Controls.Add(this.cb_date);
+            this.panel_Select.Controls.Add(this.tb_manufacturing);
+            this.panel_Select.Controls.Add(this.label2);
+            this.panel_Select.Controls.Add(this.dt_end);
             this.panel_Select.Controls.Add(this.combo_date);
-            this.panel_Select.Controls.Add(this.rjDatePicker1);
+            this.panel_Select.Controls.Add(this.dt_start);
             this.panel_Select.Controls.Add(this.label1);
             this.panel_Select.Location = new System.Drawing.Point(10, 47);
             this.panel_Select.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -111,19 +119,19 @@
             this.panel_Select.Size = new System.Drawing.Size(668, 212);
             this.panel_Select.TabIndex = 65;
             // 
-            // rjDatePicker2
+            // dt_end
             // 
-            this.rjDatePicker2.BorderColor = System.Drawing.Color.Black;
-            this.rjDatePicker2.BorderSize = 1;
-            this.rjDatePicker2.Font = new System.Drawing.Font("굴림", 9.5F);
-            this.rjDatePicker2.Location = new System.Drawing.Point(425, 10);
-            this.rjDatePicker2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.rjDatePicker2.MinimumSize = new System.Drawing.Size(4, 35);
-            this.rjDatePicker2.Name = "rjDatePicker2";
-            this.rjDatePicker2.Size = new System.Drawing.Size(206, 35);
-            this.rjDatePicker2.SkinColor = System.Drawing.Color.White;
-            this.rjDatePicker2.TabIndex = 2;
-            this.rjDatePicker2.TextColor = System.Drawing.Color.Black;
+            this.dt_end.BorderColor = System.Drawing.Color.Black;
+            this.dt_end.BorderSize = 1;
+            this.dt_end.Font = new System.Drawing.Font("굴림", 9.5F);
+            this.dt_end.Location = new System.Drawing.Point(446, 14);
+            this.dt_end.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.dt_end.MinimumSize = new System.Drawing.Size(4, 35);
+            this.dt_end.Name = "dt_end";
+            this.dt_end.Size = new System.Drawing.Size(206, 35);
+            this.dt_end.SkinColor = System.Drawing.Color.White;
+            this.dt_end.TabIndex = 2;
+            this.dt_end.TextColor = System.Drawing.Color.Black;
             // 
             // combo_date
             // 
@@ -143,7 +151,7 @@
             "1년"});
             this.combo_date.ListBackColor = System.Drawing.Color.White;
             this.combo_date.ListTextColor = System.Drawing.Color.DimGray;
-            this.combo_date.Location = new System.Drawing.Point(93, 10);
+            this.combo_date.Location = new System.Drawing.Point(114, 14);
             this.combo_date.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.combo_date.Name = "combo_date";
             this.combo_date.Padding = new System.Windows.Forms.Padding(1);
@@ -152,28 +160,28 @@
             this.combo_date.Texts = "오늘";
             this.combo_date.OnSelectedIndexChanged += new System.EventHandler(this.combo_date_OnSelectedIndexChanged);
             // 
-            // rjDatePicker1
+            // dt_start
             // 
-            this.rjDatePicker1.BorderColor = System.Drawing.Color.Black;
-            this.rjDatePicker1.BorderSize = 1;
-            this.rjDatePicker1.Font = new System.Drawing.Font("굴림", 9.5F);
-            this.rjDatePicker1.Location = new System.Drawing.Point(214, 10);
-            this.rjDatePicker1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.rjDatePicker1.MinimumSize = new System.Drawing.Size(4, 35);
-            this.rjDatePicker1.Name = "rjDatePicker1";
-            this.rjDatePicker1.Size = new System.Drawing.Size(206, 35);
-            this.rjDatePicker1.SkinColor = System.Drawing.Color.White;
-            this.rjDatePicker1.TabIndex = 1;
-            this.rjDatePicker1.TextColor = System.Drawing.Color.Black;
+            this.dt_start.BorderColor = System.Drawing.Color.Black;
+            this.dt_start.BorderSize = 1;
+            this.dt_start.Font = new System.Drawing.Font("굴림", 9.5F);
+            this.dt_start.Location = new System.Drawing.Point(235, 14);
+            this.dt_start.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.dt_start.MinimumSize = new System.Drawing.Size(4, 35);
+            this.dt_start.Name = "dt_start";
+            this.dt_start.Size = new System.Drawing.Size(206, 35);
+            this.dt_start.SkinColor = System.Drawing.Color.White;
+            this.dt_start.TabIndex = 1;
+            this.dt_start.TextColor = System.Drawing.Color.Black;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(23, 24);
+            this.label1.Location = new System.Drawing.Point(44, 28);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 12);
+            this.label1.Size = new System.Drawing.Size(29, 12);
             this.label1.TabIndex = 0;
-            this.label1.Text = "검색기간";
+            this.label1.Text = "기간";
             // 
             // btn_Cancel
             // 
@@ -219,6 +227,56 @@
             this.btn_Create.UseVisualStyleBackColor = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(44, 75);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 12);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "공정명";
+            // 
+            // tb_manufacturing
+            // 
+            this.tb_manufacturing.BackColor = System.Drawing.SystemColors.Window;
+            this.tb_manufacturing.BorderColor = System.Drawing.Color.Black;
+            this.tb_manufacturing.BorderFocusColor = System.Drawing.Color.HotPink;
+            this.tb_manufacturing.BorderRadius = 0;
+            this.tb_manufacturing.BorderSize = 1;
+            this.tb_manufacturing.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_manufacturing.ForeColor = System.Drawing.Color.DimGray;
+            this.tb_manufacturing.Location = new System.Drawing.Point(114, 66);
+            this.tb_manufacturing.Margin = new System.Windows.Forms.Padding(4);
+            this.tb_manufacturing.Multiline = false;
+            this.tb_manufacturing.Name = "tb_manufacturing";
+            this.tb_manufacturing.Padding = new System.Windows.Forms.Padding(7);
+            this.tb_manufacturing.PasswordChar = false;
+            this.tb_manufacturing.PlaceholderColor = System.Drawing.Color.DarkGray;
+            this.tb_manufacturing.PlaceholderText = "";
+            this.tb_manufacturing.ReadOnly = false;
+            this.tb_manufacturing.Size = new System.Drawing.Size(538, 31);
+            this.tb_manufacturing.TabIndex = 4;
+            this.tb_manufacturing.Texts = "";
+            this.tb_manufacturing.UnderlinedStyle = true;
+            // 
+            // cb_date
+            // 
+            this.cb_date.AutoSize = true;
+            this.cb_date.Location = new System.Drawing.Point(14, 26);
+            this.cb_date.Name = "cb_date";
+            this.cb_date.Size = new System.Drawing.Size(15, 14);
+            this.cb_date.TabIndex = 5;
+            this.cb_date.UseVisualStyleBackColor = true;
+            // 
+            // cb_manufacturing
+            // 
+            this.cb_manufacturing.AutoSize = true;
+            this.cb_manufacturing.Location = new System.Drawing.Point(14, 73);
+            this.cb_manufacturing.Name = "cb_manufacturing";
+            this.cb_manufacturing.Size = new System.Drawing.Size(15, 14);
+            this.cb_manufacturing.TabIndex = 6;
+            this.cb_manufacturing.UseVisualStyleBackColor = true;
+            // 
             // frmDetailSearch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -250,8 +308,12 @@
         private CustomControls.RJControls.RJButton btn_Cancel;
         private System.Windows.Forms.Panel panel_Select;
         private System.Windows.Forms.Label label1;
-        private CustomControls.RJControls.RJDatePicker rjDatePicker1;
+        private CustomControls.RJControls.RJDatePicker dt_start;
         private CustomControls.RJControls.RJComboBox combo_date;
-        private CustomControls.RJControls.RJDatePicker rjDatePicker2;
+        private CustomControls.RJControls.RJDatePicker dt_end;
+        private System.Windows.Forms.Label label2;
+        private CustomControls.RJControls.RJTextBox tb_manufacturing;
+        private System.Windows.Forms.CheckBox cb_manufacturing;
+        private System.Windows.Forms.CheckBox cb_date;
     }
 }

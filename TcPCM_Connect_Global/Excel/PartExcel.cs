@@ -65,10 +65,16 @@ namespace TcPCM_Connect_Global
         {
             try
             {
-                string sheetName = (lang == Bom.ExportLang.Kor ? "부품원가계산서" : "Quotation");
-                string sheetName2 = (lang == Bom.ExportLang.Kor ? "제조경비 산출근거(변경 기준)" : "Quotation");
+                string sheetName = (lang == Bom.ExportLang.Kor ? "부품원가계산서" : lang == Bom.ExportLang.Eng ? "Part Price cost(ENG)" : "Part Price cost(CHN)");
+                string sheetName2 = (lang == Bom.ExportLang.Kor ? "제조경비 산출근거" : lang == Bom.ExportLang.Eng ? "Manufaturing cost(ENG)" : "Manufaturing cost(CHN)");
+
                 Excel.Worksheet worksheet = workbook.Sheets[sheetName];
                 Excel.Worksheet worksheet2 = workbook.Sheets[sheetName2];
+
+                foreach(Excel.Worksheet sheet in workbook.Sheets)
+                {
+                    if (sheet != worksheet && sheet != worksheet2) sheet.Visible = Excel.XlSheetVisibility.xlSheetHidden;
+                }
                 worksheet.Select();
                 //CBD의 기본정보
                 worksheet.get_Range("B1", "B1").Select();
@@ -482,7 +488,7 @@ namespace TcPCM_Connect_Global
                         {
                             part.Add(Report.Material.netWeight, net / unit);
                             excel.CellVaildation(Report.Material.grossWeight, nameRow, 22, 12, j, 12, worksheet, ref part);
-                            part[Report.Material.grossWeight] = (global.ConvertDouble(part[Report.Material.grossWeight]) - net) / unit;
+                            part[Report.Material.grossWeight] = (global.ConvertDouble(part[Report.Material.grossWeight])) / unit;
 
                             material.Add(Report.LineType.procument, "Siemens.TCPCM.ProcurementType.Purchase_RawMaterial");
                             scrap.Add(Report.LineType.procument, "Siemens.TCPCM.ProcurementType.Purchase_RawMaterial");

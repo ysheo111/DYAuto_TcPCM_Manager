@@ -186,34 +186,35 @@ namespace TcPCM_Connect_Global
             Excel.Workbook workBook = null;
             try
             {
-                File.Copy($@"{Application.StartupPath}\BOM Export.xlsx", $@"{fileLocation}\BOM Export.xlsx", true);
+                string name = $"{apiResult["data"][0][Report.Header.partName]}({apiResult["data"][0][Report.Header.partNumber]})";
+                File.Copy($@"{Application.StartupPath}\BOM Export.xlsx", $@"{fileLocation}\{name}.xlsx", true);
                 //Excel 프로그램 실행
                 application = new Excel.Application();
                 //Excel 화면 띄우기 옵션
                 application.Visible = true;
                 //파일로부터 불러오기                
-                workBook = application.Workbooks.Open($@"{fileLocation}\BOM Export.xlsx");
+                workBook = application.Workbooks.Open($@"{fileLocation}\{name}.xlsx");
                 Excel.Worksheet worksheet = workBook.Sheets["ExportTable"];
                 worksheet.Select();
 
                 int row = 2;
                 foreach (var element in apiResult["data"])
-                {
+                {                    
                     Dictionary<string, object> values = element.ToObject<Dictionary<string, object>>();
-                    if (values[Report.LineType.view]?.ToString().Contains("Buyer view") == true) continue;
-                    else if (values[Report.LineType.lineType]?.ToString().Contains("Raw material") == true) continue;
+                    if (values[Report.LineType.lineType]?.ToString().Contains("Raw material") == true) continue;
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Part") != true) continue;
-                    else if (global.ConvertDouble(values[Report.LineType.level]) <= 1) continue;
+                    else if (global.ConvertDouble(values[Report.LineType.level]) <=0) continue;
 
+                    int level = (int)global.ConvertDouble(values[Report.LineType.level]);
                     row++;
                     worksheet.get_Range($"K{row}", $"K{row}").Select();
-                    int level = ((int)(global.ConvertDouble(values[Report.LineType.level]) / 2));                    
+                              
                     worksheet.Cells[row, level].Value = level;
 
                     // Get the range of the filled cells
                     Excel.Range usedRange = worksheet.Range[
                         worksheet.Cells[row, 11],
-                        worksheet.Cells[row,21]
+                        worksheet.Cells[row,24]
                     ];
 
                     // Add borders to all cells in the used range
@@ -223,19 +224,29 @@ namespace TcPCM_Connect_Global
                     usedRange.Borders.Weight = Excel.XlBorderWeight.xlThin;
                     usedRange.Borders.Weight = Excel.XlBorderWeight.xlThin;
 
-                    worksheet.Cells[row, 11].Value = values[Report.Header.partNumber?.ToString().Replace("[DYA]", "")];
-                    worksheet.Cells[row, 12].Value = values[Report.Header.partName]?.ToString().Replace("[DYA]", "");
+                    worksheet.Cells[row, 11].NumberFormat = "@";
+                    worksheet.Cells[row, 11].Value = values[Report.Header.partNumber?.ToString().Replace("[DYA]", "")].ToString();                    
+                    worksheet.Cells[row, 12].Value = values[Report.Header.partName]?.ToString().Replace("[DYA]", "").ToString();
                     worksheet.Cells[row, 13].Value = values[Report.Material.quantity];
                     worksheet.Cells[row, 14].Value = values[Report.Material.unit];
                     worksheet.Cells[row, 16].Value = values[Report.Material.substance]?.ToString().Replace("[DYA]", "");
                     worksheet.Cells[row, 17].Value = values[Report.Material.netWeight+ "[g]"];
-                    worksheet.Cells[row, 18].Value = values[Report.Material.harmful];
-                    worksheet.Cells[row, 19].Value = values["총액"];
+                    worksheet.Cells[row, 18].Value = values[Report.Material.designWeight + "[g]"];
+                    worksheet.Cells[row, 19].Formula = global.ConvertDouble(values[Report.Material.netWeight + "[g]"])>0? $"= (R{row} - Q{row}) / R{row}" : "";
+                    worksheet.Cells[row, 19].NumberFormat = "###,##%";
+                    worksheet.Cells[row, 20].Formula = global.ConvertDouble(values[Report.Material.netWeight + "[g]"])>0? $"= (Q{row} - R{row}) / Q{row}" : "";
+                    worksheet.Cells[row, 20].NumberFormat = "###,##%";
+                    worksheet.Cells[row, 21].Value = values[Report.Material.harmful];
+                    worksheet.Cells[row, 24].Value = values["총액"];
                 }
             }
             catch (Exception e)
             {
                 return e.Message;
+            }
+            finally
+            {
+                workBook.Save();
             }
             return null;
         }

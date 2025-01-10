@@ -17,8 +17,8 @@ namespace TcPCM_Connect
     public partial class frmDashboard : Form
     {
         public string privateFolder;
+        private string partQuery, projectQuery, folderQuery; 
         Interface export = new Interface();
-        Dictionary<string, Dictionary<string, Part>> partData;
         Bom.ExportLang mode = Bom.ExportLang.Kor;
 
         public frmDashboard()
@@ -41,20 +41,6 @@ namespace TcPCM_Connect
 
             pb_Refresh_Click(this.pb_Refresh, null);
             BasicInfoColumn();
-        }
-
-        private void cb_Mode_CheckedChanged(object sender, EventArgs e)
-        {
-            if (cb_Mode.Checked)
-            {
-                cb_Mode.Image = Properties.Resources.간략1;
-                mode = Bom.ExportLang.Eng;
-            }
-            else
-            {
-                cb_Mode.Image = Properties.Resources.상세1;
-                mode = Bom.ExportLang.Kor;
-            }
         }
 
         private void pb_Refresh_Click(object sender, EventArgs e)
@@ -93,7 +79,8 @@ namespace TcPCM_Connect
         {
             dgv_BaicInfo.Rows.Clear();
             // 'a'를 포함한 모든 노드 찾기
-            export.FindDashboard(searchButton1.text, tv_Bom.ImageList, dgv_BaicInfo);
+            List<string> query = new List<string>() { searchButton1.text, folderQuery, projectQuery, partQuery};
+            export.FindDashboard(query, tv_Bom.ImageList, dgv_BaicInfo);
         }
 
         private void dgv_UserInfo_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -188,7 +175,12 @@ namespace TcPCM_Connect
 
         private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
         {
+            frmDetailSearch search = new frmDetailSearch();
+            if (search.ShowDialog() == DialogResult.Cancel) return;
 
+            folderQuery = search.ReturnValue1;
+            projectQuery = search.ReturnValue2;
+            partQuery = search.ReturnValue3;
         }
 
         private void eXCEL내려받기ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -296,6 +288,15 @@ namespace TcPCM_Connect
             string err = bom.ExportPartBom(selectItem, dialog.FileName, mode);
             if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void rb_lang_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButton radio = (RadioButton)sender;
+            if (radio.Checked)
+            {
+                mode = (Bom.ExportLang)radio.Tag;
+            }
         }
     }
 }
