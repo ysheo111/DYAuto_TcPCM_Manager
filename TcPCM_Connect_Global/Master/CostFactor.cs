@@ -48,6 +48,11 @@ namespace TcPCM_Connect_Global
                         break;
                     }
 
+                    //if (name == "직접임률" && (col.Name.Contains("간접") || col.Name.Contains("경비")))
+                    //    continue;
+                    //else if (name == "간접임률" && (col.Name.Contains("직접") || col.Name.Contains("경비")))
+                    //    continue;
+
                     if (col.Name.Contains("연간 작업 일수"))
                         item.Add(col.Name, global.ConvertDouble(row.Cells[col.Name].Value) * global.ConvertDouble(row.Cells["Shift 당 작업 시간"].Value) * global.ConvertDouble(row.Cells["Shift"].Value));
                     else if (col.Name.Contains("Labor"))
