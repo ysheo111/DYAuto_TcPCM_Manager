@@ -141,6 +141,8 @@ namespace TcPCM_Connect
                     ((DataGridViewComboBoxColumn)dgv_Material.Columns[item]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
                     dgv_Material.Columns[item].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
                 }
+                else if(item.Contains("탄소발생량 단위"))
+                    dgv_Material.Columns.Add("단위", item);
                 else  dgv_Material.Columns.Add(item, item);
             }
         }
