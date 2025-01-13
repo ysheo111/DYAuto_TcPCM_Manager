@@ -107,11 +107,16 @@ namespace TcPCM_Connect_Global
                         item.Add("단가", row.Cells[category].Value?.ToString().ToLower());
                     else if (category.Contains("스크랩 단가"))
                         scrapItem.Add("단가", row.Cells[category].Value?.ToString().ToLower());
+                    else if (category.Contains("탄소발생량 단위"))
+                    {
+                        item.Add(category, row.Cells["단위"].Value?.ToString().ToLower());
+                        scrapItem.Add(category, row.Cells["단위"].Value?.ToString().ToLower());
+                    }
                     else
                     {
                         item.Add(category, row.Cells[category].Value?.ToString());
                         scrapItem.Add(category, row.Cells[category].Value?.ToString());
-                    } 
+                    }
                 }
                 substance.Add(item);
                 scrap.Add(scrapItem);
