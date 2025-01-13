@@ -50,11 +50,12 @@ namespace TcPCM_Connect
             //                        as name from MDMaterialHeaders,MDMaterialDetails
             //                        where CAST(MDMaterialHeaders.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
             ////searchColumn = "DateValidFrom";
+            //List<string> list = new List<string>();
 
             //List<string> resultList = global_DB.ListSelect(searchQeury, (int)global_DB.connDB.PCMDB);
             //if (resultList.Count == 0) return;
 
-            //foreach(DataGridViewRow row in dgv_Material.Rows)
+            //foreach (DataGridViewRow row in dgv_Material.Rows)
             //{
             //    if (row.IsNewRow) continue;
 
