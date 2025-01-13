@@ -136,19 +136,29 @@ namespace TcPCM_Connect_Global
                     {
                         postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Detail");
                         err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
-                        if (scrap.Count != 0 && err == null)
+                        if (err == null)
                         {
-                            postData["Data"] = scrap;
-                            postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Header");
+                            postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Carbon");
                             err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
-                            if (err == null)
+                            if (scrap.Count != 0 && err == null)
                             {
-                                postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Revision");
+                                postData["Data"] = scrap;
+                                postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Header");
                                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
                                 if (err == null)
                                 {
-                                    postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Detail");
+                                    postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Revision");
                                     err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                                    if (err == null)
+                                    {
+                                        postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Detail");
+                                        err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                                        if (err == null)
+                                        {
+                                            postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Carbon");
+                                            err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                                        }
+                                    }
                                 }
                             }
                         }
