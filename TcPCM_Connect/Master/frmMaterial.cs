@@ -35,13 +35,11 @@ namespace TcPCM_Connect
 
         private void btn_Create_Click(object sender, EventArgs e)
         {
-            ExcelImport excel = new ExcelImport();            
+            ExcelImport excel = new ExcelImport();
             string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString(),dgv_Material);
 
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            else
-                ImportMethod();
         }
 
         private void btn_Save_Click(object sender, EventArgs e)

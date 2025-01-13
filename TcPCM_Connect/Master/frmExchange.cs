@@ -40,14 +40,6 @@ namespace TcPCM_Connect
 
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Exchange", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            else
-            {
-                CostFactor costFactor = new CostFactor();
-                string err2 = costFactor.Import("ExchangeRate", "Import", dgv_ExchangeRate);
-
-                if (err2 != null) CustomMessageBox.RJMessageBox.Show($"Import 실패하였습니다\n{err2}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("Import 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
         }
 
         private void btn_ExcelCreate_Click(object sender, EventArgs e)

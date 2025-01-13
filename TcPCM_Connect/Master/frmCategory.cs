@@ -40,8 +40,6 @@ namespace TcPCM_Connect
 
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            else
-                ImportMethod();
         }
 
         private void btn_ExcelCreate_Click(object sender, EventArgs e)
