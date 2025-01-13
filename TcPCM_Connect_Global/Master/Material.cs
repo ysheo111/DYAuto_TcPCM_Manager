@@ -60,7 +60,7 @@ namespace TcPCM_Connect_Global
                         else if (materialName == "플라스틱")
                             materials = "Siemens.TCPCM.Classification.Material.RawMaterial.Plastic";
                         else if (materialName == "철판" || materialName == "철강" || materialName == "특수강")
-                             materials = "Siemens.TCPCM.Classification.Material.SemiFinished.SheetMetal.Coil";
+                             materials = "Siemens.TCPCM.Classification.Material.SemiFinished.SheetMetal.Plate";
                         else
                             materials = "";
                         item.Add("Materials", $"{materials}");
