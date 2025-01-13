@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using TcPCM_Connect_Global;
 
 namespace TcPCM_Connect
@@ -44,6 +45,28 @@ namespace TcPCM_Connect
 
         private void btn_Save_Click(object sender, EventArgs e)
         {
+            //string searchColumn = "MDMaterialHeaders.Name_LOC";
+            //string searchQeury = $@"select {searchColumn}
+            //                        as name from MDMaterialHeaders,MDMaterialDetails
+            //                        where CAST(MDMaterialHeaders.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
+            ////searchColumn = "DateValidFrom";
+
+            //List<string> resultList = global_DB.ListSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+            //if (resultList.Count == 0) return;
+
+            //foreach(DataGridViewRow row in dgv_Material.Rows)
+            //{
+            //    if (row.IsNewRow) continue;
+
+            //    string dateValue = row.Cells[""].Value?.ToString();
+            //    string nameValue = row.Cells[""].Value?.ToString();
+
+            //    if (resultList.Contains(dateValue))
+            //    {
+
+            //    }
+            //}
+
             ImportMethod();
         }
         private void ImportMethod()
@@ -174,6 +197,61 @@ namespace TcPCM_Connect
             if (row.Cells[e.ColumnIndex].Value == null) return;
             row.Cells[e.ColumnIndex].Value = !DateTime.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out DateTime dt) ?
                 row.Cells[e.ColumnIndex].Value : dt.ToString("yyyy-MM-dd");
+        }
+
+        public string NameSplit(string input)
+        {
+            List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR", "ru-RU", "ja-JP", "pt-BR", "de-DE" };
+            string delimiter = "</split>";
+            string[] xmlFiles = input.Split(new string[] { delimiter }, StringSplitOptions.None);
+
+            for (int i = 0; i < xmlFiles.Length; i++)
+            {
+                string name = "";
+                string xmlString = xmlFiles[i];
+                try
+                {
+                    XDocument doc = XDocument.Parse(xmlString);
+
+                    var translations = doc.Descendants("value")
+                                       .OrderBy(v =>
+                                       {
+                                           string lang = (string)v.Attribute("lang");
+                                           return lang == null ? int.MaxValue : desiredLanguages.IndexOf(lang);
+                                       })
+                                       .ToDictionary(v => (string)v.Attribute("lang") ?? string.Empty, v => (string)v);
+                    string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+                    if (columnName == "지역")
+                    {
+                        if (translations.ContainsKey("en-US"))
+                            input = $"{translations["en-US"]}";
+                        else
+                            input = null;
+
+                        break;
+                    }
+                    else
+                    {
+                        foreach (var lang in desiredLanguages)
+                        {
+                            if (translations.ContainsKey(lang))
+                            {
+                                if (i == xmlFiles.Length - 1)
+                                    name = $"{translations[lang]}";
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    if (i == xmlFiles.Length - 1)
+                        name = $"{xmlString}";
+                }
+                if (!string.IsNullOrEmpty(name))
+                    input = name;
+            }
+            return input;
         }
     }
 }
