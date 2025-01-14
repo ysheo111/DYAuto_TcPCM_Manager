@@ -37,7 +37,7 @@ namespace TcPCM_Connect
         private void btn_Create_Click(object sender, EventArgs e)
         {
             ExcelImport excel = new ExcelImport();
-            string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString(),dgv_Material);
+            string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString(), dgv_Material);
 
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -45,42 +45,29 @@ namespace TcPCM_Connect
 
         private void btn_Save_Click(object sender, EventArgs e)
         {
-            //string searchColumn = "MDMaterialHeaders.Name_LOC";
-            //string searchQeury = $@"select {searchColumn}
-            //                        as name from MDMaterialHeaders,MDMaterialDetails
-            //                        where CAST(MDMaterialHeaders.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
-            ////searchColumn = "DateValidFrom";
-            //List<string> list = new List<string>();
-
-            //List<string> resultList = global_DB.ListSelect(searchQeury, (int)global_DB.connDB.PCMDB);
-            //if (resultList.Count == 0) return;
-
-            //foreach (DataGridViewRow row in dgv_Material.Rows)
-            //{
-            //    if (row.IsNewRow) continue;
-
-            //    string dateValue = row.Cells[""].Value?.ToString();
-            //    string nameValue = row.Cells[""].Value?.ToString();
-
-            //    if (resultList.Contains(dateValue))
-            //    {
-
-            //    }
-            //}
-
             ImportMethod();
         }
         private void ImportMethod()
         {
+            //bool duple = IsDuplicate();
+            string type = cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString();
+            if(type == "원소재 단가")
+            {
+                isSubstance();
+                if (!IsDuplicate())
+                    return;
+            }
+
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
             splashthread.Start();
 
             try
             {
+
                 dgv_Material.AllowUserToAddRows = false;
                 Material material = new Material();
-                string err = material.Import(cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString(), dgv_Material);
+                string err = material.Import(type, dgv_Material);
 
                 if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Material", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -92,6 +79,116 @@ namespace TcPCM_Connect
 
             dgv_Material.AllowUserToAddRows = true;
             LoadingScreen.CloseSplashScreen();
+        }
+        private void isSubstance()
+        {
+            List<string> list = new List<string>();
+            foreach (DataGridViewRow row in dgv_Material.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                string nameValue = row.Cells["재질명"].Value?.ToString();
+                string grandValue = row.Cells["GRADE"].Value?.ToString();
+
+                string searchQeury = $@"select UniqueKey as name from MDSubstances
+                                        where CAST(UniqueKey AS NVARCHAR(MAX)) = '{nameValue}_{grandValue}'";
+
+                string result = global_DB.ScalarExecute(searchQeury, (int)global_DB.connDB.PCMDB);
+
+                if (string.IsNullOrEmpty(result))
+                {
+                    list.Add($"{nameValue}_{grandValue}");
+                }
+            }
+            if(list.Count != 0)
+            {
+                string message = "";
+                foreach(string msg in list)
+                {
+                    message += $"{msg}\n";
+                }
+                CustomMessageBox.RJMessageBox.Show($"{message}의 물성치 정보가 없습니다.", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+        private bool IsDuplicate()
+        {
+            List<string> list = new List<string>();
+            List<int> numList = new List<int>();
+            string searchQeury = $@"With A as(
+	                                    select Name_LOC,Id from MDMaterialHeaders
+	                                    where CAST(MDMaterialHeaders.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'
+                                    ), B as(
+	                                    select MaterialHeaderId,DateValidFrom,BDRegions.UniqueKey as region from MDMaterialDetails
+	                                    join BDRegions ON RegionId = BDRegions.Id
+	                                    where MaterialHeaderId in (select Id from MDMaterialHeaders where CAST(MDMaterialHeaders.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%')
+                                    )
+                                    select 
+                                    DateValidFrom,
+                                    region,
+                                    Name_LOC
+                                    as name from A
+                                    Full Outer Join B ON A.Id = B.MaterialHeaderId";
+
+            DataTable resultData = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+
+            if (resultData.Rows.Count == 0) return false;
+
+            foreach (DataGridViewRow row in dgv_Material.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                if (row.Tag != null)
+                    if ((bool)row.Tag == false)
+                        row.Tag = null;
+
+                string dateValue = row.Cells["Valid From"].Value?.ToString();
+                string regionValue = row.Cells["지역"].Value?.ToString();
+                string nameValue = row.Cells["재질명"].Value?.ToString();
+                string grandValue = row.Cells["GRADE"].Value?.ToString();
+
+                bool isMatch = resultData.AsEnumerable().Any(r =>
+                {
+                    DateTime DBValid = DateTime.Parse(r[0].ToString()).Date;
+                    DateTime dgvValid = DateTime.Parse(dateValue);
+
+                    string nameLoc = r[2]?.ToString();
+                    if (nameLoc == null) return false;
+
+                    nameLoc = NameSplit(nameLoc);
+                    nameLoc = nameLoc.Replace("[DYA]", "");
+                    string[] splitNames = nameLoc.Split('_');
+
+                    return DBValid == dgvValid &&
+                            r[1].ToString() == regionValue &&
+                            splitNames[1] == nameValue &&
+                            splitNames[2] == grandValue;
+                });
+
+                if (isMatch)
+                {
+                    list.Add($"{dateValue} {regionValue} {nameValue}_{grandValue}");
+                    numList.Add(row.Index);
+                }
+            }
+            if (list.Count != 0)
+            {
+                string array = "";
+                foreach (string a in list)
+                {
+                    array += $"\n{a}";
+                }
+                DialogResult result = CustomMessageBox.RJMessageBox.Show($"중복되는 값 {array} \n을 덮어씌우겠습니까? \n(Cancel=Import 취소)", "Material", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                {
+                    foreach (int index in numList)
+                    {
+                        dgv_Material.Rows[index].Tag = false;
+                    }
+                }
+                else if (result == DialogResult.Cancel) return false;
+            }
+
+            return true;
         }
 
         private void btn_Configuration_Click(object sender, EventArgs e)
