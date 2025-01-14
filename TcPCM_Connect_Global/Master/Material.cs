@@ -46,6 +46,9 @@ namespace TcPCM_Connect_Global
             JArray scrap = new JArray();
             foreach (DataGridViewRow row in dgv.Rows)
             {
+                if (row.Tag != null)
+                    if((bool)row.Tag == false) continue;
+
                 JObject item = new JObject();
                 JObject scrapItem = new JObject();
                 string materialName = null;
