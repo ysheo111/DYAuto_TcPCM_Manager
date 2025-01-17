@@ -34,6 +34,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.roundBorderPanel2 = new TcPCM_Connect.RoundBorderPanel();
+            this.btn_DBLoad = new CustomControls.RJControls.RJButton();
             this.label2 = new System.Windows.Forms.Label();
             this.cb_Classification = new CustomControls.RJControls.RJComboBox();
             this.btn_Configuration = new CustomControls.RJControls.RJButton();
@@ -53,6 +54,7 @@
             this.roundBorderPanel2.BorderColor = System.Drawing.Color.Gainsboro;
             this.roundBorderPanel2.BorderRadius = 10;
             this.roundBorderPanel2.BorderSize = 1;
+            this.roundBorderPanel2.Controls.Add(this.btn_DBLoad);
             this.roundBorderPanel2.Controls.Add(this.label2);
             this.roundBorderPanel2.Controls.Add(this.cb_Classification);
             this.roundBorderPanel2.Controls.Add(this.btn_Configuration);
@@ -65,6 +67,29 @@
             this.roundBorderPanel2.Name = "roundBorderPanel2";
             this.roundBorderPanel2.Size = new System.Drawing.Size(1050, 615);
             this.roundBorderPanel2.TabIndex = 62;
+            // 
+            // btn_DBLoad
+            // 
+            this.btn_DBLoad.AllowDrop = true;
+            this.btn_DBLoad.BackColor = System.Drawing.Color.White;
+            this.btn_DBLoad.BackgroundColor = System.Drawing.Color.White;
+            this.btn_DBLoad.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_DBLoad.BorderRadius = 5;
+            this.btn_DBLoad.BorderSize = 1;
+            this.btn_DBLoad.FlatAppearance.BorderSize = 0;
+            this.btn_DBLoad.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_DBLoad.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_DBLoad.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_DBLoad.Location = new System.Drawing.Point(460, 21);
+            this.btn_DBLoad.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_DBLoad.Name = "btn_DBLoad";
+            this.btn_DBLoad.Size = new System.Drawing.Size(114, 39);
+            this.btn_DBLoad.TabIndex = 65;
+            this.btn_DBLoad.Text = "불러오기";
+            this.btn_DBLoad.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_DBLoad.UseVisualStyleBackColor = false;
+            this.btn_DBLoad.Visible = false;
+            this.btn_DBLoad.Click += new System.EventHandler(this.btn_DBLoad_Click);
             // 
             // label2
             // 
@@ -226,7 +251,7 @@
             this.btn_Create.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Create.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Create.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Create.Location = new System.Drawing.Point(341, 21);
+            this.btn_Create.Location = new System.Drawing.Point(340, 22);
             this.btn_Create.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Create.Name = "btn_Create";
             this.btn_Create.Size = new System.Drawing.Size(114, 39);
@@ -262,5 +287,6 @@
         private CustomControls.RJControls.RJButton btn_Configuration;
         private CustomControls.RJControls.RJComboBox cb_Classification;
         private System.Windows.Forms.Label label2;
+        private CustomControls.RJControls.RJButton btn_DBLoad;
     }
 }

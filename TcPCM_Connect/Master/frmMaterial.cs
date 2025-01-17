@@ -33,6 +33,68 @@ namespace TcPCM_Connect
             //InjectionColumn();
             dgv_Material.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
+        private void btn_DBLoad_Click(object sender, EventArgs e)
+        {
+            CalendarColumn calendar = new CalendarColumn();
+            calendar.Name = calendar.HeaderText = "Valid From";
+
+
+            Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+            splashthread.IsBackground = true;
+            splashthread.Start();
+
+            //dgv_Material.Rows.Clear();
+
+            //string searchQeury = @"select BDRegions.Name_LOC as region,Currencies.IsoCode,Units.DisplayName_LOC as unit,MDMaterialHeaders.Name_LOC
+            //                            as name from MDMaterialDetails
+            //                            join MDMaterialHeaders ON MaterialHeaderId = MDMaterialHeaders.Id
+            //                            join BDRegions on RegionId = BDRegions.Id
+            //                            join Currencies on CurrencyId = Currencies.Id
+            //                            join Units on StaggerPriceQuantityUnitId = Units.Id
+            //                        where MaterialHeaderId = 66329";
+            //createDBDGV(searchQeury);
+
+            LoadingScreen.CloseSplashScreen();
+        }
+        private void createDBDGV(string searchQeury)
+        {
+            try
+            {
+                DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+                if (dataTable == null) return;
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    dgv_Material.Rows.Add();
+                    foreach (DataColumn col in dataTable.Columns)
+                    {
+                        string result = row[col].ToString();
+                        result = NameSplit(result);
+
+                        if (col.ColumnName == "region")
+                            dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["지역"].Value = result;
+                        else if (col.ColumnName == "IsoCode")
+                            dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["통화"].Value = result;
+                        else if (col.ColumnName == "unit")
+                        {
+                            dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["원재료 단위"].Value = result;
+                            dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["스크랩 단위"].Value = result;
+                        }
+                        else
+                        {
+                            string[] resultArray = result.Split(' ');
+                            dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["재질명"].Value = resultArray[0];
+                            dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["GRADE"].Value = resultArray[1];
+                        }
+                    }
+                }
+                CustomMessageBox.RJMessageBox.Show($"불러오기에 성공하였습니다", "Material", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch
+            {
+                CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
 
         private void btn_Create_Click(object sender, EventArgs e)
         {
@@ -203,6 +265,7 @@ namespace TcPCM_Connect
             System.Windows.Forms.ComboBox combo = (System.Windows.Forms.ComboBox)sender;
             if (combo.SelectedIndex < 0) return;
 
+            btn_DBLoad.Visible = false;
             if (combo.SelectedItem?.ToString()== "다이캐스팅")
                 Material(MasterData.Material.casting); //DieCastingColumn();
             else if(combo.SelectedItem?.ToString()== "사출")
@@ -210,7 +273,10 @@ namespace TcPCM_Connect
             else if(combo.SelectedItem?.ToString()== "프레스")
                 Material(MasterData.Material.plate); //PlateColumn();
             else if (combo.SelectedItem?.ToString() == "원소재 단가")
+            {
                 Material(MasterData.Material.price); //PriceColumn();
+                //btn_DBLoad.Visible = true;
+            }
             else
                 Material(MasterData.Material.material);
 
@@ -353,5 +419,6 @@ namespace TcPCM_Connect
             }
             return input;
         }
+
     }
 }

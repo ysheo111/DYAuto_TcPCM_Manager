@@ -332,87 +332,100 @@ namespace TcPCM_Connect_Global
                 sheetSelect.workSheet = workSheetList;
 
                 if (sheetSelect.ShowDialog() == DialogResult.Cancel) return null;
-                string val = sheetSelect.ReturnValue1;
+                //string val = sheetSelect.ReturnValue1;
 
-                Excel.Worksheet worksheet = workBook.Worksheets.Item[val];
-                //Excel.Range xlRng = worksheet.UsedRange.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
-                //var lastCell = worksheet.ra;
+                //Excel.Worksheet worksheet = workBook.Worksheets.Item[val];
+                Excel.Worksheet worksheet = null;
+                List<string> resultValueList = new List<string>();
 
-                object[,] xlRng = worksheet.UsedRange.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
+                if (sheetSelect.ReturnValues == null)
+                    resultValueList.Add(sheetSelect.ReturnValue1);
+                else
+                    resultValueList = sheetSelect.ReturnValues;
 
-                string[] keys = new string[xlRng.GetUpperBound(1) + 1];
-                int firstCol = 0, firstRow;
-                for (firstRow = xlRng.GetLowerBound(0); firstRow <= xlRng.GetUpperBound(0); firstRow++)
+                foreach (string returnValue in resultValueList)
                 {
-                    for (int col = xlRng.GetLowerBound(1); col <= xlRng.GetUpperBound(1); col++)
-                    {
-                        if (xlRng[firstRow, col] == null) continue;
-                        if (firstCol == 0) firstCol = col;
-                        
-                        string key = xlRng[firstRow, col]?.ToString();
-                        
-                        if (key == "나라")
-                            key = "지역";
-                        if (key == "재료명")
-                            key = "재질명";
-                        if (worksheetName == "재료관리비")
-                        {
-                            if (key.Contains("재료") && key.Contains("Loss") && key.Contains("율"))
-                                key = "재료 관리비율";
-                        }
-                        keys[col] = key;
-                    }
+                    worksheet = workBook.Worksheets.Item[returnValue];
 
-                    if (!keys.All(x => x == null))
-                    {
-                        if (keys.Any(colName => colName != null && dgv.Columns.Contains(colName)))
-                            break;
-                    }
-                }
+                    object[,] xlRng = worksheet.UsedRange.get_Value(Excel.XlRangeValueDataType.xlRangeValueDefault);
 
-                for (int row = firstRow + 1; row <= xlRng.GetUpperBound(0); row++)
-                {
-                    dgv.Rows.Add();
-                    bool flag = false;
-                    foreach (DataGridViewColumn col in dgv.Columns)
+                    string[] keys = new string[xlRng.GetUpperBound(1) + 1];
+                    int firstCol = 0, firstRow;
+                    for (firstRow = xlRng.GetLowerBound(0); firstRow <= xlRng.GetUpperBound(0); firstRow++)
                     {
-                        for (int category = xlRng.GetLowerBound(0); category < keys.Length; category++)
+                        for (int col = xlRng.GetLowerBound(1); col <= xlRng.GetUpperBound(1); col++)
                         {
-                            if (keys[category] == null) continue;
-                            if (keys[category].Contains(col.Name) && !keys.Where(key => key != keys[category]).Contains(col.Name))
+                            if (xlRng[firstRow, col] == null) continue;
+                            if (firstCol == 0) firstCol = col;
+                        
+                            string key = xlRng[firstRow, col]?.ToString();
+                        
+                            if (key == "나라")
+                                key = "지역";
+                            if (key == "재료명")
+                                key = "재질명";
+                            if (worksheetName == "재료관리비")
                             {
-                                if (xlRng[row, category] == null)
+                                if (key.Contains("재료") && key.Contains("Loss") && key.Contains("율"))
+                                    key = "재료 관리비율";
+                            }
+                            //if(!keys.Any(item => item == key))
+                            //    keys[col] = key;
+                            keys[col] = key;
+                        }
+
+                        if (!keys.All(x => x == null))
+                        {
+                            if (keys.Any(colName => colName != null && dgv.Columns.Contains(colName)))
+                                break;
+                        }
+                    }
+
+                    for (int row = firstRow + 1; row <= xlRng.GetUpperBound(0); row++)
+                    {
+                        dgv.Rows.Add();
+                        bool flag = false;
+                        foreach (DataGridViewColumn col in dgv.Columns)
+                        {
+                            for (int category = xlRng.GetLowerBound(0); category < keys.Length; category++)
+                            {
+                                if (keys[category] == null) continue;
+                                if (keys[category].Contains(col.Name) && !keys.Where(key => key != keys[category]).Any(key => key == col.Name)) //!keys.Where(key => key != keys[category]).Contains(col.Name))
                                 {
-                                    dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Red;
-                                    continue;
+                                    if (xlRng[row, category] == null)
+                                    {
+                                        dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Red;
+                                        continue;
+                                    }
+
+                                    bool dateTypeCheck = global.TryFormat("{####-##-##}", out string resultValue, xlRng[row, category].ToString());
+                                    if ((col.Name.ToLower().Contains("valid") && !dateTypeCheck) || (!col.Name.ToLower().Contains("valid") && dateTypeCheck))
+                                    {
+                                        dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
+                                    }
+
+                                    flag = true;
+
+                                    if (resultValue.Contains("CO2e/kg"))
+                                        resultValue = resultValue.Replace("CO2e/kg","").Trim();
+                                    if(col.Name == "지역" && worksheetName == "임률")
+                                        dgv.Rows[dgv.Rows.Count - 1].Cells["Plant"].Value = resultValue;
+
+                                    dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue;
+                                    if (new List<string>() { "지역", "공정", "업종", "설비명", "설비구분", "통화", "Valid From", "구분자", "재질명", "소재명", "메이커", "구분", "비중", "비중 단위", "가격 단위", "이름", "ISO", "UOM Code", "UOM 명", "Plant", "GRADE", "단위" }.Contains(col.Name)) continue;
+
+                                    if ((((col.Name.Contains("율") || col.Name.Contains("률")) && !col.Name.Contains("임률") && !col.Name.Contains("환율"))) && !col.Name.Contains("수선비율"))
+                                    {
+                                        dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = global.ConvertDouble(resultValue) * 100;
+                                    }
+                                    if (!double.TryParse(resultValue, out double resultDouble)) dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
                                 }
-
-                                bool dateTypeCheck = global.TryFormat("{####-##-##}", out string resultValue, xlRng[row, category].ToString());
-                                if ((col.Name.ToLower().Contains("valid") && !dateTypeCheck) || (!col.Name.ToLower().Contains("valid") && dateTypeCheck))
-                                {
-                                    dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
-                                }
-
-                                flag = true;
-
-                                if (resultValue.Contains("CO2e/kg"))
-                                    resultValue = resultValue.Replace("CO2e/kg","").Trim();
-
-                                dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue;
-                                if (new List<string>() { "지역", "공정", "업종", "설비명", "설비구분", "통화", "Valid From", "구분자", "재질명", "소재명", "메이커", "구분", "비중", "비중 단위", "가격 단위", "이름", "ISO", "UOM Code", "UOM 명", "Plant", "GRADE", "단위" }.Contains(col.Name)) continue;
-
-                                if ((((col.Name.Contains("율") || col.Name.Contains("률")) && !col.Name.Contains("임률") && !col.Name.Contains("환율"))) && !col.Name.Contains("수선비율"))
-                                {
-                                    dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = global.ConvertDouble(resultValue) * 100;
-                                }
-                                if (!double.TryParse(resultValue, out double resultDouble)) dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
                             }
                         }
+
+                        if (!flag) dgv.Rows.RemoveAt(dgv.Rows.Count - 1);
                     }
-
-                    if (!flag) dgv.Rows.RemoveAt(dgv.Rows.Count - 1);
                 }
-
             }
             catch (Exception exc)
             {
