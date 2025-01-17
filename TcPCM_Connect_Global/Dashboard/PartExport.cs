@@ -156,8 +156,8 @@ namespace TcPCM_Connect_Global
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Process manufacturing step") == true)
                     {
                         Part.Manufacturing manufacturing = new Part.Manufacturing();
-                        manufacturing.quantity = global.ConvertDouble( values["Quantity, direct input value (Manufacturing Step)"]);
-                        manufacturing.price = global.ConvertDouble(values["Price (Manufacturing Step)"]);
+                        manufacturing.quantity = global.ConvertDouble( values[Report.Manufacturing.externalQuntity]);
+                        manufacturing.price = global.ConvertDouble(values[Report.Manufacturing.externalPrice]);
                     }
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Detailed manufacturing step") == true)
                     {

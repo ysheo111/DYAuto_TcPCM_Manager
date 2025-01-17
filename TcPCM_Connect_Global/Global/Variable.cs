@@ -310,6 +310,9 @@ namespace TcPCM_Connect_Global
             public static string redirectExpenseRatio = "간접경비율";
             public static string ratioOfMachineRepair = "수선비율";
 
+            public static string externalQuntity = "Quantity, direct input value (Manufacturing Step)";
+            public static string externalPrice = "Price (Manufacturing Step)";
+
             public static string sequence = "Sequence Number";
 
             public static string id = "Database internal identifier (Manufacturing step)";
