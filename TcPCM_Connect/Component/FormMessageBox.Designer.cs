@@ -160,7 +160,6 @@ namespace CustomMessageBox.Private
             // 
             // labelMessage
             // 
-            this.labelMessage.AutoSize = true;
             this.labelMessage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.labelMessage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(85)))), ((int)(((byte)(85)))), ((int)(((byte)(85)))));
@@ -168,7 +167,7 @@ namespace CustomMessageBox.Private
             this.labelMessage.MaximumSize = new System.Drawing.Size(800, 0);
             this.labelMessage.Name = "labelMessage";
             this.labelMessage.Padding = new System.Windows.Forms.Padding(7, 12, 14, 18);
-            this.labelMessage.Size = new System.Drawing.Size(133, 50);
+            this.labelMessage.Size = new System.Drawing.Size(394, 71);
             this.labelMessage.TabIndex = 1;
             this.labelMessage.Text = "labelMessage";
             this.labelMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -205,7 +204,6 @@ namespace CustomMessageBox.Private
             this.panelTitleBar.PerformLayout();
             this.panelButtons.ResumeLayout(false);
             this.panelBody.ResumeLayout(false);
-            this.panelBody.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxIcon)).EndInit();
             this.ResumeLayout(false);
 

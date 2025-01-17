@@ -69,9 +69,10 @@ public partial class FormMessageBox : Form
         this.PrimaryColor = primaryColor;
         this.labelMessage.Text = text;
         this.labelCaption.Text = caption;
+        this.labelMessage.Size = new Size(this.labelMessage.Width+30, this.labelMessage.Height);
         SetFormSize();
-            SetIcon(icon);
-            SetButtons(buttons, MessageBoxDefaultButton.Button1);//Set [Default Button 1]
+        SetIcon(icon);
+        SetButtons(buttons, MessageBoxDefaultButton.Button1);//Set [Default Button 1]
         
     }
     public FormMessageBox(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton)
@@ -91,6 +92,7 @@ public partial class FormMessageBox : Form
     {
         this.FormBorderStyle = FormBorderStyle.None;
         this.Padding = new Padding(borderSize);//Set border size
+        this.labelMessage.AutoSize = true;
         this.labelMessage.MaximumSize = new Size(550, 0);
         this.btnClose.DialogResult = DialogResult.Cancel;
         this.button1.DialogResult = DialogResult.OK;
