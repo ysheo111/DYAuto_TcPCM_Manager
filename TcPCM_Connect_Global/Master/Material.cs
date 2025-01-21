@@ -62,10 +62,11 @@ namespace TcPCM_Connect_Global
                             materials = "Siemens.TCPCM.Classification.Material.RawMaterial.CastingMaterial";
                         else if (materialName == "플라스틱")
                             materials = "Siemens.TCPCM.Classification.Material.RawMaterial.Plastic";
-                        else if (materialName == "철판" || materialName == "철강" || materialName == "특수강" || materialName == "스테인리스강")
+                        else if (materialName == "철판" || materialName == "철강" || materialName == "스테인리스강")
                              materials = "Siemens.TCPCM.Classification.Material.SemiFinished.SheetMetal.Plate";
                         else
-                            materials = "";
+                            materials = "Siemens.TCPCM.Classification.Material.RawMaterial.Plastic";
+
                         item.Add("Materials", $"{materials}");
                         scrapItem.Add("Materials", $"Siemens.TCPCM.Classification.Material.Scrap");
                         item.Add("Designation", $"[DYA]{row.Cells[category].Value}");
