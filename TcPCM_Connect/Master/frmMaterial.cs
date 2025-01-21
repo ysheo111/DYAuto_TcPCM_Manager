@@ -21,6 +21,8 @@ namespace TcPCM_Connect
     public partial class frmMaterial : Form
     {
         public string className = "";
+        private MonthCalendar calendar;
+        private DateTime selectedDate;
         public frmMaterial()
         {
             InitializeComponent();
@@ -35,31 +37,100 @@ namespace TcPCM_Connect
         }
         private void btn_DBLoad_Click(object sender, EventArgs e)
         {
-            CalendarColumn calendar = new CalendarColumn();
-            calendar.Name = calendar.HeaderText = "Valid From";
+            calendar = new MonthCalendar
+            {
+                Location = btn_DBLoad.Location,
+                MaxSelectionCount = 1,
+                Name = "buttonCalendar"
+            };
+            calendar.DateSelected += Calendar_DateSelected;
 
+            this.Controls.Add(calendar);
 
-            Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
-            splashthread.IsBackground = true;
-            splashthread.Start();
+            calendar.BringToFront();
+            calendar.Focus();
 
-            //dgv_Material.Rows.Clear();
-
-            //string searchQeury = @"select BDRegions.Name_LOC as region,Currencies.IsoCode,Units.DisplayName_LOC as unit,MDMaterialHeaders.Name_LOC
-            //                            as name from MDMaterialDetails
-            //                            join MDMaterialHeaders ON MaterialHeaderId = MDMaterialHeaders.Id
-            //                            join BDRegions on RegionId = BDRegions.Id
-            //                            join Currencies on CurrencyId = Currencies.Id
-            //                            join Units on StaggerPriceQuantityUnitId = Units.Id
-            //                        where MaterialHeaderId = 66329";
-            //createDBDGV(searchQeury);
-
-            LoadingScreen.CloseSplashScreen();
+            calendar.Leave += (s, args) =>
+            {
+                this.Controls.Remove(calendar);
+                calendar.Dispose();
+            };
         }
-        private void createDBDGV(string searchQeury)
+        private void Calendar_DateSelected(object sender, DateRangeEventArgs e)
+        {
+            selectedDate = e.Start;
+            this.Controls.Remove(calendar);
+            calendar.Dispose();
+            DB_Load();
+        }
+        private void DB_Load()
         {
             try
             {
+                Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+                splashthread.IsBackground = true;
+                splashthread.Start();
+
+                dgv_Material.Rows.Clear();
+
+                string searchQeury = @"With A as(
+	                                            select distinct
+		                                            BDRegions.UniqueKey as region,
+		                                            Currencies.IsoCode As IsoCode,
+		                                            MDMaterialHeaders.UniqueKey As cName,
+		                                            Units.Name As '원재료 단위',
+                                                    MDMaterialHeaders.Name_LOC_Extracted As '소재명'
+	                                            from MDMaterialDetails
+		                                            left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
+		                                            left join Units on MDMaterialDetails.UnitId = Units.Id
+		                                            LEFT join BDRegions on RegionId = BDRegions.Id
+		                                            LEFT join Currencies on CurrencyId = Currencies.Id
+	                                            where MaterialHeaderId in
+		                                            (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+		                                            And MDMaterialHeaders.UniqueKey not like '%_scrap'
+                                            ), B as(
+	                                            select distinct
+		                                            BDRegions.UniqueKey as region,
+		                                            Currencies.IsoCode As IsoCode,
+		                                            MDMaterialHeaders.UniqueKey As sName,
+		                                            Units.Name As '스크랩 단위'
+	                                            from MDMaterialDetails
+		                                            left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
+		                                            left join Units on MDMaterialDetails.UnitId = Units.Id
+		                                            LEFT join BDRegions on RegionId = BDRegions.Id
+		                                            LEFT join Currencies on CurrencyId = Currencies.Id
+	                                            where MaterialHeaderId in
+		                                            (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+		                                            And MDMaterialHeaders.UniqueKey like '%_scrap'
+                                            ), C as(
+	                                            select distinct
+		                                            BDRegions.UniqueKey as region,
+		                                            MDMaterialHeaders.UniqueKey As sName,
+		                                            Units.Name As '탄소발생량 단위'
+	                                            from MDMaterialCo2Details
+		                                            left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
+		                                            left join Units on MDMaterialCo2Details.UnitId = Units.Id
+		                                            LEFT join BDRegions on RegionId = BDRegions.Id
+	                                            where MaterialHeaderId in
+		                                            (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+		                                            And MDMaterialHeaders.UniqueKey like '%_scrap'
+                                            ) select
+                                            COALESCE(A.region, B.region, C.region) as Region,
+                                            COALESCE(A.IsoCode, B.IsoCode) as IsoCode,
+                                            A.[원재료 단위],
+                                            B.[스크랩 단위],
+                                            C.[탄소발생량 단위],
+                                            A.소재명,
+                                            A.cName
+                                            as name From A Full outer join B on
+                                            A.region = B.region And A.IsoCode = B.IsoCode
+                                            And B.sName = A.cName+'_scrap'
+                                            Full outer join C on
+                                            COALESCE(A.region, B.region) = C.region
+                                            And C.sName = B.sName
+                                            Where
+	                                            COALESCE(A.region, B.region, C.region) IS NOT NULL
+	                                            And A.[원재료 단위] is not null";
                 DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
                 if (dataTable == null) return;
 
@@ -71,22 +142,30 @@ namespace TcPCM_Connect
                         string result = row[col].ToString();
                         result = NameSplit(result);
 
-                        if (col.ColumnName == "region")
+                        if (col.ColumnName == "Region")
                             dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["지역"].Value = result;
                         else if (col.ColumnName == "IsoCode")
                             dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["통화"].Value = result;
-                        else if (col.ColumnName == "unit")
-                        {
+                        else if (col.ColumnName == "원재료 단위")
                             dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["원재료 단위"].Value = result;
+                        else if (col.ColumnName == "스크랩 단위")
                             dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["스크랩 단위"].Value = result;
+                        else if (col.ColumnName == "탄소발생량 단위")
+                            dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["단위"].Value = result;
+                        else if (col.ColumnName == "소재명")
+                        {
+                            result = result.Replace("[DYA]", "");
+                            string[] resultArray = result.Split(' ');
+                            dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["소재명"].Value = resultArray[0];
                         }
                         else
                         {
-                            string[] resultArray = result.Split(' ');
+                            string[] resultArray = result.Split('_');
                             dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["재질명"].Value = resultArray[0];
                             dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["GRADE"].Value = resultArray[1];
                         }
                     }
+                    dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["Valid From"].Value = selectedDate;
                 }
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 성공하였습니다", "Material", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -94,6 +173,7 @@ namespace TcPCM_Connect
             {
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            LoadingScreen.CloseSplashScreen();
         }
 
         private void btn_Create_Click(object sender, EventArgs e)
@@ -113,7 +193,7 @@ namespace TcPCM_Connect
         {
             //bool duple = IsDuplicate();
             string type = cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString();
-            if(type == "원소재 단가")
+            if (type == "원소재 단가")
             {
                 isSubstance();
                 if (!IsDuplicate())
@@ -126,7 +206,6 @@ namespace TcPCM_Connect
 
             try
             {
-
                 dgv_Material.AllowUserToAddRows = false;
                 Material material = new Material();
                 string err = material.Import(type, dgv_Material);
@@ -275,7 +354,7 @@ namespace TcPCM_Connect
             else if (combo.SelectedItem?.ToString() == "원소재 단가")
             {
                 Material(MasterData.Material.price); //PriceColumn();
-                //btn_DBLoad.Visible = true;
+                btn_DBLoad.Visible = true;
             }
             else
                 Material(MasterData.Material.material);

@@ -85,7 +85,7 @@
             this.btn_DBLoad.Name = "btn_DBLoad";
             this.btn_DBLoad.Size = new System.Drawing.Size(114, 39);
             this.btn_DBLoad.TabIndex = 65;
-            this.btn_DBLoad.Text = "불러오기";
+            this.btn_DBLoad.Text = "DB 불러오기";
             this.btn_DBLoad.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
             this.btn_DBLoad.UseVisualStyleBackColor = false;
             this.btn_DBLoad.Visible = false;

@@ -364,14 +364,16 @@ namespace TcPCM_Connect_Global
                                 key = "지역";
                             if (key == "재료명")
                                 key = "재질명";
+                            if (key == "segmant")
+                                key = "업종";
                             if (worksheetName == "재료관리비")
                             {
                                 if (key.Contains("재료") && key.Contains("Loss") && key.Contains("율"))
                                     key = "재료 관리비율";
                             }
-                            //if(!keys.Any(item => item == key))
-                            //    keys[col] = key;
-                            keys[col] = key;
+                            if (!keys.Any(item => item == key))
+                                keys[col] = key;
+                            //keys[col] = key;
                         }
 
                         if (!keys.All(x => x == null))
@@ -403,6 +405,11 @@ namespace TcPCM_Connect_Global
                                     {
                                         dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
                                     }
+                                    if(col.Name.ToLower().Contains("valid") && !dateTypeCheck)
+                                    {
+                                        flag = false;
+                                        break;
+                                    }
 
                                     flag = true;
 
@@ -418,6 +425,24 @@ namespace TcPCM_Connect_Global
                                     {
                                         dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = global.ConvertDouble(resultValue) * 100;
                                     }
+                                    if (!double.TryParse(resultValue, out double resultDouble)) dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
+                                }
+                                else if (keys[category] == "임률" && !keys.Where(key => key != keys[category]).Any(key => key == col.Name))
+                                {
+                                    if (xlRng[row, category] == null)
+                                    {
+                                        dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Red;
+                                        continue;
+                                    }
+
+                                    bool dateTypeCheck = global.TryFormat("{####-##-##}", out string resultValue, xlRng[row, category].ToString());
+                                    if ((col.Name.ToLower().Contains("valid") && !dateTypeCheck) || (!col.Name.ToLower().Contains("valid") && dateTypeCheck))
+                                    {
+                                        dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
+                                    }
+
+                                    flag = true;
+                                    dgv.Rows[dgv.Rows.Count - 1].Cells["직접임률"].Value = global.ConvertDouble(resultValue);
                                     if (!double.TryParse(resultValue, out double resultDouble)) dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
                                 }
                             }
