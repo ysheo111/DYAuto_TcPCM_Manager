@@ -244,7 +244,7 @@ namespace TcPCM_Connect
             if (list.Count != 0)
             {
                 string message = "";
-                foreach (string msg in list)
+                foreach(string msg in list)
                 {
                     message += $"{msg}\n";
                 }
