@@ -232,7 +232,7 @@ namespace TcPCM_Connect
                 string grandValue = row.Cells["GRADE"].Value?.ToString();
 
                 string searchQeury = $@"select UniqueKey as name from MDSubstances
-                                        where CAST(UniqueKey AS NVARCHAR(MAX)) = '{nameValue}_{grandValue}'";
+                                        where CAST(UniqueKey AS NVARCHAR(MAX)) = N'{nameValue}_{grandValue}'";
 
                 string result = global_DB.ScalarExecute(searchQeury, (int)global_DB.connDB.PCMDB);
 
@@ -246,9 +246,9 @@ namespace TcPCM_Connect
                 string message = "";
                 foreach(string msg in list)
                 {
-                    message += $"{msg}\n";
+                    message += $"\n{msg}";
                 }
-                CustomMessageBox.RJMessageBox.Show($"{message}의 물성치 정보가 없습니다.", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomMessageBox.RJMessageBox.Show($"아래의 물성치 정보가 없습니다:{message}", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
         private bool IsDuplicate()
@@ -318,7 +318,9 @@ namespace TcPCM_Connect
                 {
                     array += $"\n{a}";
                 }
-                DialogResult result = CustomMessageBox.RJMessageBox.Show($"중복되는 값 {array} \n을 덮어씌우겠습니까? \n(Cancel=Import 취소)", "Material", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                if (string.IsNullOrEmpty(array)) return true;
+                DialogResult result = CustomMessageBox.RJMessageBox.Show($"중복되는 값을 덮어씌우겠습니까? \n(Yes=덮어쓰기,No=중복 값 제외하고 Import,Cancel=Import 취소){array}", "Material", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
                 if (result == DialogResult.No)
                 {
                     foreach (int index in numList)

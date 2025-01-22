@@ -603,6 +603,7 @@ namespace TcPCM_Connect_Global
 
         public class Machine
         {
+            public static List<string> machineDetailList = new List<string>() { validFrom, currency, segment, designation1, maxClampingForce, maker, manufacturer, acquisition, imputed, space, ratedPower, poweUtiliation, acquisitionEx, customer};
             public static string designation = "이름";
             public static string designation1= "설비명";
             public static string designation2 = "구분 2";
@@ -613,6 +614,7 @@ namespace TcPCM_Connect_Global
             public static string currency = "통화";
             public static string category = "구분";
             public static string acquisition = "설비가";
+            public static string acquisitionEx = "기타비용";
             public static string imputed = "기계상각년수";
             public static string space = "설치면적";
             public static string ratedPower = "전력용량";
@@ -621,6 +623,10 @@ namespace TcPCM_Connect_Global
             public static string validFrom = "Valid From";
             public static string setup = "준비시간";
             public static string region = "지역";
+            public static string segment = "업종";
+            public static string manufacturer = "설비구분";
+            public static string maker = "사양 정보";
+            public static string customer = "업체명";
 
             public static string setupTime = "준비시간";
             public static string dryRunningTime = "기본C/T 두께 2 이하";
