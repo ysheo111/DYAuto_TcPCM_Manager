@@ -72,12 +72,11 @@ namespace TcPCM_Connect
 
         private void ColumnAdd()
         {
-            dgv_Machine.Columns.Add(MasterData.Machine.designation1, MasterData.Machine.designation1);
-            //dgv_Machine.Columns.Add(MasterData.Machine.designation2, MasterData.Machine.designation2);
-            if(cb_Classification.SelectedItem?.ToString() == "기타") dgv_Machine.Columns.Add(MasterData.Machine.process, MasterData.Machine.process);
-            dgv_Machine.Columns.Add(MasterData.Machine.maxClampingForce, MasterData.Machine.maxClampingForce);
-            //dgv_Machine.Columns.Add(MasterData.Machine.setup, MasterData.Machine.setup);
-
+            CalendarColumn calendar = new CalendarColumn();
+            calendar.Name = calendar.HeaderText = MasterData.Machine.validFrom;
+            dgv_Machine.Columns.Add(calendar);
+            dgv_Machine.Columns[MasterData.Machine.validFrom].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+            
             DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
             combo.Name = combo.HeaderText = MasterData.Machine.currency;
             combo.FlatStyle = FlatStyle.Flat;
@@ -85,27 +84,29 @@ namespace TcPCM_Connect
             ((DataGridViewComboBoxColumn)dgv_Machine.Columns[MasterData.Machine.currency]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
             dgv_Machine.Columns[MasterData.Machine.currency].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
 
+            dgv_Machine.Columns.Add(MasterData.Machine.segment, MasterData.Machine.segment);
+
+            dgv_Machine.Columns.Add(MasterData.Machine.designation1, MasterData.Machine.designation1);
+            //dgv_Machine.Columns.Add(MasterData.Machine.designation2, MasterData.Machine.designation2);
+            if(cb_Classification.SelectedItem?.ToString() == "기타") dgv_Machine.Columns.Add(MasterData.Machine.process, MasterData.Machine.process);
+                dgv_Machine.Columns.Add(MasterData.Machine.maxClampingForce, MasterData.Machine.maxClampingForce);
+            //dgv_Machine.Columns.Add(MasterData.Machine.setup, MasterData.Machine.setup);
+
+
             //if (cb_Classification.SelectedItem?.ToString() == "기타")  dgv_Machine.Columns.Add(MasterData.Machine.category, MasterData.Machine.category);
-
-            CalendarColumn calendar = new CalendarColumn();
-            calendar.Name = calendar.HeaderText = MasterData.Machine.validFrom;
-            dgv_Machine.Columns.Add(calendar);
-            dgv_Machine.Columns[MasterData.Machine.validFrom].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
-
-            dgv_Machine.Columns.Add(MasterData.Machine.acquisition, MasterData.Machine.acquisition);
-            dgv_Machine.Columns.Add(MasterData.Machine.region, MasterData.Machine.region);
-            dgv_Machine.Columns.Add(MasterData.Machine.category, MasterData.Machine.category);
-            dgv_Machine.Columns.Add(MasterData.Machine.maintance, MasterData.Machine.maintance);
-            dgv_Machine.Columns.Add(MasterData.Machine.imputed, MasterData.Machine.imputed);
-            dgv_Machine.Columns.Add(MasterData.Machine.space, MasterData.Machine.space);
-            dgv_Machine.Columns.Add(MasterData.Machine.ratedPower, MasterData.Machine.ratedPower);
-            dgv_Machine.Columns.Add(MasterData.Machine.poweUtiliation, MasterData.Machine.poweUtiliation);           
             dgv_Machine.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
         private void dgv_Machine_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             global.CommaAdd(e, 2);
+            if (!dgv_Machine.Columns[e.ColumnIndex].Name.Contains("Valid")) return;
+
+            DataGridViewRow row = dgv_Machine.Rows[e.RowIndex];
+
+            if (row.Cells[e.ColumnIndex].Value == null) return;
+            row.Cells[e.ColumnIndex].Value = !DateTime.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out DateTime dt) ?
+                row.Cells[e.ColumnIndex].Value : dt.ToString("yyyy-MM-dd");
         }
 
         private void dgv_Machine_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -131,6 +132,7 @@ namespace TcPCM_Connect
             if (combo.SelectedItem?.ToString() == "다이캐스팅") DieCastingColumn();
             else if (combo.SelectedItem?.ToString() == "사출") InjectionColumn();
             else if (combo.SelectedItem?.ToString() == "프레스") PressColumn();
+            else if (combo.SelectedItem?.ToString() == "설비") Capitalcolumn();
             dgv_Machine.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
@@ -164,6 +166,19 @@ namespace TcPCM_Connect
             dgv_Machine.Columns.Add(MasterData.Machine.Foaming, MasterData.Machine.Foaming);
             dgv_Machine.Columns.Add(MasterData.Machine.Drawing, MasterData.Machine.Drawing);
             dgv_Machine.Columns.Add(MasterData.Machine.SPM, MasterData.Machine.SPM);
+        }
+
+        private void Capitalcolumn()
+        {
+            dgv_Machine.Columns.Add(MasterData.Machine.maker, MasterData.Machine.maker);
+            dgv_Machine.Columns.Add(MasterData.Machine.manufacturer, MasterData.Machine.manufacturer);
+            dgv_Machine.Columns.Add(MasterData.Machine.acquisition, MasterData.Machine.acquisition);
+            dgv_Machine.Columns.Add(MasterData.Machine.imputed, MasterData.Machine.imputed);
+            dgv_Machine.Columns.Add(MasterData.Machine.space, MasterData.Machine.space);
+            dgv_Machine.Columns.Add(MasterData.Machine.ratedPower, MasterData.Machine.ratedPower);
+            dgv_Machine.Columns.Add(MasterData.Machine.poweUtiliation, MasterData.Machine.poweUtiliation);
+            dgv_Machine.Columns.Add(MasterData.Machine.acquisitionEx, MasterData.Machine.acquisitionEx);
+            dgv_Machine.Columns.Add("업체명","업체명");
         }
     }
 }

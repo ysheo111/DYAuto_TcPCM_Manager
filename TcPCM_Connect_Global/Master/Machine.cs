@@ -27,123 +27,179 @@ namespace TcPCM_Connect_Global
 
             foreach (DataGridViewRow row in dgv.Rows)
             {
+                bool flag = true;
                 object force = row.Cells[MasterData.Machine.maxClampingForce].Value;
                 if (type == "프레스")
                 {
                     force = null;
                 }
-                    //string designation = row.Cells[MasterData.Machine.designation2].Value?.ToString().Length > 0 ? "_": "";
-                JObject item = new JObject
+                //string designation = row.Cells[MasterData.Machine.designation2].Value?.ToString().Length > 0 ? "_": "";
+                JObject item = new JObject();
+                JObject detailitem = new JObject();
+                //{
+                //    { MasterData.Machine.designation1, $"[DYA]{row.Cells[MasterData.Machine.designation1].Value}{(force != null ? $" {force}" : "")}"  },
+                //    { MasterData.Machine.maxClampingForce, row.Cells[MasterData.Machine.maxClampingForce].Value?.ToString() },
+                //    { MasterData.Machine.category, row.Cells[MasterData.Machine.category].Value?.ToString() },
+                //    { "Column1",  global.ConvertDouble( row.Cells[MasterData.Machine.maxClampingForce].Value)*10 },
+                //};
+                #region 옛코드
+                //            if (type == "다이캐스팅")
+                //            {
+                //                item.Add(MasterData.Machine.technology, "Siemens.TCPCM.Classification.Technology.DieCasting");
+                //                item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.Casting.DieCastingMachine");
+                //                item.Add(MasterData.Machine.resetEjector, row.Cells[MasterData.Machine.blowOutMold2].Value?.ToString());
+                //                item.Add(MasterData.Machine.closeSilder, row.Cells[MasterData.Machine.closeSilder2].Value?.ToString());
+                //                item.Add(MasterData.Machine.closeMold, row.Cells[MasterData.Machine.closeMold2].Value?.ToString()); 
+                //                item.Add(MasterData.Machine.fillMaterial, row.Cells[MasterData.Machine.fillMaterial2].Value?.ToString());
+                //                item.Add(MasterData.Machine.shotTime, row.Cells[MasterData.Machine.injectPartingAgent2].Value?.ToString());
+                //                item.Add(MasterData.Machine.openMold, row.Cells[MasterData.Machine.openSilder2].Value?.ToString());
+                //                double setup = global.ConvertDouble(row.Cells[MasterData.Machine.openMold2].Value)*60;
+                //                item.Add(MasterData.Machine.blowOutMold, setup);
+                //                item.Add(MasterData.Machine.injectPartingAgent, 0);
+                //                item.Add(MasterData.Machine.openSilder, 0);
+                //                item.Add(MasterData.Machine.removeCast, 0);
+                //                item.Add(MasterData.Machine.retractEjector, 0);
+                //                //item.Add(MasterData.Machine.openMold, row.Cells[MasterData.Machine.openMold2].Value?.ToString());
+                //                //item.Add(MasterData.Machine.removeCast, row.Cells[MasterData.Machine.removeCast2].Value?.ToString());
+                //                //item.Add(MasterData.Machine.retractEjector, row.Cells[MasterData.Machine.retractEjector2].Value?.ToString());
+                //                //item.Add(MasterData.Machine.resetEjector, row.Cells[MasterData.Machine.resetEjector2].Value?.ToString());
+                //                //item.Add(MasterData.Machine.shotTime, row.Cells[MasterData.Machine.shotTime2].Value?.ToString());
+                //}
+                //            else if (type == "사출")
+                //            {
+                //                item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.PlasticProcessing.InjectionMolding");
+                //                item.Add(MasterData.Machine.technology, "Siemens.TCPCM.Classification.Technology.InjectionMolding");
+                //                item.Add(MasterData.Machine.setupTime, row.Cells[MasterData.Machine.setupTime].Value?.ToString());
+                //                item.Add(MasterData.Machine.dryRunningTime, row.Cells[MasterData.Machine.dryRunningTime].Value?.ToString());
+                //                item.Add(MasterData.Machine.meltingPower, row.Cells[MasterData.Machine.meltingPower].Value?.ToString());
+                //                item.Add(MasterData.Machine.movePlasticizingUnit,row.Cells[ MasterData.Machine.movePlasticizingUnit].Value?.ToString());
+                //                meltingPower = 1 + (global.ConvertDouble(row.Cells[MasterData.Machine.maxClampingForce].Value) - 65) * 0.006;
+                //                item["구분 1"] = meltingPower;
+                //            }
+                //            else if (type == "프레스")
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.StampingDrawingBending.Press");
+                //                item.Add(MasterData.Machine.setupTime, row.Cells[MasterData.Machine.setupTime].Value?.ToString());
+                //                item.Add(MasterData.Machine.Foaming, row.Cells[MasterData.Machine.Foaming].Value?.ToString());
+                //                item.Add(MasterData.Machine.Drawing, row.Cells[MasterData.Machine.Drawing].Value?.ToString());
+                //                item.Add(MasterData.Machine.SPM, row.Cells[MasterData.Machine.SPM].Value?.ToString());
+                //            }
+                //            else if (row.Cells[MasterData.Machine.process].Value?.ToString().ToLower().Contains("press") == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.StampingDrawingBending.Press");
+                //            }
+                //            else if (row.Cells[MasterData.Machine.process].Value?.ToString().ToLower().Contains("inspection") == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.Testing");
+                //            }
+                //            else if (new List<string>() { "progressive" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.StampingDrawingBending.Progressive");
+                //            }
+                //            else if (new List<string>() { "leak test" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Testing.{row.Cells[MasterData.Machine.process].Value}");
+                //            }
+                //            else if (row.Cells[MasterData.Machine.process].Value?.ToString().ToLower().Contains("shot") == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.Deburring.ShotBlasting");
+                //            }
+                //            else if (new List<string>() { "grinding", "mc", "polishing" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Machining.{row.Cells[MasterData.Machine.process].Value}");
+                //            }
+                //            else if (new List<string>() { "smelting furnace" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Casting.SmeltingFurnace");
+                //            }
+                //            else if (new List<string>() { "impregnation", "trimming" , "core compaction" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Casting.{row.Cells[MasterData.Machine.process].Value?.ToString().Replace(" ","")}");
+                //            }
+                //            else if (new List<string>() { "laser marking" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Label.{row.Cells[MasterData.Machine.process].Value?.ToString().Replace(" ", "")}");
+                //            }
+                //            else if (new List<string>() { "laser welding" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Joining.LaserWelding");
+                //            }
+                //            else
+                //            {
+                //                item.Add(MasterData.Machine.technology, "");
+                //                item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.{row.Cells[MasterData.Machine.process].Value}");
+                //            }
+                #endregion
+                if (type == "설비")
                 {
-                    { MasterData.Machine.designation1, $"[LGMagna]{row.Cells[MasterData.Machine.designation1].Value}{(force != null ? $" {force}" : "")}"  },
-                    { MasterData.Machine.maxClampingForce, row.Cells[MasterData.Machine.maxClampingForce].Value?.ToString() },
-                     { MasterData.Machine.category, row.Cells[MasterData.Machine.category].Value?.ToString() },
-                    
-                    { "Column1",  global.ConvertDouble( row.Cells[MasterData.Machine.maxClampingForce].Value)*10 },
-                    { "구분 1", null},
-                };
-                if (type == "다이캐스팅")
-                {
-                    item.Add(MasterData.Machine.technology, "Siemens.TCPCM.Classification.Technology.DieCasting");
-                    item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.Casting.DieCastingMachine");
-                    item.Add(MasterData.Machine.resetEjector, row.Cells[MasterData.Machine.blowOutMold2].Value?.ToString());
-                    item.Add(MasterData.Machine.closeSilder, row.Cells[MasterData.Machine.closeSilder2].Value?.ToString());
-                    item.Add(MasterData.Machine.closeMold, row.Cells[MasterData.Machine.closeMold2].Value?.ToString()); 
-                    item.Add(MasterData.Machine.fillMaterial, row.Cells[MasterData.Machine.fillMaterial2].Value?.ToString());
-                    item.Add(MasterData.Machine.shotTime, row.Cells[MasterData.Machine.injectPartingAgent2].Value?.ToString());
-                    item.Add(MasterData.Machine.openMold, row.Cells[MasterData.Machine.openSilder2].Value?.ToString());
-                    double setup = global.ConvertDouble(row.Cells[MasterData.Machine.openMold2].Value)*60;
-                    item.Add(MasterData.Machine.blowOutMold, setup);
-                    item.Add(MasterData.Machine.injectPartingAgent, 0);
-                    item.Add(MasterData.Machine.openSilder, 0);
-                    item.Add(MasterData.Machine.removeCast, 0);
-                    item.Add(MasterData.Machine.retractEjector, 0);
-                    //item.Add(MasterData.Machine.openMold, row.Cells[MasterData.Machine.openMold2].Value?.ToString());
-                    //item.Add(MasterData.Machine.removeCast, row.Cells[MasterData.Machine.removeCast2].Value?.ToString());
-                    //item.Add(MasterData.Machine.retractEjector, row.Cells[MasterData.Machine.retractEjector2].Value?.ToString());
-                    //item.Add(MasterData.Machine.resetEjector, row.Cells[MasterData.Machine.resetEjector2].Value?.ToString());
-                    //item.Add(MasterData.Machine.shotTime, row.Cells[MasterData.Machine.shotTime2].Value?.ToString());
-    }
-                else if (type == "사출")
-                {
-                    item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.PlasticProcessing.InjectionMolding");
-                    item.Add(MasterData.Machine.technology, "Siemens.TCPCM.Classification.Technology.InjectionMolding");
-                    item.Add(MasterData.Machine.setupTime, row.Cells[MasterData.Machine.setupTime].Value?.ToString());
-                    item.Add(MasterData.Machine.dryRunningTime, row.Cells[MasterData.Machine.dryRunningTime].Value?.ToString());
-                    item.Add(MasterData.Machine.meltingPower, row.Cells[MasterData.Machine.meltingPower].Value?.ToString());
-                    item.Add(MasterData.Machine.movePlasticizingUnit,row.Cells[ MasterData.Machine.movePlasticizingUnit].Value?.ToString());
-                    meltingPower = 1 + (global.ConvertDouble(row.Cells[MasterData.Machine.maxClampingForce].Value) - 65) * 0.006;
-                    item["구분 1"] = meltingPower;
+                    foreach(string config in MasterData.Machine.machineDetailList)
+                    {
+                        if (row.Cells["설비명"].Value == null || string.IsNullOrEmpty(row.Cells["설비명"].Value?.ToString())) continue;
+                        if (config.Contains("설비명"))
+                        {
+                            //item.Add("Designation", $"[DYA]{row.Cells[MasterData.Machine.designation1].Value}");
+                            item.Add("Unique identifier", $"{row.Cells[MasterData.Machine.designation1].Value}");
+                            //detailitem.Add("Designation", $"{row.Cells[MasterData.Machine.designation1].Value}");
+                            detailitem.Add("Unique identifier", $"{row.Cells[MasterData.Machine.designation1].Value}");
+                        }
+                        else if(config.Contains("최대 톤수"))
+                        {
+                            if (!string.IsNullOrEmpty(row.Cells[MasterData.Machine.maxClampingForce].Value?.ToString()))
+                            {
+                                item["Unique identifier"] += $"_{row.Cells[MasterData.Machine.maxClampingForce].Value}";
+                                detailitem["Unique identifier"] += $"_{row.Cells[MasterData.Machine.maxClampingForce].Value}";
+                            }
+                        }
+                        else if (config.Contains("사양 정보"))
+                        {
+                            if (!string.IsNullOrEmpty(row.Cells[MasterData.Machine.maker].Value?.ToString()))
+                            {
+                                item["Unique identifier"] += $"_{row.Cells[MasterData.Machine.maker].Value}";
+                                detailitem["Unique identifier"] += $"_{row.Cells[MasterData.Machine.maker].Value}";
+                            }
+                        }
+                        else if (config.Contains("설비구분"))
+                        {
+                            item.Add("설비구분",row.Cells[MasterData.Machine.manufacturer].Value?.ToString());
+                        }
+                        else if (config.Contains("전력소비율"))
+                        {
+                            double poweUtiliation = global.ConvertDouble(global.ConvertDouble(row.Cells[MasterData.Machine.poweUtiliation].Value?.ToString().Replace("%", "")));
+                            poweUtiliation = poweUtiliation <= 1 ? poweUtiliation * 100 : poweUtiliation;
+                            detailitem.Add(config, poweUtiliation);
+                        }
+                        else if (config.Contains("업종"))
+                        {
+                            detailitem.Add("업종", $"한국||{row.Cells["업종"].Value?.ToString()}");
+                        }
+                        else
+                        {
+                            detailitem.Add(config,row.Cells[config].Value?.ToString());
+                        }
+                    }
+                    item.Add("Designation", $"[DYA]{item["Unique identifier"]}");
+                    detailitem.Add("Designation", $"[DYA]{detailitem["Unique identifier"]}");
+                    if (string.IsNullOrEmpty(item["Unique identifier"]?.ToString()) || string.IsNullOrEmpty(detailitem["Unique identifier"]?.ToString())) flag = false;
                 }
-                else if (type == "프레스")
+                if (flag)
                 {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.StampingDrawingBending.Press");
-                    item.Add(MasterData.Machine.setupTime, row.Cells[MasterData.Machine.setupTime].Value?.ToString());
-                    item.Add(MasterData.Machine.Foaming, row.Cells[MasterData.Machine.Foaming].Value?.ToString());
-                    item.Add(MasterData.Machine.Drawing, row.Cells[MasterData.Machine.Drawing].Value?.ToString());
-                    item.Add(MasterData.Machine.SPM, row.Cells[MasterData.Machine.SPM].Value?.ToString());
+                    header.Add(item);
+                    detail.Add(detailitem);
                 }
-                else if (row.Cells[MasterData.Machine.process].Value?.ToString().ToLower().Contains("press") == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.StampingDrawingBending.Press");
-                }
-                else if (row.Cells[MasterData.Machine.process].Value?.ToString().ToLower().Contains("inspection") == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.Testing");
-                }
-                else if (new List<string>() { "progressive" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.StampingDrawingBending.Progressive");
-                }
-                else if (new List<string>() { "leak test" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Testing.{row.Cells[MasterData.Machine.process].Value}");
-                }
-                else if (row.Cells[MasterData.Machine.process].Value?.ToString().ToLower().Contains("shot") == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, "Siemens.TCPCM.Classification.CapitalAsset.Machine.Deburring.ShotBlasting");
-                }
-                else if (new List<string>() { "grinding", "mc", "polishing" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Machining.{row.Cells[MasterData.Machine.process].Value}");
-                }
-                else if (new List<string>() { "smelting furnace" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Casting.SmeltingFurnace");
-                }
-                else if (new List<string>() { "impregnation", "trimming" , "core compaction" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Casting.{row.Cells[MasterData.Machine.process].Value?.ToString().Replace(" ","")}");
-                }
-                else if (new List<string>() { "laser marking" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Label.{row.Cells[MasterData.Machine.process].Value?.ToString().Replace(" ", "")}");
-                }
-                else if (new List<string>() { "laser welding" }.Contains(row.Cells[MasterData.Machine.process].Value?.ToString().ToLower()) == true)
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.Joining.LaserWelding");
-                }
-                else
-                {
-                    item.Add(MasterData.Machine.technology, "");
-                    item.Add(MasterData.Machine.asset, $"Siemens.TCPCM.Classification.CapitalAsset.Machine.{row.Cells[MasterData.Machine.process].Value}");
-                }
-                
-                if (item[MasterData.Machine.designation1].ToString() != "[LGMagna]")  header.Add(item);
 
-                double poweUtiliation = global.ConvertDouble(global.ConvertDouble(row.Cells[MasterData.Machine.poweUtiliation].Value?.ToString().Replace("%", "")));
-                poweUtiliation = poweUtiliation <= 1 ? poweUtiliation *100 : poweUtiliation;
+                //double poweUtiliation = global.ConvertDouble(global.ConvertDouble(row.Cells[MasterData.Machine.poweUtiliation].Value?.ToString().Replace("%", "")));
+                //poweUtiliation = poweUtiliation <= 1 ? poweUtiliation *100 : poweUtiliation;
 
                 //string query = @"select top 1 value as name from [MDCostFactorDetails] as a
                 //                join
@@ -157,28 +213,29 @@ namespace TcPCM_Connect_Global
                 //                order by[DateValidFrom] desc";
 
                 //string spaceCosts = global_DB.ScalarExecute(query, (int)global_DB.connDB.PCMDB);
-                item = new JObject
-                {
-                    { MasterData.Machine.designation1, $"[LGMagna]{row.Cells[MasterData.Machine.designation1].Value}{(force != null ? $" {force}" : "")}" },
-                    { MasterData.Machine.currency, row.Cells[MasterData.Machine.currency].Value?.ToString() },
-                    { MasterData.Machine.acquisition, global.ConvertDouble( row.Cells[MasterData.Machine.acquisition].Value?.ToString() )},
-                    { MasterData.Machine.imputed, global.ConvertDouble(row.Cells[MasterData.Machine.imputed].Value?.ToString()) },
-                    { MasterData.Machine.validFrom, row.Cells[MasterData.Machine.validFrom].Value?.ToString() },
-                    { MasterData.Machine.space, global.ConvertDouble(row.Cells[MasterData.Machine.space].Value?.ToString()) },
-                    { MasterData.Machine.ratedPower, global.ConvertDouble(row.Cells[MasterData.Machine.ratedPower].Value?.ToString()) },
-                    { MasterData.Machine.poweUtiliation, poweUtiliation},
-                    { MasterData.Machine.region, row.Cells[MasterData.Machine.region].Value?.ToString()},
-                    { MasterData.Machine.maintance, row.Cells[MasterData.Machine.maintance].Value?.ToString()},
-                    {"Technical availability (Capital asset detail)", 100},
-                };
-                if (type == "사출") item["Technical availability (Capital asset detail)"] = row.Cells[MasterData.Machine.setupTime].Value?.ToString();
-                    if (item[MasterData.Machine.designation1].ToString() != "[LGMagna]") detail.Add(item);
+                //item = new JObject
+                //{
+                //    { MasterData.Machine.designation1, $"[DYA]{row.Cells[MasterData.Machine.designation1].Value}{(force != null ? $" {force}" : "")}" },
+                //    { MasterData.Machine.currency, row.Cells[MasterData.Machine.currency].Value?.ToString() },
+                //    { MasterData.Machine.acquisition, global.ConvertDouble( row.Cells[MasterData.Machine.acquisition].Value?.ToString() )},
+                //    { MasterData.Machine.imputed, global.ConvertDouble(row.Cells[MasterData.Machine.imputed].Value?.ToString()) },
+                //    { MasterData.Machine.validFrom, row.Cells[MasterData.Machine.validFrom].Value?.ToString() },
+                //    { MasterData.Machine.space, global.ConvertDouble(row.Cells[MasterData.Machine.space].Value?.ToString()) },
+                //    { MasterData.Machine.ratedPower, global.ConvertDouble(row.Cells[MasterData.Machine.ratedPower].Value?.ToString()) },
+                //    { MasterData.Machine.poweUtiliation, poweUtiliation},
+                //    { MasterData.Machine.region, row.Cells[MasterData.Machine.region].Value?.ToString()},
+                //    { MasterData.Machine.maintance, row.Cells[MasterData.Machine.maintance].Value?.ToString()},
+                //    {"Technical availability (Capital asset detail)", 100},
+                //};
+                //if (type == "사출") item["Technical availability (Capital asset detail)"] = row.Cells[MasterData.Machine.setupTime].Value?.ToString();
+                //    if (item[MasterData.Machine.designation1].ToString() != "[DYA]") detail.Add(item);
             }
 
             string headerConfig = "";
             if (type=="사출") headerConfig = global_iniLoad.GetConfig("Machine", "Import_Injection_Header");
             else if (type== "다이캐스팅") headerConfig = global_iniLoad.GetConfig("Machine", "Import_Diecast_Header");
             else if (type == "프레스") headerConfig = global_iniLoad.GetConfig("Machine", "Import_Press_Header");
+            else if (type == "설비") headerConfig = global_iniLoad.GetConfig("Machine", "Import_Header");
             else headerConfig = global_iniLoad.GetConfig("Machine", "Import_ETC_Header");
 
             string err = null;
@@ -187,16 +244,17 @@ namespace TcPCM_Connect_Global
                 { "Data", header },
                 { "ConfigurationGuid", headerConfig }
             };
-
             err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
 
-            postData = new JObject
+            if(err == null)
             {
-                { "Data", detail },
-                { "ConfigurationGuid", global_iniLoad.GetConfig("Machine", "Import_Detail") }
-            };
-
-            err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);            
+                postData = new JObject
+                {
+                    { "Data", detail },
+                    { "ConfigurationGuid", global_iniLoad.GetConfig("Machine", "Import_Detail") }
+                };
+                err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);            
+            }
 
             return err; 
         }
