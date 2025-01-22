@@ -45,7 +45,13 @@ namespace CustomMessageBox
                 result = msgForm.ShowDialog();
             return result;
         }
-
+        public static DialogResult Show(string text, string caption, string detail, MessageBoxButtons buttons, MessageBoxIcon icon)
+        {
+            DialogResult result;
+            using (var msgForm = new FormMessageBox(text, caption, detail, buttons, icon))
+                result = msgForm.ShowDialog();
+            return result;
+        }
         /*-> IWin32Window Owner:
             *      Displays a message box in front of the specified object and with the other specified parameters.
             *      An implementation of IWin32Window that will own the modal dialog box.*/
