@@ -241,7 +241,7 @@ namespace TcPCM_Connect
                     list.Add($"{nameValue}_{grandValue}");
                 }
             }
-            if (list.Count != 0)
+            if(list.Count != 0)
             {
                 string message = "";
                 foreach(string msg in list)
