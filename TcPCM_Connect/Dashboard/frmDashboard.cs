@@ -11,13 +11,15 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using TcPCM_Connect_Global;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.Office.Interop.Excel;
+using Application = Microsoft.Office.Interop.Excel.Application;
 
 namespace TcPCM_Connect
 {
     public partial class frmDashboard : Form
     {
         public string privateFolder;
-        private string partQuery, projectQuery, folderQuery; 
+        private string partQuery, projectQuery, folderQuery;
         Interface export = new Interface();
         Bom.ExportLang mode = Bom.ExportLang.Kor;
 
@@ -79,7 +81,7 @@ namespace TcPCM_Connect
         {
             dgv_BaicInfo.Rows.Clear();
             // 'a'를 포함한 모든 노드 찾기
-            List<string> query = new List<string>() { searchButton1.text, folderQuery, projectQuery, partQuery};
+            List<string> query = new List<string>() { searchButton1.text, folderQuery, projectQuery, partQuery };
             export.FindDashboard(query, tv_Bom.ImageList, dgv_BaicInfo);
         }
 
@@ -184,7 +186,7 @@ namespace TcPCM_Connect
         }
 
         private void eXCEL내려받기ToolStripMenuItem_Click(object sender, EventArgs e)
-        {            
+        {
             if (selectItem.Count == 0)
             {
                 CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -200,7 +202,7 @@ namespace TcPCM_Connect
             }
 
             PartExport bom = new PartExport();
-            string err= bom.ExportPartBom(selectItem, dialog.FileName, mode);
+            string err = bom.ExportPartBom(selectItem, dialog.FileName, mode);
             if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -211,8 +213,8 @@ namespace TcPCM_Connect
         private void eXCEL올리기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PartExcel import = new PartExcel();
-            Dictionary<string,string> id= GetTargetTypeID();
-            string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]));
+            Dictionary<string, string> id = GetTargetTypeID();
+            string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]),"");
 
             if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -241,13 +243,13 @@ namespace TcPCM_Connect
             LoadingScreen.CloseSplashScreen();
         }
 
-        private Dictionary<string,string> GetTargetTypeID()
+        private Dictionary<string, string> GetTargetTypeID()
         {
             Dictionary<string, string> pairs = new Dictionary<string, string>();
             string Id = selectItem.Last();
             string targetType = Id.StartsWith("f") ? "Folder" :
                                 Id.StartsWith("p") ? "Project" : "Calculation";
-            
+
             if (Id.StartsWith("f") || Id.StartsWith("p"))
             {
                 Id = Id.Substring(1); // 첫 글자 제거
@@ -266,6 +268,18 @@ namespace TcPCM_Connect
 
             if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void eXCELBulk업로드ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            PartExcel import = new PartExcel();
+            Dictionary<string, string> id = GetTargetTypeID();
+            string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]), "자동");
+
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
         }
 
         private void eXCEL다운로드ToolStripMenuItem_Click(object sender, EventArgs e)

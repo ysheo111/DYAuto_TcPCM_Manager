@@ -47,8 +47,8 @@
             // 
             // roundBorderPanel2
             // 
-            this.roundBorderPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.roundBorderPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.roundBorderPanel2.BackgroundColor = System.Drawing.Color.White;
             this.roundBorderPanel2.BorderColor = System.Drawing.Color.Gainsboro;
@@ -179,8 +179,8 @@
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Menu;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.DimGray;
             this.dgv_Material.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.dgv_Material.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.dgv_Material.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgv_Material.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgv_Material.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;

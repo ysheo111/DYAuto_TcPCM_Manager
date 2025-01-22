@@ -30,7 +30,7 @@ namespace TcPCM_Connect
 
         private void frmExchange_Load(object sender, EventArgs e)
         {
-            dgv_Material.AllowUserToAddRows= true;
+            dgv_Material.AllowUserToAddRows = true;
             Material(MasterData.Material.injection);
             //InjectionColumn();
             dgv_Material.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -347,9 +347,9 @@ namespace TcPCM_Connect
             btn_DBLoad.Visible = false;
             if (combo.SelectedItem?.ToString()== "다이캐스팅")
                 Material(MasterData.Material.casting); //DieCastingColumn();
-            else if(combo.SelectedItem?.ToString()== "사출")
+            else if (combo.SelectedItem?.ToString() == "사출")
                 Material(MasterData.Material.injection); //InjectionColumn();
-            else if(combo.SelectedItem?.ToString()== "프레스")
+            else if (combo.SelectedItem?.ToString() == "프레스")
                 Material(MasterData.Material.plate); //PlateColumn();
             else if (combo.SelectedItem?.ToString() == "원소재 단가")
             {
@@ -365,7 +365,7 @@ namespace TcPCM_Connect
         {
             dgv_Material.Columns.Clear();
 
-            foreach(string item in variable)
+            foreach (string item in variable)
             {
                 if (item.Contains("Valid"))
                 {
@@ -383,9 +383,9 @@ namespace TcPCM_Connect
                     ((DataGridViewComboBoxColumn)dgv_Material.Columns[item]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
                     dgv_Material.Columns[item].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
                 }
-                else if(item.Contains("탄소발생량 단위"))
+                else if (item.Contains("탄소발생량 단위"))
                     dgv_Material.Columns.Add("단위", item);
-                else  dgv_Material.Columns.Add(item, item);
+                else dgv_Material.Columns.Add(item, item);
             }
         }
 
