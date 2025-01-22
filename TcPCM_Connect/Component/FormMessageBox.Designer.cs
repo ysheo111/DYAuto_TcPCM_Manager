@@ -68,7 +68,7 @@ namespace CustomMessageBox.Private
             this.labelCaption.ForeColor = System.Drawing.Color.White;
             this.labelCaption.Location = new System.Drawing.Point(10, 7);
             this.labelCaption.Name = "labelCaption";
-            this.labelCaption.Size = new System.Drawing.Size(89, 18);
+            this.labelCaption.Size = new System.Drawing.Size(114, 24);
             this.labelCaption.TabIndex = 4;
             this.labelCaption.Text = "labelCaption";
             // 
@@ -163,8 +163,8 @@ namespace CustomMessageBox.Private
             this.labelMessage.Location = new System.Drawing.Point(59, 9);
             this.labelMessage.MaximumSize = new System.Drawing.Size(700, 0);
             this.labelMessage.Name = "labelMessage";
-            this.labelMessage.Padding = new System.Windows.Forms.Padding(6, 10, 12, 14);
-            this.labelMessage.Size = new System.Drawing.Size(113, 41);
+            this.labelMessage.Padding = new System.Windows.Forms.Padding(7, 12, 14, 18);
+            this.labelMessage.Size = new System.Drawing.Size(394, 71);
             this.labelMessage.TabIndex = 1;
             this.labelMessage.Text = "labelMessage";
             this.labelMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
