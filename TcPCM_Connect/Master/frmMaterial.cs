@@ -345,7 +345,7 @@ namespace TcPCM_Connect
             if (combo.SelectedIndex < 0) return;
 
             btn_DBLoad.Visible = false;
-            if (combo.SelectedItem?.ToString() == "다이캐스팅")
+            if (combo.SelectedItem?.ToString()== "다이캐스팅")
                 Material(MasterData.Material.casting); //DieCastingColumn();
             else if (combo.SelectedItem?.ToString() == "사출")
                 Material(MasterData.Material.injection); //InjectionColumn();
