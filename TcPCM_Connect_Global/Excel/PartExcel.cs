@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Application = System.Windows.Forms.Application;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Threading;
 
 namespace TcPCM_Connect_Global
 {
@@ -160,12 +161,20 @@ namespace TcPCM_Connect_Global
                     worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].itemNumber?.Replace("[DYA]", "");
                     category = part.manufacturing[i].category != null ? part.manufacturing[i].category?.Split('-')[0].Replace(" ", "").Replace("[DYA]", "") : "";
                     worksheet.Cells[row, excelCol++].Value = category;
-                    worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].machineName?.Replace("[DYA]", "");
+                    string[] machineName = part.manufacturing[i].machineName?.Replace("[DYA]", "").Split('_');
+                    worksheet.Cells[row, excelCol++].Value = machineName[0];
+                    worksheet.Cells[row, excelCol++].Value = (machineName.Length>=2 ? machineName[1]:"");
+                    string etc = "";
+                    for (int cnt = 2; cnt < machineName.Length - 1; cnt++)
+                    {
+                        etc += machineName[cnt];
+                    }
+                    worksheet.Cells[row, excelCol++].Value = (machineName.Length >= 3 ? etc : "");
 
                     if (part.manufacturing[i].price != 0)
                     {
-                        worksheet.Cells[row, 16].Value = global.ZeroToNull(part.manufacturing[i].price);
-                        worksheet.Cells[row, 11].Value = global.ZeroToNull(part.manufacturing[i].quantity);
+                        worksheet.Cells[row, 18].Value = global.ZeroToNull(part.manufacturing[i].price);
+                        worksheet.Cells[row, 13].Value = global.ZeroToNull(part.manufacturing[i].quantity);
                         continue;
                     }
 
@@ -331,7 +340,7 @@ namespace TcPCM_Connect_Global
         }
 
 
-        public string Import(string tagetType, double tagetID)
+        public string Import(string tagetType, double tagetID, string mode)
         {
             Microsoft.Office.Interop.Excel.Application application = null;
             Excel.Workbook workBook = null;
@@ -340,17 +349,25 @@ namespace TcPCM_Connect_Global
             try
             {
                 OpenFileDialog dlg = new OpenFileDialog();
+                int cnt = 0;
                 dlg.Multiselect = true;
                 DialogResult dialog = dlg.ShowDialog();
                 if (dialog == DialogResult.Cancel) return null;
                 else if (dialog != DialogResult.OK) return $"Error : 파일 오픈에 실패하였습니다.";
+
+                if (mode == "자동")
+                {
+                    Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+                    splashthread.IsBackground = true;
+                    splashthread.Start();
+                }
                 foreach (string file in dlg.FileNames)
                 {
-
+                    cnt++;
+                    Thread.Sleep(100);
+                    LoadingScreen.UdpateStatusTextWithStatus($"{cnt}/{dlg.FileNames.Length}");
                     //Excel 프로그램 실행
-                    application = new Microsoft.Office.Interop.Excel.Application();
-                    //Excel 화면 띄우기 옵션
-                    application.Visible = true;
+                    application = new Microsoft.Office.Interop.Excel.Application();                    
                     //파일로부터 불러오기
                     workBook = application.Workbooks.Open(file);
 
@@ -360,15 +377,28 @@ namespace TcPCM_Connect_Global
                         if (sheet.Visible != Excel.XlSheetVisibility.xlSheetVisible) continue;
                         workSheetList.Add(sheet.Name);
                     }
+                    string val = "";
+                    string val2 = "";
+                    if (mode == "자동")
+                    {
+                        val = workSheetList[1];
+                        val2 = workSheetList[2];
+                        application.Visible = false;
+                    }
+                    else
+                    {
+                        //Excel 화면 띄우기 옵션
+                        application.Visible = true;
 
-                    frmPartWorkSheetSelect workSheetSelect = new frmPartWorkSheetSelect();
-                    workSheetSelect.workSheet = workSheetList;
-                    if (workSheetSelect.ShowDialog() == DialogResult.Cancel) return null;
-                    string val = workSheetSelect.ReturnValue1;
-                    string val2 = workSheetSelect.ReturnValue2;
-
+                        frmPartWorkSheetSelect workSheetSelect = new frmPartWorkSheetSelect();
+                        workSheetSelect.workSheet = workSheetList;
+                        if (workSheetSelect.ShowDialog() == DialogResult.Cancel) return null;
+                        val = workSheetSelect.ReturnValue1;
+                        val2 = workSheetSelect.ReturnValue2;
+                    }
                     Excel.Worksheet worksheet = workBook.Worksheets.Item[val];
                     Excel.Worksheet worksheet2 = workBook.Worksheets.Item[val2];
+
                     worksheet.Activate();
 
                     //CBD의 기본정보
@@ -376,7 +406,7 @@ namespace TcPCM_Connect_Global
 
                     JArray data = new JArray();
                     JObject header = new JObject();
-
+                    JArray manufacturings = new JArray();
                     //Basic
                     int row = 2, excelCol = 2;
                     header.Add(Report.LineType.lineType, "M");
@@ -423,7 +453,6 @@ namespace TcPCM_Connect_Global
 
                     }
                     header.Add(Report.Header.category, $"{header[Report.Header.suppier]}||{segment}");
-
                     excelCol = 8; row = 11;
                     for (int i = 13; i < 16; i++)
                     {
@@ -433,6 +462,18 @@ namespace TcPCM_Connect_Global
                     {
                         excel.CellVaildation(colName[i], 3, row, excelCol, row + 3, excelCol++, worksheet, ref header);
                     }
+                    header.Add(Report.LineType.comment, $"{worksheet.Cells[14, 15].Value}");
+                    string query = $@"select Value as name from DoubleDefaultValues as a 
+                                    join Properties as b on a.PropertyIdentifier = b.Guid
+                                    where b.Name = 'ManualUtilizationRate' and a.ConfigurationId = 2
+
+                                    union all
+
+                                    select[반영율] as name
+                                    FROM[PCI].[dbo].[Sprue]
+                                    where[업종] like N'%{segment}%'";
+
+                    List<string> properies = global_DB.ListSelect(query, (int)global_DB.connDB.PCMDB);
 
                     //원/부재료
                     int materialDefault = 3;
@@ -445,98 +486,122 @@ namespace TcPCM_Connect_Global
                             JObject part = new JObject();
                             JObject material = new JObject();
                             JObject scrap = new JObject();
-                            int colIndex = 16, nameRow = 3;
+                            string sprue = (properies.Count < 1 ? null : (global.ConvertDouble(properies[1]) * 100).ToString());
+                            part.Add("기타2", sprue);
+                            int colIndex = 17, nameRow = 3;
                             int[] values = { 11, 12, 13, 14, 17 };
 
                             double unit = 1, net = global.ConvertDouble(worksheet.Cells[j, 11].Value);
                             if (((Excel.Range)worksheet.Cells[j, 3]).Value == null) break;
-
-
-                            for (int i = 3; i < 20; i++)
+                            if (worksheet.Cells[j, 5].Value?.ToString().Contains("외주") == true)
                             {
-                                if (i == 4 || i == 16 || i == 18)
-                                {
-                                    colIndex--;
-                                    continue;
-                                }
-                                excelCol = i;
+                                JObject manufacturing = new JObject();
 
-                                if (!values.Contains(i)) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref part);
-                                else if (net != 0)
-                                {
-                                    if (i == 14) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material);
-                                    else if (i == 17) excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, excelCol, j, excelCol, worksheet, ref scrap);
-                                    else if (i == 13)
-                                    {
-                                        excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material);
-                                        excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref scrap);
+                                manufacturing.Add(Report.Manufacturing.sequence, j * 10);
+                                manufacturing.Add(Report.LineType.lineType, "F");
+                                manufacturing.Add(Report.LineType.level, "2");
+                                manufacturing.Add(Report.Header.partName, header[Report.Header.partName]);
+                                manufacturing.Add(Report.Header.suppier, header[Report.Header.suppier]);
+                                manufacturing.Add(Report.Header.currency, header[Report.Header.currency]);
+                                manufacturing.Add(Report.Manufacturing.externalPrice, worksheet.Cells[j, 20].Value);
+                                manufacturing.Add(Report.Manufacturing.externalQuntity, 1);
+                                manufacturing.Add(Report.Manufacturing.partName, worksheet.Cells[j, 3].Value);
+                                manufacturing.Add(Report.LineType.comment, worksheet.Cells[j, 21].Value);
 
-                                        if (worksheet.Cells[j, excelCol].Value.ToString().ToLower().Contains("kg")) unit /= Math.Pow(10, 3);
-                                        else if (worksheet.Cells[j, excelCol].Value.ToString().ToLower().Contains("t")) unit /= Math.Pow(10, 6);
-                                    }
-                                }
-
+                                manufacturings.Add(manufacturing);
                             }
-
-                            part.Add(Report.LineType.procument, "Siemens.TCPCM.ProcurementType.Purchase");
-                            part.Add(Report.LineType.level, "2");
-                            part.Add(Report.Header.currency, header[Report.Header.currency]);
-                            part.Add(Report.LineType.lineType, "M");
-                            part.Add(Report.Header.dateOfCalc, header[Report.Header.dateOfCalc]);
-                            part.Add(Report.Header.suppier, header[Report.Header.suppier]);
-                            part.Add(Report.Header.category, header[Report.Header.category]);
-
-                            if (net > 0)
-                            {
-                                part.Add(Report.Material.netWeight, net / unit);
-                                excel.CellVaildation(Report.Material.grossWeight, nameRow, 22, 12, j, 12, worksheet, ref part);
-                                part[Report.Material.grossWeight] = (global.ConvertDouble(part[Report.Material.grossWeight])) / unit;
-
-                                material.Add(Report.LineType.procument, "Siemens.TCPCM.ProcurementType.Purchase_RawMaterial");
-                                scrap.Add(Report.LineType.procument, "Siemens.TCPCM.ProcurementType.Purchase_RawMaterial");
-
-                                part.Add(Report.LineType.materials, "Siemens.TCPCM.Classification.Material.InjectionMoldingPart");
-                                material.Add(Report.LineType.materials, "Siemens.TCPCM.Classification.Material.RawMaterial.Plastic");
-                                scrap.Add(Report.LineType.materials, "Siemens.TCPCM.Classification.Material.Scrap");
-                                material.Add(Report.Header.partName, "RawMaterial");
-                                scrap.Add(Report.Header.partName, "Scrap");
-
-                                material.Add("WeightType", "Deployed weight");
-                                scrap.Add("WeightType", "Scrap / Waste");
-
-                                material.Add(Report.Header.dateOfCalc, header[Report.Header.dateOfCalc]);
-                                scrap.Add(Report.Header.dateOfCalc, header[Report.Header.dateOfCalc]);
-
-                                material.Add(Report.Header.suppier, header[Report.Header.suppier]);
-                                scrap.Add(Report.Header.suppier, header[Report.Header.suppier]);
-
-                                material.Add(Report.Header.category, header[Report.Header.category]);
-                                scrap.Add(Report.Header.category, header[Report.Header.category]);
-
-                                part.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Benchmarkcalculation");
-                                material.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
-                                scrap.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
-
-                                material.Add(Report.LineType.lineType, "M");
-                                scrap.Add(Report.LineType.lineType, "M");
-
-                                material.Add(Report.LineType.level, "3");
-                                scrap.Add(Report.LineType.level, "3");
-
-                                material.Add(Report.Header.currency, header[Report.Header.currency]);
-                                scrap.Add(Report.Header.currency, header[Report.Header.currency]);
-
-                                materials.Add(part);
-                                materials.Add(material);
-                                materials.Add(scrap);
-                            }
-
                             else
                             {
-                                part.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
-                                excel.CellVaildation(Report.Material.unit, nameRow, 22, 13, j, 13, worksheet, ref part);
-                                excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, 14, j, 14, worksheet, ref part);
-                                materials.Add(part);
+                                for (int i = 3; i < 22; i++)
+                                {
+                                    if (i == 4 || i == 16 || i == 18 || i == 20)
+                                    {
+                                        colIndex--;
+                                        continue;
+                                    }
+                                    excelCol = i;
+
+
+                                    if (!values.Contains(i)) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref part);
+                                    else if (net != 0)
+                                    {
+                                        if (i == 14) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material);
+                                        else if (i == 17) excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, excelCol, j, excelCol, worksheet, ref scrap);
+                                        else if (i == 13)
+                                        {
+                                            excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material);
+                                            excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref scrap);
+
+                                            if (worksheet.Cells[j, excelCol].Value.ToString().ToLower().Contains("kg")) unit /= Math.Pow(10, 3);
+                                            else if (worksheet.Cells[j, excelCol].Value.ToString().ToLower().Contains("t")) unit /= Math.Pow(10, 6);
+                                        }
+                                    }
+
+                                }
+
+                                part.Add(Report.LineType.procument, "Siemens.TCPCM.ProcurementType.Purchase");
+                                part.Add(Report.LineType.level, "2");
+                                part.Add(Report.Header.currency, header[Report.Header.currency]);
+                                part.Add(Report.LineType.lineType, "M");
+                                part.Add(Report.Header.dateOfCalc, header[Report.Header.dateOfCalc]);
+                                part.Add(Report.Header.suppier, header[Report.Header.suppier]);
+                                part.Add(Report.Header.category, header[Report.Header.category]);
+
+                                if (net > 0)
+                                {
+                                    part.Add(Report.Material.netWeight, net / unit);
+                                    excel.CellVaildation(Report.Material.grossWeight, nameRow, 22, 12, j, 12, worksheet, ref part);
+                                    part[Report.Material.grossWeight] = (global.ConvertDouble(part[Report.Material.grossWeight])) / unit;
+
+                                    material.Add(Report.LineType.procument, "Siemens.TCPCM.ProcurementType.Purchase_RawMaterial");
+                                    scrap.Add(Report.LineType.procument, "Siemens.TCPCM.ProcurementType.Purchase_RawMaterial");
+
+                                    part.Add(Report.LineType.materials, "Siemens.TCPCM.Classification.Material.InjectionMoldingPart");
+                                    material.Add(Report.LineType.materials, "Siemens.TCPCM.Classification.Material.RawMaterial.Plastic");
+                                    scrap.Add(Report.LineType.materials, "Siemens.TCPCM.Classification.Material.Scrap");
+                                    material.Add(Report.Header.partName, "RawMaterial");
+                                    scrap.Add(Report.Header.partName, "Scrap");
+
+                                    material.Add("WeightType", "Deployed weight");
+                                    scrap.Add("WeightType", "Scrap / Waste");
+
+                                    material.Add(Report.Header.dateOfCalc, header[Report.Header.dateOfCalc]);
+                                    scrap.Add(Report.Header.dateOfCalc, header[Report.Header.dateOfCalc]);
+
+                                    material.Add(Report.Header.suppier, header[Report.Header.suppier]);
+                                    scrap.Add(Report.Header.suppier, header[Report.Header.suppier]);
+
+                                    material.Add(Report.Header.category, header[Report.Header.category]);
+                                    scrap.Add(Report.Header.category, header[Report.Header.category]);
+
+                                    part.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Benchmarkcalculation");
+                                    material.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
+                                    scrap.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
+
+                                    material.Add(Report.LineType.lineType, "M");
+                                    scrap.Add(Report.LineType.lineType, "M");
+
+                                    material.Add(Report.LineType.level, "3");
+                                    scrap.Add(Report.LineType.level, "3");
+
+                                    material.Add(Report.Header.currency, header[Report.Header.currency]);
+                                    scrap.Add(Report.Header.currency, header[Report.Header.currency]);
+
+                                    material.Add(Report.Header.partNumber, part[Report.Material.substance]);
+                                    scrap.Add(Report.Header.partNumber, part[Report.Material.substance] + "_Scrap");
+
+                                    materials.Add(part);
+                                    materials.Add(material);
+                                    materials.Add(scrap);
+                                }
+
+                                else
+                                {
+                                    part.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
+                                    excel.CellVaildation(Report.Material.unit, nameRow, 22, 13, j, 13, worksheet, ref part);
+                                    excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, 14, j, 14, worksheet, ref part);
+                                    materials.Add(part);
+                                }
                             }
                         }
                     }
@@ -566,19 +631,23 @@ namespace TcPCM_Connect_Global
                     data.Add(header);
                     data.Merge(materials);
 
-                    int[] manufacturingList = { 10, 15, 17, 21, 24, 25, 27 };
+                    int[] manufacturingList = { 12, 17, 19, 23, 26, 27, 29 };
                     int manufacturingDefault = 3;
-                    JArray manufacturings = new JArray();
+                    
 
-                    for (int j = 58; j < 89; j++)
+                    for (int j = 57; j < 89; j++)
                     {
                         int machinLine = j - 49;
-                        int colIndex = 30;
+                        int colIndex = 32;
                         int nameRow = 2;
 
                         worksheet.get_Range($"C{j}", $"C{j}").Select();
 
-                        if (((Excel.Range)worksheet.Cells[j, 3]).Value == null) break;
+                        if (((Excel.Range)worksheet.Cells[j, 3]).Value == null)
+                        {
+                            if (j == 57) continue;
+                            break;
+                        }
                         JObject manufacturing = new JObject();
                         JObject machine = new JObject();
                         JObject otherMachine = new JObject();
@@ -606,68 +675,85 @@ namespace TcPCM_Connect_Global
                         labor.Add(Report.Header.currency, header[Report.Header.currency]);
                         machine.Add(Report.Header.currency, header[Report.Header.currency]);
 
-                        for (int i = 3; i < 14; i++)
+                        if (worksheet.Cells[j, 5].Value?.ToString().Contains("외주") == true)
                         {
-                            if (i == 4)
-                            {
-                                colIndex--;
-                                continue;
-                            }
-                            else if (colName[colIndex + i] == Report.Manufacturing.itemNumber && worksheet.Cells[j, i].Value?.ToString().Contains("외주") == true)
-                            {
-                                manufacturing[Report.LineType.lineType] = "P";
-                            }
-                            else if (colName[colIndex + i] == Report.Manufacturing.category)
-                            {
-                                excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref manufacturing);
-                                excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref labor);
-                            }
-                            else
-                            {
-                                excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref manufacturing);
-                                excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref labor);
-                            }
+                            manufacturing[Report.LineType.lineType] = "F";
+                            manufacturing.Add(Report.Manufacturing.partName, worksheet.Cells[j, 3].Value);
+                            manufacturing.Add(Report.Manufacturing.externalPrice, worksheet.Cells[j, 18].Value);
+                            manufacturing.Add(Report.Manufacturing.externalQuntity, 1);
 
-                            //excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref machine);
+                            manufacturings.Add(manufacturing);
                         }
-
-                        colIndex += 11;
-                        nameRow = 4;
-
-                        for (int i = 3; i < 28; i++)
+                        else
                         {
-                            if (manufacturing[Report.LineType.lineType].ToString() == "P") break;
-                            try
+                            for (int i = 3; i < 20; i++)
                             {
-                                if (manufacturingList.Contains(i))
+                                if (i == 4 || (16 <=i  && i<= 18) )
                                 {
                                     colIndex--;
                                     continue;
                                 }
-                                else if (i == 22 || i == 23) excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, machinLine, i, worksheet2, ref otherMachine);
-                                else if (machine.ContainsKey(colName[colIndex + i])) excel.CellVaildation(Report.Manufacturing.rationForSupplementaryMachine3, nameRow, 4, i, machinLine, i, worksheet2, ref machine);
+
                                 else if (colName[colIndex + i] == Report.Manufacturing.category)
                                 {
-                                    excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, worksheet2, $"{header[Report.Header.suppier]}||{worksheet2.Cells[machinLine, i].Value}", ref machine);
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref manufacturing);
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref labor);
                                 }
-                                else excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, machinLine, i, worksheet2, ref machine);
-                            }
-                            catch (Exception e)
-                            {
-                                err += e.Message + "\n";
+                                else if (colName[colIndex + i] == Report.Manufacturing.machineName)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref manufacturing);
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref labor);
+                                }
+
+                                //excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref machine);
                             }
 
-                        }
-                        if (manufacturing[Report.LineType.lineType].ToString() == "P")
-                        {
-                            manufacturings.Add(manufacturing);     
-                        }
-                        else
-                        {
+                            colIndex += 17;
+                            nameRow = 4;
+
+                            for (int i = 3; i < 30; i++)
+                            {
+
+                                try
+                                {
+                                    if (manufacturingList.Contains(i))
+                                    {
+                                        colIndex--;
+                                        continue;
+                                    }
+                                    else if (colName[colIndex + i] == Report.Manufacturing.category)
+                                    {
+                                        excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, worksheet2, $"{header[Report.Header.suppier]}||{worksheet2.Cells[machinLine, i].Value}", ref machine);
+                                    }
+                                    else if (colName[colIndex + i] == Report.Manufacturing.machineName)
+                                    {
+                                        if (machine.ContainsKey(Report.Manufacturing.machineName))
+                                        {
+                                            machine[Report.Manufacturing.machineName] +=
+                                                worksheet2.Cells[machinLine, i].Value == null ? "" : $"_{worksheet2.Cells[machinLine, i].Value.ToString()}";
+                                        }
+                                        else machine.Add(Report.Manufacturing.machineName, worksheet2.Cells[machinLine, i].Value.ToString());
+                                    }
+                                    else if (machine.ContainsKey(Report.Manufacturing.rationForSupplementaryMachine3)&& machine.ContainsKey(colName[colIndex + i])) continue;
+                                    else if (machine.ContainsKey(colName[colIndex + i])) excel.CellVaildation(Report.Manufacturing.rationForSupplementaryMachine3, nameRow, 4, i, machinLine, i, worksheet2, ref machine);
+                                    else if (worksheet2.Cells[machinLine, i].Value == null) continue;                                    
+                                    else excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, machinLine, i, worksheet2, ref machine);
+                                }
+                                catch (Exception e)
+                                {
+                                    err += e.Message + "\n";
+                                }
+
+                            }
+
                             double rationForSupplementaryMachine = global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine3]) != 0 ?
-                                    global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine1])
-                                * global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine2])
-                                / global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine3]) : 0;
+                                   global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine1])
+                               * global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine2])
+                               / global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine3]) : 0;
                             machine.Add(Report.Manufacturing.spaceCost, rationForSupplementaryMachine);
                             manufacturing.Add(Report.Manufacturing.redirectExpenseRatio, machine[Report.Manufacturing.redirectExpenseRatio]);
                             manufacturing.Add(Report.Manufacturing.productionDay, machine[Report.Manufacturing.productionDay]);
@@ -677,30 +763,17 @@ namespace TcPCM_Connect_Global
                             manufacturings.Add(manufacturing);
                             manufacturings.Add(labor);
                             manufacturings.Add(machine);
-
-                            if (global.ConvertDouble(otherMachine[Report.Manufacturing.otherMachineCost]) != 0)
-                            {
-                                otherMachine.Add(Report.Manufacturing.sequence, j * 10);
-                                otherMachine.Add(Report.Manufacturing.machineName, "Other Machine");
-                                otherMachine.Add(Report.LineType.lineType, "A");
-                                otherMachine.Add(Report.LineType.level, "2");
-                                otherMachine.Add(Report.Manufacturing.machineCost, otherMachine[Report.Manufacturing.otherMachineCost]);
-                                //otherMachine.Add(Report.Manufacturing.amotizingYearOfMachine, otherMachine[Report.Manufacturing.otherYearOfMachine]);
-                                otherMachine.Add(Report.Header.currency, header[Report.Header.currency]);
-                                otherMachine.Add(Report.Header.partName, header[Report.Header.partName]);
-                                manufacturings.Add(otherMachine);
-                            }
                         }
                     }
                     data.Merge(manufacturings);
                     String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Import";
                     string response = WebAPI.POST(callUrl, new JObject
-                {
-                    { "Data", data },
-                    { "ConfigurationGuid", global_iniLoad.GetConfig("CBD", "Import") },
-                    { "TargetType", tagetType},
-                    { "TargetId",  tagetID.ToString()},
-                });
+                    {
+                        { "Data", data },
+                        { "ConfigurationGuid", global_iniLoad.GetConfig("CBD", "Import") },
+                        { "TargetType", tagetType},
+                        { "TargetId",  tagetID.ToString()},
+                    });
 
                     try
                     {
@@ -710,6 +783,24 @@ namespace TcPCM_Connect_Global
                     catch
                     {
                         err += response;
+                    }
+                    data[0][Report.Header.partName] = $"표준_{data[0][Report.Header.partName]}";
+                    string response2 = WebAPI.POST(callUrl, new JObject
+                    {
+                        { "Data", data },
+                        { "ConfigurationGuid", global_iniLoad.GetConfig("CBD", "Import2") },
+                        { "TargetType", tagetType},
+                        { "TargetId",  tagetID.ToString()},
+                    });
+
+                    try
+                    {
+                        JObject postResult2 = JObject.Parse(response2);
+                        if ((bool)postResult2["success"] == false) err = postResult2["message"].ToString();
+                    }
+                    catch
+                    {
+                        err += response2;
                     }
                     finally
                     {
@@ -725,6 +816,8 @@ namespace TcPCM_Connect_Global
                         }
                     }
                 }
+
+                LoadingScreen.CloseSplashScreen();
             }
             catch (Exception exc)
             {

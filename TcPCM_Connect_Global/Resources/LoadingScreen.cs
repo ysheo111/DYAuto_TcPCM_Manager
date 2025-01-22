@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace TcPCM_Connect
+namespace TcPCM_Connect_Global
 {
     public enum TypeOfMessage
     {
@@ -38,11 +38,11 @@ namespace TcPCM_Connect
             }
         }
 
-        public static void UdpateStatusTextWithStatus(string Text, string Detail)
+        public static void UdpateStatusTextWithStatus(string Text)
         {
 
             if (sf != null)
-                sf.UdpateStatusTextWithStatus(Text, Detail);
+                sf.UdpateStatusTextWithStatus(Text);
         }
     }
 }

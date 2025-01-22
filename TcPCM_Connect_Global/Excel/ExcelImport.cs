@@ -35,7 +35,7 @@ namespace TcPCM_Connect_Global
         public void CellVaildation(string colName, int nameRow, int rowCol, int colCol, int rowValue, int colValue, Excel.Worksheet worksheet, ref JObject value)
         {
             string name = CombineString(nameRow, rowCol, colCol, worksheet);
-            if (!name.Contains(cbd.FindValue(rowCol, colCol)))
+            if (!name.Replace("전략","전력").Contains(cbd.FindValue(rowCol, colCol)))
             {
                 incorrect.Add($"{cbd.FindValue(rowCol, colCol)}을 다시 확인해주세요. ({name} {rowCol} {colCol})");
                 //(worksheet.Cells[row, excelCol]).Interior.Color = Excel.XlRgbColor.rgbYellow;

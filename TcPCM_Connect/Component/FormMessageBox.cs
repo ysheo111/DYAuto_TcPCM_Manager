@@ -74,7 +74,22 @@ public partial class FormMessageBox : Form
             SetButtons(buttons, MessageBoxDefaultButton.Button1);//Set [Default Button 1]
         
     }
-    public FormMessageBox(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton)
+
+        public FormMessageBox(string text, string caption, string detail, MessageBoxButtons buttons, MessageBoxIcon icon)
+        {
+            InitializeComponent();
+            InitializeItems();
+            this.PrimaryColor = primaryColor;
+            this.labelMessage.Text = text;
+            this.labelCaption.Text = caption;
+            this.txt_rich.Visible = true;
+            this.txt_rich.Text = detail;
+            SetFormSize();
+            SetIcon(icon);
+            SetButtons(buttons, MessageBoxDefaultButton.Button1);//Set [Default Button 1]
+
+        }
+        public FormMessageBox(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton)
     {
         InitializeComponent();
         InitializeItems();

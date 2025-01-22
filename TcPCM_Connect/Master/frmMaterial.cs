@@ -72,10 +72,6 @@ namespace TcPCM_Connect
         }
         private void ImportMethod()
         {
-            Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
-            splashthread.IsBackground = true;
-            splashthread.Start();
-
             try
             {
                 dgv_Material.AllowUserToAddRows = false;
@@ -89,9 +85,8 @@ namespace TcPCM_Connect
             {
                 CustomMessageBox.RJMessageBox.Show($"Error : 작업중 오류가 발생하였습니다. 다시 시도해주세요.", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-
             dgv_Material.AllowUserToAddRows = true;
-            LoadingScreen.CloseSplashScreen();
+
         }
 
         private void btn_Configuration_Click(object sender, EventArgs e)

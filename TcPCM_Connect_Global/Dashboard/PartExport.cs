@@ -159,6 +159,17 @@ namespace TcPCM_Connect_Global
                         manufacturing.quantity = global.ConvertDouble( values[Report.Manufacturing.externalQuntity]);
                         manufacturing.price = global.ConvertDouble(values[Report.Manufacturing.externalPrice]);
                     }
+                    else if (values[Report.LineType.lineType]?.ToString().Contains("External manufacturing step") == true)
+                    {
+                        Part.Material material = new Part.Material();
+
+                        material.name = values[Report.Manufacturing.partName]?.ToString();
+                        material.quantity = global.ConvertDouble(values[Report.Manufacturing.externalQuntity]);
+                        material.grossWeight = global.ConvertDouble(values[Report.Manufacturing.externalQuntity]);
+                        material.unitCost = global.ConvertDouble(values[Report.Manufacturing.externalPrice]);
+
+                        part.material.Add(material);
+                    }
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Detailed manufacturing step") == true)
                     {
                         Part.Manufacturing manufacturing = new Part.Manufacturing();
@@ -170,16 +181,16 @@ namespace TcPCM_Connect_Global
                     }
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Machine") == true)
                     {
-                        if (part.manufacturing[part.manufacturing.Count - 1].machineCost != 0)
-                        {
-                            part.manufacturing[part.manufacturing.Count - 1].otherMachineCost = global.ConvertDouble(values[Report.Manufacturing.machineCost]);
-                            part.manufacturing[part.manufacturing.Count - 1].otherYearOfMachine = global.ConvertDouble(values[Report.Manufacturing.amotizingYearOfMachine + "[Year(s)]"]);
-                        }
-                        else
-                        {
+                        //if (part.manufacturing[part.manufacturing.Count - 1].machineCost != 0)
+                        //{
+                        //    part.manufacturing[part.manufacturing.Count - 1].otherMachineCost = global.ConvertDouble(values[Report.Manufacturing.machineCost]);
+                        //    part.manufacturing[part.manufacturing.Count - 1].otherYearOfMachine = global.ConvertDouble(values[Report.Manufacturing.amotizingYearOfMachine + "[Year(s)]"]);
+                        //}
+                        //else
+                        //{
                             MemberInfo[] manufacturingMember = typeof(Report.Manufacturing).GetMembers(BindingFlags.Static | BindingFlags.Public);
                             SetMembers(manufacturingMember, values, typeof(Part.Manufacturing), part.manufacturing[part.manufacturing.Count - 1]);
-                        }
+                        //}
                     }
                     else if (values[Report.LineType.lineType]?.ToString().Contains("Labor") == true)
                     {

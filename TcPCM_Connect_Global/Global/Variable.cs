@@ -80,6 +80,7 @@ namespace TcPCM_Connect_Global
             {(11, 11), Report.Summary.rnd},
             {(11, 12), Report.Summary.packageTransport},
             {(11, 13), Report.Summary.etc},
+            {(11, 14), Report.LineType.comment},
 
             {(22, 3), Report.Material.name},
             {(22, 5),  Report.Material.itemNumber },
@@ -97,41 +98,47 @@ namespace TcPCM_Connect_Global
             {(22, 15), Report.Material.quantity },
             {(22, 17), Report.Material.scrap },
             {(22, 19), Report.Material.trash },
+            {(22, 21), Report.LineType.comment},
 
             {(55, 3), Report.Manufacturing.partName},
             {(55, 5), Report.Manufacturing.itemNumber},
             {(55, 6), Report.Manufacturing.category},
             {(55, 7), Report.Manufacturing.machineName},
-            {(55, 8), Report.Manufacturing.workers},
-            {(55, 9), Report.Manufacturing.cycletime},
-            {(55, 10),Report.Manufacturing.cavity},
-            {(55, 11),Report.Manufacturing.quantity},
-            {(55, 12),Report.Manufacturing.utillization},
-            {(55, 13),Report.Manufacturing.grossWage},
+            {(55, 8), Report.Manufacturing.machineName},
+            {(55, 9), Report.Manufacturing.machineName},
+            {(55, 10), Report.Manufacturing.workers},
+            {(55, 11), Report.Manufacturing.cycletime},
+            {(55, 12),Report.Manufacturing.cavity},
+            {(55, 13),Report.Manufacturing.quantity},
+            {(55, 14),Report.Manufacturing.utillization},
+            {(55, 15),Report.Manufacturing.grossWage},
+            {(55, 19), Report.LineType.comment},
 
             {(4, 3),Report.Manufacturing.partName},
             {(4, 4),Report.Manufacturing.category},
             {(4, 5),Report.Manufacturing.machineName},
-            {(4, 6),Report.Manufacturing.productionDay},
-            {(4, 7),Report.Manufacturing.productionTime},
-            {(4, 8),Report.Manufacturing.machineCost},
-            {(4, 9),Report.Manufacturing.amotizingYearOfMachine},
+            {(4, 6),Report.Manufacturing.machineName},
+            {(4, 7),Report.Manufacturing.machineName},
+            {(4, 8),Report.Manufacturing.productionDay},
+            {(4, 9),Report.Manufacturing.productionTime},
+            {(4, 10),Report.Manufacturing.machineCost},
+            {(4, 11),Report.Manufacturing.amotizingYearOfMachine},
 
-            {(4, 11),Report.Manufacturing.machineArea},
-            {(4, 12),Report.Manufacturing.rationForSupplementaryMachine1},
-            {(4, 13),Report.Manufacturing.rationForSupplementaryMachine2},
-            {(4, 14),Report.Manufacturing.amotizingYearOfMachine},
+            {(4, 13),Report.Manufacturing.machineArea},
+            {(4, 14),Report.Manufacturing.rationForSupplementaryMachine1},
+            {(4, 15),Report.Manufacturing.rationForSupplementaryMachine2},
+            {(4, 16),Report.Manufacturing.amotizingYearOfMachine},
               
-            {(4, 16),Report.Manufacturing.ratioOfMachineRepair},
+            {(4, 18),Report.Manufacturing.ratioOfMachineRepair},
               
-            {(4, 18),Report.Manufacturing.machinePower},
-            {(4, 19),Report.Manufacturing.machinePowerCost},
-            {(4, 20),Report.Manufacturing.machinePowerEfficiency},
+            {(4, 20),Report.Manufacturing.machinePower},
+            {(4, 21),Report.Manufacturing.machinePowerCost},
+            {(4, 22),Report.Manufacturing.machinePowerEfficiency},
               
-            {(4, 22),Report.Manufacturing.otherMachineCost},
-            {(4, 23),Report.Manufacturing.otherYearOfMachine},
+            {(4, 24),Report.Manufacturing.otherMachineCost},
+            {(4, 25),Report.Manufacturing.otherYearOfMachine},
               
-            {(4, 26),Report.Manufacturing.redirectExpenseRatio}
+            {(4, 28),Report.Manufacturing.redirectExpenseRatio}
         };
 
         public string FindValue(int row, int col)
@@ -173,6 +180,8 @@ namespace TcPCM_Connect_Global
             public static string procument = "조달유형";
             public static string method = "계산방법";
             public static string materials = "Materials";
+
+            public static string comment = "비고";
         }
 
         public static class Header
