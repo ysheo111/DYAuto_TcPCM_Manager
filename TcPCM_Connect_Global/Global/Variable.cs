@@ -615,7 +615,8 @@ namespace TcPCM_Connect_Global
 
         public class Machine
         {
-            public static List<string> machineDetailList = new List<string>() { validFrom, currency, segment, designation1, maxClampingForce, maker, manufacturer, acquisition, imputed, space, ratedPower, poweUtiliation, acquisitionEx, customer};
+            public static List<string> machineDetailList = new List<string>()
+            { "Valid From", "통화", "업종", "업체명", "설비명", "최대 톤수", "사양 정보", "설비구분", "설비가", "기계상각년수", "설치면적", "전력용량", "전력소비율", "기타비용", "내용년수"};
             public static string designation = "이름";
             public static string designation1= "설비명";
             public static string designation2 = "구분 2";

@@ -359,19 +359,33 @@ namespace TcPCM_Connect_Global
                             if (firstCol == 0) firstCol = col;
                         
                             string key = xlRng[firstRow, col]?.ToString();
-                        
+
                             if (key == "나라")
                                 key = "지역";
-                            if (key == "재료명")
+                            else if (key == "재료명")
                                 key = "재질명";
-                            if (key == "segmant")
+                            else if (key == "segmant")
                                 key = "업종";
+                            
+                            if (worksheetName == "Machine" && key == "OTHER UTILITY")
+                            {
+                                key = "기타비용";
+                                keys[col + 1] = "내용년수";
+                            }
+
                             if (worksheetName == "재료관리비")
                             {
                                 if (key.Contains("재료") && key.Contains("Loss") && key.Contains("율"))
                                     key = "재료 관리비율";
                             }
-                            if (!keys.Any(item => item == key))
+                            if (worksheetName == "Machine" && (key.Contains("설비가") || key.Contains("사양") || key.Contains("기계상각년수") || key.Contains("설치면적") || key.Contains("전력")))
+                            {
+                                int index = key.IndexOf('(');
+                                if(index != -1)
+                                    key = key.Substring(0,index).Trim();
+                            }
+
+                            if (!keys.Any(item => item == key) && keys[col] == null)
                                 keys[col] = key;
                             //keys[col] = key;
                         }
@@ -405,12 +419,13 @@ namespace TcPCM_Connect_Global
                                     {
                                         dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
                                     }
+
                                     if(col.Name.ToLower().Contains("valid") && !dateTypeCheck)
                                     {
                                         flag = false;
                                         break;
                                     }
-
+                                    
                                     flag = true;
 
                                     if (resultValue.Contains("CO2e/kg"))
@@ -419,7 +434,7 @@ namespace TcPCM_Connect_Global
                                         dgv.Rows[dgv.Rows.Count - 1].Cells["Plant"].Value = resultValue;
 
                                     dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue;
-                                    if (new List<string>() { "지역", "공정", "업종", "설비명", "설비구분", "통화", "Valid From", "구분자", "재질명", "소재명", "메이커", "구분", "비중", "비중 단위", "가격 단위", "이름", "ISO", "UOM Code", "UOM 명", "Plant", "GRADE", "단위" }.Contains(col.Name)) continue;
+                                    if (new List<string>() { "지역", "공정", "업종", "설비명", "설비구분", "통화", "Valid From", "구분자", "재질명", "소재명", "메이커", "구분", "비중", "비중 단위", "가격 단위", "이름", "ISO", "UOM Code", "UOM 명", "Plant", "GRADE", "단위", "사양 정보", "업체명" }.Contains(col.Name)) continue;
 
                                     if ((((col.Name.Contains("율") || col.Name.Contains("률")) && !col.Name.Contains("임률") && !col.Name.Contains("환율"))) && !col.Name.Contains("수선비율"))
                                     {
@@ -447,8 +462,8 @@ namespace TcPCM_Connect_Global
                                 }
                             }
                         }
-
                         if (!flag) dgv.Rows.RemoveAt(dgv.Rows.Count - 1);
+                        else if(string.IsNullOrEmpty(dgv.Rows[dgv.Rows.Count - 1].Cells["Valid From"].Value?.ToString())) dgv.Rows.RemoveAt(dgv.Rows.Count - 1);
                     }
                 }
             }
