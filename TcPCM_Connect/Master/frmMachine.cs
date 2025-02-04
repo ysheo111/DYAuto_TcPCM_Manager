@@ -27,7 +27,7 @@ namespace TcPCM_Connect
         {
             dgv_Machine.AllowUserToAddRows = true;
             ColumnAdd();
-            InjectionColumn();
+            Capitalcolumn();
             dgv_Machine.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
@@ -134,14 +134,6 @@ namespace TcPCM_Connect
             ColumnAdd();
             if (combo.SelectedItem?.ToString() == "설비") Capitalcolumn();
             dgv_Machine.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        }
-
-        private void InjectionColumn()
-        {
-            dgv_Machine.Columns.Add(MasterData.Machine.setupTime, MasterData.Machine.setupTime);
-            dgv_Machine.Columns.Add(MasterData.Machine.dryRunningTime, MasterData.Machine.dryRunningTime);
-            dgv_Machine.Columns.Add(MasterData.Machine.meltingPower, MasterData.Machine.meltingPower);
-            dgv_Machine.Columns.Add(MasterData.Machine.movePlasticizingUnit, MasterData.Machine.movePlasticizingUnit);
         }
 
         private void Capitalcolumn()
