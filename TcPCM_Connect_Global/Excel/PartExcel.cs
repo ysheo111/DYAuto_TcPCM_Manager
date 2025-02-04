@@ -132,19 +132,19 @@ namespace TcPCM_Connect_Global
                     worksheet.Cells[row, excelCol++].Value = part.material[i].itemNumber?.Replace("[DYA]", "");
                     worksheet.Cells[row, excelCol++].Value = part.material[i].transport;//공급기준
                     worksheet.Cells[row, excelCol++].Value = part.material[i].substance?.Replace("[DYA]", "");
-                    worksheet.Cells[row, excelCol++].Value = part.material[i].thickness;//두께
-                    worksheet.Cells[row, excelCol++].Value = part.material[i].width;//가로
-                    worksheet.Cells[row, excelCol++].Value = part.material[i].length;//세로
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].thickness);//두께
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].width);//가로
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].length);//세로
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].netWeight);
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].grossWeight);
                     worksheet.Cells[row, excelCol++].Value = part.material[i].qunantityUnit;
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].unitCost);
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].quantity);
-                    worksheet.Cells[row, excelCol++].Formula = part.material[i].grossWeight != null ? $"=IFERROR(L{row}*N{row}*O{row}, \"\")" : $"=IFERROR(N{row}*O{row}, \"\")";
+                    worksheet.Cells[row, excelCol++].Formula = part.material[i].grossWeight != null ? $"=IFERROR(L{row}*N{row}*O{row}, 0)" : $"=IFERROR(N{row}*O{row}, 0)";
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].scrapUnitPrice);
-                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR((L{row}-K{row})*Q{row}*O{row}, \"\")";
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR((L{row}-K{row})*Q{row}*O{row}, 0)";
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].trash);
-                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR(P{row}-R{row}+S{row}, \"\")";
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR(P{row}-R{row}+S{row}, 0)";
                 }
 
                 //가공비        
@@ -161,15 +161,21 @@ namespace TcPCM_Connect_Global
                     worksheet.Cells[row, excelCol++].Value = part.manufacturing[i].itemNumber?.Replace("[DYA]", "");
                     category = part.manufacturing[i].category != null ? part.manufacturing[i].category?.Split('-')[0].Replace(" ", "").Replace("[DYA]", "") : "";
                     worksheet.Cells[row, excelCol++].Value = category;
+
                     string[] machineName = part.manufacturing[i].machineName?.Replace("[DYA]", "").Split('_');
                     worksheet.Cells[row, excelCol++].Value = machineName[0];
-                    worksheet.Cells[row, excelCol++].Value = (machineName.Length>=2 ? machineName[1]:"");
+
+                    string sec = (machineName.Length >= 2 ? machineName[1] : "");
+                    int start = 2;
+                    if (!double.TryParse(sec, out double num)) start--;
+                    worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(num);
+
                     string etc = "";
-                    for (int cnt = 2; cnt < machineName.Length - 1; cnt++)
+                    for (int cnt = start; cnt < machineName.Length ; cnt++)
                     {
                         etc += machineName[cnt];
                     }
-                    worksheet.Cells[row, excelCol++].Value = (machineName.Length >= 3 ? etc : "");
+                    worksheet.Cells[row, excelCol++].Value = etc;
 
                     if (part.manufacturing[i].price != 0)
                     {
@@ -184,21 +190,25 @@ namespace TcPCM_Connect_Global
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].quantity);
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].utillization);
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].grossWage);
-                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR(H{row}*I{row}*K{row}*M{row}/(J{row}*60*60*L{row}), \"\")";
-                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR('{sheetName2}'!AB{row2}, \"\")";
-                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR(O{row}*K{row}*I{row}/(60*60*L{row}*J{row}), \"\")";
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR(J{row}*K{row}*M{row}*O{row}/(L{row}*60*60*N{row}), 0)";
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR('{sheetName2}'!AD{row2}, 0)";
+                    worksheet.Cells[row, excelCol++].Formula = $"=IFERROR(Q{row}*M{row}*K{row}/(60*60*N{row}*L{row}), 0)";
 
                     excelCol = 2;
                     worksheet2.Cells[row2, excelCol++].Value = i + 1;
                     worksheet2.Cells[row2, excelCol++].Value = part.manufacturing[i].partName?.Replace("[DYA]", "");
-                    worksheet2.Cells[row2, excelCol++].Value = part.manufacturing[i].category?.Replace("[DYA]", "");
-                    worksheet2.Cells[row2, excelCol++].Value = part.manufacturing[i].machineName?.Replace("[DYA]", "");
+                    worksheet2.Cells[row2, excelCol++].Value = category;
+
+                    worksheet2.Cells[row2, excelCol++].Value = machineName[0];
+                    worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(num);
+                    worksheet2.Cells[row2, excelCol++].Value = etc;
+
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].productionDay);
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].productionTime / part.manufacturing[i].productionDay);
 
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machineCost);
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].amotizingYearOfMachine);
-                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(H{row2}/I{row2}/F{row2}/G{row2}, \"\")";
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(J{row2}/K{row2}/H{row2}/I{row2}, 0)";
 
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machineArea);
                     if (part.manufacturing[i].spaceCost != 0)
@@ -206,32 +216,32 @@ namespace TcPCM_Connect_Global
                         worksheet2.Range[worksheet2.Cells[row2, excelCol], worksheet2.Cells[row2, excelCol + 2]].Merge();
                         worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].spaceCost);
                         excelCol += 2;
-                        worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(K{row2}*L{row2}/F{row2}/G{row2}, \"\")";
+                        worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(M{row2}*N{row2}/H{row2}/I{row2}, 0)";
                     }
                     else
                     {
                         excelCol += 3;
-                        worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(K{row2}*L{row2}*M{row2}/N{row2}/F{row2}/G{row2}, \"\")";
+                        worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(M{row2}*N{row2}*O{row2}/P{row2}/H{row2}/I{row2}, 0)";
                     }
 
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].ratioOfMachineRepair);
-                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR((J{row2}+O{row2})*P{row2}, \"\")";
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR((L{row2}+Q{row2})*R{row2}, 0)";
 
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machinePower);
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machinePowerCost);
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].machinePowerEfficiency);
-                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(R{row2}*S{row2}*T{row2}, \"\")";
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(T{row2}*U{row2}*V{row2}, 0)";
 
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].otherMachineCost);
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].otherYearOfMachine);
-                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(V{row2}/(W{row2}*F{row2})/G{row2}, \"\")";
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(X{row2}/(Y{row2}*H{row2})/I{row2}, 0)";
 
-                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(J{row2}+O{row2}+Q{row2}+U{row2}+X{row2}, \"\")";
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(L{row2}+Q{row2}+S{row2}+W{row2}+Z{row2}, 0)";
 
                     worksheet2.Cells[row2, excelCol++].Value = global.ZeroToNull(part.manufacturing[i].redirectExpenseRatio);
-                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(Y{row2}*Z{row2}, \"\")";
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(AA{row2}*AB{row2}, 0)";
 
-                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(ROUND(Y{row2}+AA{row2},0), \"\")";
+                    worksheet2.Cells[row2, excelCol++].Formula = $"=IFERROR(ROUND(AA{row2}+AC{row2},0), 0)";
                 }
             }
             catch (Exception e)
@@ -381,8 +391,8 @@ namespace TcPCM_Connect_Global
                     string val2 = "";
                     if (mode == "자동")
                     {
-                        val = workSheetList[1];
-                        val2 = workSheetList[2];
+                        val = workSheetList[workSheetList.Count- 2];
+                        val2 = workSheetList[workSheetList.Count - 1];
                         application.Visible = false;
                     }
                     else
@@ -431,13 +441,13 @@ namespace TcPCM_Connect_Global
                                 date = DateTime.Now.ToString("yyyy-MM-dd");
                                 Console.WriteLine($"Error retrieving date: {ex.Message}");  // Log error message
                             }
-                            excel.CellVaildation(colName[i], nameRow, row++, excelCol, worksheet, date, ref header);
+                            excel.CellVaildation(colName[i], nameRow, row++, excelCol, worksheet, date, ref header,row-1);
                         }
                         else if (i == 10) header.Add(Report.Header.exchangeRateCurrency, worksheet.Cells[row++, excelCol + 1].Value);
                         else if (colName[i] == Report.Header.category) segment = $"{worksheet.Cells[row++, excelCol + 1].Value}";
                         else
                         {
-                            excel.CellVaildation(colName[i], nameRow, row, excelCol, row++, excelCol + 1, worksheet, ref header);
+                            excel.CellVaildation(colName[i], nameRow, row, excelCol, row++, excelCol + 1, worksheet, ref header,row-1);
                         }
 
                         if (i == 6)  // Adjusted condition to avoid unnecessary checks
@@ -456,11 +466,11 @@ namespace TcPCM_Connect_Global
                     excelCol = 8; row = 11;
                     for (int i = 13; i < 16; i++)
                     {
-                        excel.CellVaildation(colName[i], 2, row, excelCol, row + 2, excelCol++, worksheet, ref header);
+                        excel.CellVaildation(colName[i], 2, row, excelCol, row + 2, excelCol++, worksheet, ref header,row);
                     }
                     for (int i = 16; i < 19; i++)
                     {
-                        excel.CellVaildation(colName[i], 3, row, excelCol, row + 3, excelCol++, worksheet, ref header);
+                        excel.CellVaildation(colName[i], 3, row, excelCol, row + 3, excelCol++, worksheet, ref header,row);
                     }
                     header.Add(Report.LineType.comment, $"{worksheet.Cells[14, 15].Value}");
                     string query = $@"select Value as name from DoubleDefaultValues as a 
@@ -478,21 +488,27 @@ namespace TcPCM_Connect_Global
                     //원/부재료
                     int materialDefault = 3;
                     JArray materials = new JArray();
+                    int cntMaterial = 0;
                     try
                     {
-                        for (int j = 25; j < 52; j++)
+                        while(true)
                         {
+                            int j = 25 + cntMaterial;
+                            cntMaterial++;
                             worksheet.get_Range($"C{j}", $"C{j}").Select();
                             JObject part = new JObject();
                             JObject material = new JObject();
                             JObject scrap = new JObject();
-                            string sprue = (properies.Count < 1 ? null : (global.ConvertDouble(properies[1]) * 100).ToString());
+                            string sprue = (properies.Count < 2 ? null : (global.ConvertDouble(properies[1]) * 100).ToString());
                             part.Add("기타2", sprue);
                             int colIndex = 17, nameRow = 3;
                             int[] values = { 11, 12, 13, 14, 17 };
 
                             double unit = 1, net = global.ConvertDouble(worksheet.Cells[j, 11].Value);
-                            if (((Excel.Range)worksheet.Cells[j, 3]).Value == null) break;
+
+                            if (((Excel.Range)worksheet.Cells[j, 2]).Value?.ToString().Contains("가  공  비") == true) break;
+                            if (((Excel.Range)worksheet.Cells[j, 3]).Value == null) continue;
+
                             if (worksheet.Cells[j, 5].Value?.ToString().Contains("외주") == true)
                             {
                                 JObject manufacturing = new JObject();
@@ -522,15 +538,15 @@ namespace TcPCM_Connect_Global
                                     excelCol = i;
 
 
-                                    if (!values.Contains(i)) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref part);
+                                    if (!values.Contains(i)) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref part,22);
                                     else if (net != 0)
                                     {
-                                        if (i == 14) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material);
-                                        else if (i == 17) excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, excelCol, j, excelCol, worksheet, ref scrap);
+                                        if (i == 14) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material, 22);
+                                        else if (i == 17) excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, excelCol, j, excelCol, worksheet, ref scrap, 22);
                                         else if (i == 13)
                                         {
-                                            excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material);
-                                            excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref scrap);
+                                            excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material, 22);
+                                            excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref scrap, 22);
 
                                             if (worksheet.Cells[j, excelCol].Value.ToString().ToLower().Contains("kg")) unit /= Math.Pow(10, 3);
                                             else if (worksheet.Cells[j, excelCol].Value.ToString().ToLower().Contains("t")) unit /= Math.Pow(10, 6);
@@ -550,7 +566,7 @@ namespace TcPCM_Connect_Global
                                 if (net > 0)
                                 {
                                     part.Add(Report.Material.netWeight, net / unit);
-                                    excel.CellVaildation(Report.Material.grossWeight, nameRow, 22, 12, j, 12, worksheet, ref part);
+                                    excel.CellVaildation(Report.Material.grossWeight, nameRow, 22, 12, j, 12, worksheet, ref part, 22);
                                     part[Report.Material.grossWeight] = (global.ConvertDouble(part[Report.Material.grossWeight])) / unit;
 
                                     material.Add(Report.LineType.procument, "Siemens.TCPCM.ProcurementType.Purchase_RawMaterial");
@@ -598,8 +614,10 @@ namespace TcPCM_Connect_Global
                                 else
                                 {
                                     part.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
-                                    excel.CellVaildation(Report.Material.unit, nameRow, 22, 13, j, 13, worksheet, ref part);
-                                    excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, 14, j, 14, worksheet, ref part);
+                                    excel.CellVaildation(Report.Material.unit, nameRow, 22, 13, j, 13, worksheet, ref part, 22);
+                                    part[Report.Material.quantity] 
+                                        = global.ConvertDouble($"{worksheet.Cells[j, 12].Value}") * global.ConvertDouble(part[Report.Material.quantity]);
+                                    excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, 14, j, 14, worksheet, ref part,22);
                                     materials.Add(part);
                                 }
                             }
@@ -626,18 +644,22 @@ namespace TcPCM_Connect_Global
                         string key = ((FieldInfo)member).GetValue(member.Name)?.ToString();
                         if (!header.ContainsKey(key)) header.Add(key, null);
                     }
-
+                    header.Add("기타2", "");
                     header.Add("WeightType", "");
                     data.Add(header);
                     data.Merge(materials);
 
                     int[] manufacturingList = { 12, 17, 19, 23, 26, 27, 29 };
                     int manufacturingDefault = 3;
-                    
 
-                    for (int j = 57; j < 89; j++)
-                    {
-                        int machinLine = j - 49;
+                    int cntJ = 0;
+                    cntMaterial += 25;
+                    while (true)
+                    {                         
+                        int j = cntMaterial+2 + cntJ;
+                        int machinLine = 8 + cntJ;
+                        cntJ++;
+                        
                         int colIndex = 32;
                         int nameRow = 2;
 
@@ -645,7 +667,7 @@ namespace TcPCM_Connect_Global
 
                         if (((Excel.Range)worksheet.Cells[j, 3]).Value == null)
                         {
-                            if (j == 57) continue;
+                            if (cntJ == 1) continue;
                             break;
                         }
                         JObject manufacturing = new JObject();
@@ -696,8 +718,8 @@ namespace TcPCM_Connect_Global
 
                                 else if (colName[colIndex + i] == Report.Manufacturing.category)
                                 {
-                                    excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref manufacturing);
-                                    excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref labor);
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, cntMaterial, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref manufacturing,55);
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, cntMaterial, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref labor,55);
                                 }
                                 else if (colName[colIndex + i] == Report.Manufacturing.machineName)
                                 {
@@ -705,8 +727,8 @@ namespace TcPCM_Connect_Global
                                 }
                                 else
                                 {
-                                    excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref manufacturing);
-                                    excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref labor);
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, cntMaterial, i, j, i, worksheet, ref manufacturing, 55);
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, cntMaterial, i, j, i, worksheet, ref labor, 55);
                                 }
 
                                 //excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref machine);
@@ -727,7 +749,7 @@ namespace TcPCM_Connect_Global
                                     }
                                     else if (colName[colIndex + i] == Report.Manufacturing.category)
                                     {
-                                        excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, worksheet2, $"{header[Report.Header.suppier]}||{worksheet2.Cells[machinLine, i].Value}", ref machine);
+                                        excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, worksheet2, $"{header[Report.Header.suppier]}||{worksheet2.Cells[machinLine, i].Value}", ref machine,4);
                                     }
                                     else if (colName[colIndex + i] == Report.Manufacturing.machineName)
                                     {
@@ -736,12 +758,16 @@ namespace TcPCM_Connect_Global
                                             machine[Report.Manufacturing.machineName] +=
                                                 worksheet2.Cells[machinLine, i].Value == null ? "" : $"_{worksheet2.Cells[machinLine, i].Value.ToString()}";
                                         }
-                                        else machine.Add(Report.Manufacturing.machineName, worksheet2.Cells[machinLine, i].Value.ToString());
+                                        else machine.Add(Report.Manufacturing.machineName, worksheet2.Cells[machinLine, i].Value?.ToString());
                                     }
                                     else if (machine.ContainsKey(Report.Manufacturing.rationForSupplementaryMachine3)&& machine.ContainsKey(colName[colIndex + i])) continue;
-                                    else if (machine.ContainsKey(colName[colIndex + i])) excel.CellVaildation(Report.Manufacturing.rationForSupplementaryMachine3, nameRow, 4, i, machinLine, i, worksheet2, ref machine);
+                                    else if(colName[colIndex + i] == Report.Manufacturing.otherYearOfMachine)
+                                    {
+                                        machine.Add(Report.Manufacturing.otherYearOfMachine, $"{worksheet2.Cells[machinLine, i].Value}" );
+                                    }
+                                    else if (machine.ContainsKey(colName[colIndex + i])) excel.CellVaildation(Report.Manufacturing.rationForSupplementaryMachine3, nameRow, 4, i, machinLine, i, worksheet2, ref machine, 4);
                                     else if (worksheet2.Cells[machinLine, i].Value == null) continue;                                    
-                                    else excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, machinLine, i, worksheet2, ref machine);
+                                    else excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, machinLine, i, worksheet2, ref machine,4);
                                 }
                                 catch (Exception e)
                                 {
@@ -755,6 +781,10 @@ namespace TcPCM_Connect_Global
                                * global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine2])
                                / global.ConvertDouble(machine[Report.Manufacturing.rationForSupplementaryMachine3]) : 0;
                             machine.Add(Report.Manufacturing.spaceCost, rationForSupplementaryMachine);
+
+                            //machine[Report.Manufacturing.otherMachineCost] 
+                            //    = global.ConvertDouble(machine[Report.Manufacturing.otherMachineCost]) / global.ConvertDouble(machine[Report.Manufacturing.otherYearOfMachine])
+                            //     / global.ConvertDouble(manufacturings[Report.Manufacturing.productionDay]) / global.ConvertDouble(manufacturings[Report.Manufacturing.productionTime]);
                             manufacturing.Add(Report.Manufacturing.redirectExpenseRatio, machine[Report.Manufacturing.redirectExpenseRatio]);
                             manufacturing.Add(Report.Manufacturing.productionDay, machine[Report.Manufacturing.productionDay]);
                             manufacturing.Add(Report.Manufacturing.productionTime,
@@ -778,7 +808,11 @@ namespace TcPCM_Connect_Global
                     try
                     {
                         JObject postResult = JObject.Parse(response);
-                        if ((bool)postResult["success"] == false) err = postResult["message"].ToString();
+                        if ((bool)postResult["success"] == false)
+                        {
+                            err = postResult["message"].ToString();
+                            MessageBox.Show(err);
+                        }
                     }
                     catch
                     {
@@ -796,7 +830,11 @@ namespace TcPCM_Connect_Global
                     try
                     {
                         JObject postResult2 = JObject.Parse(response2);
-                        if ((bool)postResult2["success"] == false) err = postResult2["message"].ToString();
+                        if ((bool)postResult2["success"] == false)
+                        {
+                            err = postResult2["message"].ToString();
+                            MessageBox.Show(err);
+                        }
                     }
                     catch
                     {

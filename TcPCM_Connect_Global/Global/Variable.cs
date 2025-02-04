@@ -315,7 +315,7 @@ namespace TcPCM_Connect_Global
             public static string machinePowerCost = "전력단가";
             public static string machinePowerEfficiency = "전력소비율";
             public static string otherMachineCost = "투입비용";
-            public static string otherYearOfMachine = "내용년수";
+            public static string otherYearOfMachine = "기타설비내용년수";
             public static string redirectExpenseRatio = "간접경비율";
             public static string ratioOfMachineRepair = "수선비율";
 
