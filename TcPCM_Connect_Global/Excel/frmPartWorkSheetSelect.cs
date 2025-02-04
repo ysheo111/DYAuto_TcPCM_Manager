@@ -22,8 +22,8 @@ namespace TcPCM_Connect_Global
         public List<string> workSheet = new List<string>();
         private void frmPartWorkSheetSelect_Load(object sender, EventArgs e)
         {
-            if (workSheet.Count>0) combo_Part.Text = workSheet[1];
-            if (workSheet.Count>1) combo_Manufacturing.Text = workSheet[2];
+            if (workSheet.Count>0) combo_Part.Text = workSheet[workSheet.Count-2];
+            if (workSheet.Count>1) combo_Manufacturing.Text = workSheet[workSheet.Count-1];
 
             foreach(string sheet in workSheet)
             {

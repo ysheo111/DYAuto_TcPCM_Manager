@@ -32,23 +32,23 @@ namespace TcPCM_Connect_Global
             return name;
         }
 
-        public void CellVaildation(string colName, int nameRow, int rowCol, int colCol, int rowValue, int colValue, Excel.Worksheet worksheet, ref JObject value)
+        public void CellVaildation(string colName, int nameRow, int rowCol, int colCol, int rowValue, int colValue, Excel.Worksheet worksheet, ref JObject value, int cbd2)
         {
             string name = CombineString(nameRow, rowCol, colCol, worksheet);
-            if (!name.Replace("전략","전력").Contains(cbd.FindValue(rowCol, colCol)))
+            if (!name.Replace("전략","전력").Contains(cbd.FindValue(cbd2, colCol)))
             {
-                incorrect.Add($"{cbd.FindValue(rowCol, colCol)}을 다시 확인해주세요. ({name} {rowCol} {colCol})");
+                incorrect.Add($"{cbd.FindValue(cbd2, colCol)}을 다시 확인해주세요. ({name} {rowCol} {colCol})");
                 //(worksheet.Cells[row, excelCol]).Interior.Color = Excel.XlRgbColor.rgbYellow;
             }
             else value.Add(colName, $"{worksheet.Cells[rowValue, colValue].Value}");
         }
 
-        public void CellVaildation(string colName, int nameRow, int rowCol, int colCol, Excel.Worksheet worksheet, object data, ref JObject value)
+        public void CellVaildation(string colName, int nameRow, int rowCol, int colCol, Excel.Worksheet worksheet, object data, ref JObject value, int cbd2)
         {
             string name = CombineString(nameRow, rowCol, colCol, worksheet);
-            if (!name.Contains(cbd.FindValue(rowCol, colCol)))
+            if (!name.Contains(cbd.FindValue(cbd2, colCol)))
             {
-                incorrect.Add($"{cbd.FindValue(rowCol, colCol)}을 다시 확인해주세요. ({rowCol} {colCol})");
+                incorrect.Add($"{cbd.FindValue(cbd2, colCol)}을 다시 확인해주세요. ({rowCol} {colCol})");
                 //(worksheet.Cells[row, excelCol]).Interior.Color = Excel.XlRgbColor.rgbYellow;
             }
             else value.Add(colName, JToken.FromObject(data));
