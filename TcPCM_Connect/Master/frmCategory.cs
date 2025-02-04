@@ -179,7 +179,9 @@ namespace TcPCM_Connect
                 CurrencyAdd("통화");
                 dgv_Category.Columns.Add("Plant", "Plant");
                 dgv_Category.Columns.Add("전력단가", "전력단가");
+                dgv_Category.Columns["전력단가"].DefaultCellStyle.Format = "N2";
                 dgv_Category.Columns.Add("탄소배출량", "탄소배출량");
+                dgv_Category.Columns["탄소배출량"].DefaultCellStyle.Format = "N2";
             }
             else if (columnName == "임률")
             {
@@ -191,8 +193,12 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("업종", "업종");
                 CurrencyAdd("통화");
                 dgv_Category.Columns.Add("간접임률", "간접임률");
+                dgv_Category.Columns["간접임률"].DefaultCellStyle.Format = "N2";
                 dgv_Category.Columns.Add("직접임률", "직접임률");
+                dgv_Category.Columns["직접임률"].DefaultCellStyle.Format = "N2";
                 dgv_Category.Columns.Add("경비", "경비");
+                dgv_Category.Columns["경비"].DefaultCellStyle.Format = "N2";
+
                 //dgv_Category.Columns.Add("Labor burden (1Shift)", "Labor burden (1Shift)");
                 //dgv_Category.Columns.Add("Labor burden (2Shift)", "Labor burden (2Shift)");
                 //dgv_Category.Columns.Add("Labor burden (3Shift)", "Labor burden (3Shift)");
@@ -249,11 +255,18 @@ namespace TcPCM_Connect
 
         private void dgv_Category_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
+            //else if(dgv_Category.Columns[e.ColumnIndex].Name.Contains("임률") || dgv_Category.Columns[e.ColumnIndex].Name.Contains("경비") || dgv_Category.Columns[e.ColumnIndex].Name.Contains("단가") || dgv_Category.Columns[e.ColumnIndex].Name.Contains("탄소배출량"))
+            //{
+            //    row.Cells[e.ColumnIndex].Value = !double.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out double number) ?
+            //        row.Cells[e.ColumnIndex].Value : number.ToString("N2");
+            //}
+
             if (!dgv_Category.Columns[e.ColumnIndex].Name.Contains("Valid")) return;
 
             DataGridViewRow row = dgv_Category.Rows[e.RowIndex];
 
             if (row.Cells[e.ColumnIndex].Value == null) return;
+
             row.Cells[e.ColumnIndex].Value = !DateTime.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out DateTime dt) ?
                 row.Cells[e.ColumnIndex].Value : dt.ToString("yyyy-MM-dd");
         }
@@ -400,7 +413,8 @@ namespace TcPCM_Connect
                 else if (columnName == "임률")
                 {
                     searchQeury = searchQeury + $@" where CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                                                or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                                                or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                                or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
             }
             DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);

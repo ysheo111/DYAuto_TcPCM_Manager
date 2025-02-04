@@ -175,7 +175,15 @@ namespace TcPCM_Connect
             }
             LoadingScreen.CloseSplashScreen();
         }
+        private void btn_ExcelCreate_Click(object sender, EventArgs e)
+        {
+            ExcelExport excel = new ExcelExport();
+            string columnName = cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString();
+            string err = excel.ExportLocationGrid(dgv_Material, columnName);
 
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"Export 실패하였습니다\n{err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("Export 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
         private void btn_Create_Click(object sender, EventArgs e)
         {
             ExcelImport excel = new ExcelImport();
@@ -246,9 +254,9 @@ namespace TcPCM_Connect
                 string message = "";
                 foreach(string msg in list)
                 {
-                    message += $"\n{msg}";
+                    message += $"{msg}\n";
                 }
-                CustomMessageBox.RJMessageBox.Show($"아래의 물성치 정보가 없습니다:{message}", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomMessageBox.RJMessageBox.Show($"아래의 물성치 정보가 없습니다:", "Material", $"{message}", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
         private bool IsDuplicate()
@@ -316,11 +324,11 @@ namespace TcPCM_Connect
                 string array = "";
                 foreach (string a in list)
                 {
-                    array += $"\n{a}";
+                    array += $"{a}\n";
                 }
 
                 if (string.IsNullOrEmpty(array)) return true;
-                DialogResult result = CustomMessageBox.RJMessageBox.Show($"중복되는 값을 덮어씌우겠습니까? \n(Yes=덮어쓰기,No=중복 값 제외하고 Import,Cancel=Import 취소){array}", "Material", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                DialogResult result = CustomMessageBox.RJMessageBox.Show($"중복되는 값을 덮어씌우겠습니까? \n(Yes=덮어쓰기,No=중복 값 제외하고 Import,Cancel=Import 취소)", "Material", $"{array}", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
                 if (result == DialogResult.No)
                 {
                     foreach (int index in numList)
@@ -391,38 +399,6 @@ namespace TcPCM_Connect
             }
         }
 
-        //private void DieCastingColumn()
-        //{
-        //    //dgv_Material.Columns.Add("DROSS 비용", "DROSS 비용");
-        //    //dgv_Material.Columns.Add("DROSS 비용 단위", "DROSS 비용 단위");
-        //    dgv_Material.Columns.Add("주조 온도 최대(℃)", "주조 온도 최대(℃)");
-        //    dgv_Material.Columns.Add("주조 온도 최소(℃)", "주조 온도 최소(℃)");
-        //    dgv_Material.Columns.Add("T-factor", "T-factor");
-        //}
-
-        //private void InjectionColumn()
-        //{
-        //    //dgv_Material.Columns.Add("계열", "계열");
-        //    dgv_Material.Columns.Add("탈형 온도(℃)", "탈형 온도(℃)");
-        //    dgv_Material.Columns.Add("사출 온도(℃)", "사출 온도(℃)");
-        //    dgv_Material.Columns.Add("금형 온도(℃)", "금형 온도(℃)");
-        //    //dgv_Material.Columns.Add("내부 탈형 압력 계수", "내부 탈형 압력 계수");
-        //    dgv_Material.Columns.Add("열확산도(mm²/s)", "열확산도(mm²/s)");
-        //}
-
-        //private void PlateColumn()
-        //{
-        //    dgv_Material.Columns.Add("인장 강도(N/mm²)", "인장 강도(N/mm²)");
-        //    dgv_Material.Columns.Add("전단 강도(N/mm²)", "전단 강도(N/mm²)");
-        //    //dgv_Material.Columns.Add("생산 계수", "생산 계수");
-        //}
-
-        //private void PriceColumn()
-        //{
-        //    dgv_Material.Columns.Add("지역", "지역");
-        //    dgv_Material.Columns.Add("원재료 단가", "원재료 단가");
-        //}
-
         private void dgv_Material_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
@@ -444,6 +420,180 @@ namespace TcPCM_Connect
             if (row.Cells[e.ColumnIndex].Value == null) return;
             row.Cells[e.ColumnIndex].Value = !DateTime.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out DateTime dt) ?
                 row.Cells[e.ColumnIndex].Value : dt.ToString("yyyy-MM-dd");
+        }
+        private void searchButton1_SearchButtonClick(object sender, EventArgs e)
+        {
+            Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+            splashthread.IsBackground = true;
+            splashthread.Start();
+
+            dgv_Material.Rows.Clear();
+
+            string columnName = cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString();
+            string inputString = "", searchQeury = "", colQeury = "", havingQuery = ""; ;
+            inputString = searchButton1.text;
+            if (columnName == "원소재 단가")
+            {
+                //searchQeury = @"With A as(
+	               //                     select distinct
+		              //                      BDRegions.UniqueKey as region,
+		              //                      DateValidFrom,
+		              //                      Currencies.IsoCode As IsoCode,
+		              //                      MDMaterialHeaders.UniqueKey As UniqueKey,
+		              //                      Price,
+		              //                      Units.Name As '원재료 단위'
+		              //                      ,MDMaterialHeaders.Name_LOC_Extracted As '소재명'
+	               //                     from MDMaterialDetails
+		              //                      left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
+		              //                      left join Units on MDMaterialDetails.UnitId = Units.Id
+		              //                      LEFT join BDRegions on RegionId = BDRegions.Id
+		              //                      LEFT join Currencies on CurrencyId = Currencies.Id
+	               //                     where MaterialHeaderId in
+		              //                      (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+		              //                      And MDMaterialHeaders.UniqueKey not like '%_scrap'
+                //                    ),
+                //                    B as(
+	               //                     select distinct
+		              //                      BDRegions.UniqueKey as region,
+		              //                      Currencies.IsoCode As IsoCode,
+		              //                      MDMaterialHeaders.UniqueKey As sName,
+		              //                      Price,
+		              //                      Units.Name As '스크랩 단위'
+	               //                     from MDMaterialDetails
+		              //                      left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
+		              //                      left join Units on MDMaterialDetails.UnitId = Units.Id
+		              //                      LEFT join BDRegions on RegionId = BDRegions.Id
+		              //                      LEFT join Currencies on CurrencyId = Currencies.Id
+	               //                     where MaterialHeaderId in
+		              //                      (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+		              //                      And MDMaterialHeaders.UniqueKey like '%_scrap'
+                //                    ),
+                //                    C as(
+	               //                     select distinct
+		              //                      BDRegions.UniqueKey as region,
+		              //                      MDMaterialHeaders.UniqueKey As sName,
+		              //                      MDMaterialCo2Details.value,
+		              //                      Units.Name As '탄소발생량 단위'
+	               //                     from MDMaterialCo2Details
+		              //                      left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
+		              //                      left join Units on MDMaterialCo2Details.UnitId = Units.Id
+		              //                      LEFT join BDRegions on RegionId = BDRegions.Id
+	               //                     where MaterialHeaderId in
+		              //                      (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+		              //                      And MDMaterialHeaders.UniqueKey like '%_scrap'
+                //                    )
+                //                    select
+                //                    A.DateValidFrom as 'Valid From',
+                //                    COALESCE(A.region, B.region, C.region) as '지역',
+                //                    COALESCE(A.IsoCode, B.IsoCode) as '통화',
+                //                    A.소재명,
+                //                    A.UniqueKey,
+                //                    A.Price as '원재료 단가',
+                //                    A.[원재료 단위],
+                //                    B.Price as '스크랩 단가',
+                //                    B.[스크랩 단위],
+                //                    C.Value as '탄소발생량',
+                //                    C.[탄소발생량 단위]
+                //                    From A
+                //                    Full outer join B on
+                //                    A.region = B.region And A.IsoCode = B.IsoCode 
+                //                    And B.sName = A.UniqueKey+'_scrap'
+                //                    Full outer join C on
+                //                    COALESCE(A.region, B.region) = C.region
+                //                    And C.sName = B.sName
+                //                    Where
+	               //                     COALESCE(A.region, B.region, C.region) IS NOT NULL
+	               //                     And A.[원재료 단위] is not null";
+            }
+            else
+            {
+                if (columnName == "다이캐스팅")
+                {
+                    colQeury = @",MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 332 THEN MDSubstancePropertyValues.DecimalValue END) AS '주조 온도 최소',
+	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 331 THEN MDSubstancePropertyValues.DecimalValue END) AS '주조 온도 최대',
+	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 330 THEN MDSubstancePropertyValues.DecimalValue END) AS 'T-factor'";
+                    havingQuery = @"Group by UniqueKey,Density HAVING 
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 332 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 331 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 330 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL";
+                }
+                else if (columnName == "사출")
+                {
+                    colQeury = @",MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 328 THEN MDSubstancePropertyValues.DecimalValue END) AS '탈형 온도',
+	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 329 THEN MDSubstancePropertyValues.DecimalValue END) AS '사출 온도',
+	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 327 THEN MDSubstancePropertyValues.DecimalValue END) AS '금형 온도',
+	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 326 THEN MDSubstancePropertyValues.DecimalValue * 1000000 END) AS '열확산도'";
+                    havingQuery = @"Group by UniqueKey,Density HAVING 
+                                    MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 328 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 329 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 327 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 326 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL";
+                }
+                else if (columnName == "프레스")
+                {
+                    colQeury = @",MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 324 THEN MDSubstancePropertyValues.DecimalValue / 1000000 END) AS '인장 강도',
+	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 296 THEN MDSubstancePropertyValues.DecimalValue / 1000000 END) AS '전단 강도'";
+                    havingQuery = @"Group by UniqueKey,Density HAVING
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 324 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 296 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL";
+                }
+                else if (columnName == "기타")
+                {
+                    havingQuery = @"Group by UniqueKey,Density HAVING 
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 332 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 331 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 330 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 328 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 329 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 327 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 326 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 324 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL AND
+	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 296 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL";
+                }
+                searchQeury = $@"select DISTINCT UniqueKey,Density*0.001 as Density {colQeury}
+                                from MDSubstances
+                                LEFT join MDSubstancePropertyValues on MDSubstances.id = MDSubstancePropertyValues.SubstanceId
+                                where MDSubstances.id in (select SubstanceId from MDSubstanceStandardNames where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+                                {havingQuery}";
+            }
+            if (!string.IsNullOrEmpty(inputString))
+            {
+                searchQeury = searchQeury + $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
+            }
+
+            DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+            if (dataTable == null) return;
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                dgv_Material.Rows.Add();
+                int i = 0;
+                foreach (DataColumn col in dataTable.Columns)
+                {
+                    string result = row[col].ToString();
+                    result = NameSplit(result);
+
+                    int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
+                    if (col.ColumnName == "UniqueKey")
+                    {
+                        string[] aa = result.Split('_');
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["재질명"].Value = aa[0];
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["GRADE"].Value = aa[1];
+                        i++;
+                    }
+                    else if (col.ColumnName == "소재명")
+                    {
+                        result = result.Replace("[DYA]","");
+                        string[] resultArray = result.Split(' ');
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].Value = resultArray[0];
+                    }
+                    else
+                    {
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].Value = result;
+                    }
+                }
+            }
+            LoadingScreen.CloseSplashScreen();
         }
 
         public string NameSplit(string input)
@@ -500,6 +650,5 @@ namespace TcPCM_Connect
             }
             return input;
         }
-
     }
 }

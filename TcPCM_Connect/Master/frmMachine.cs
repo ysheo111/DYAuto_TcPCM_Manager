@@ -53,7 +53,6 @@ namespace TcPCM_Connect
 
                 if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "Machine", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Machine", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
             }
             catch
             {
@@ -68,6 +67,11 @@ namespace TcPCM_Connect
             ConfigSetting config = new ConfigSetting();
             config.className = "Machine";
             config.Show();
+        }
+        private void btn_Shift_Click(object sender, EventArgs e)
+        {
+            Component.ShiftSetting shift = new Component.ShiftSetting();
+            shift.Show();
         }
 
         private void ColumnAdd()
@@ -84,16 +88,15 @@ namespace TcPCM_Connect
             ((DataGridViewComboBoxColumn)dgv_Machine.Columns[MasterData.Machine.currency]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
             dgv_Machine.Columns[MasterData.Machine.currency].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
 
-            dgv_Machine.Columns.Add(MasterData.Machine.segment, MasterData.Machine.segment);
+            DataGridViewComboBoxColumn segCombo = new DataGridViewComboBoxColumn();
+            segCombo.Name = segCombo.HeaderText = MasterData.Machine.segment;
+            segCombo.FlatStyle = FlatStyle.Flat;
+            dgv_Machine.Columns.Add(segCombo);
+            ((DataGridViewComboBoxColumn)dgv_Machine.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'", 0);
+            dgv_Machine.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
 
-            dgv_Machine.Columns.Add(MasterData.Machine.designation1, MasterData.Machine.designation1);
-            //dgv_Machine.Columns.Add(MasterData.Machine.designation2, MasterData.Machine.designation2);
-            if(cb_Classification.SelectedItem?.ToString() == "기타") dgv_Machine.Columns.Add(MasterData.Machine.process, MasterData.Machine.process);
-                dgv_Machine.Columns.Add(MasterData.Machine.maxClampingForce, MasterData.Machine.maxClampingForce);
-            //dgv_Machine.Columns.Add(MasterData.Machine.setup, MasterData.Machine.setup);
+            //dgv_Machine.Columns.Add(MasterData.Machine.segment, MasterData.Machine.segment);
 
-
-            //if (cb_Classification.SelectedItem?.ToString() == "기타")  dgv_Machine.Columns.Add(MasterData.Machine.category, MasterData.Machine.category);
             dgv_Machine.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
@@ -129,27 +132,8 @@ namespace TcPCM_Connect
             if (combo.SelectedIndex < 0) return;
 
             ColumnAdd();
-            if (combo.SelectedItem?.ToString() == "다이캐스팅") DieCastingColumn();
-            else if (combo.SelectedItem?.ToString() == "사출") InjectionColumn();
-            else if (combo.SelectedItem?.ToString() == "프레스") PressColumn();
-            else if (combo.SelectedItem?.ToString() == "설비") Capitalcolumn();
+            if (combo.SelectedItem?.ToString() == "설비") Capitalcolumn();
             dgv_Machine.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        }
-
-        private void DieCastingColumn()
-        {
-            dgv_Machine.Columns.Add(MasterData.Machine.openMold2, MasterData.Machine.openMold2);
-            dgv_Machine.Columns.Add(MasterData.Machine.blowOutMold2, MasterData.Machine.blowOutMold2);
-            dgv_Machine.Columns.Add(MasterData.Machine.closeSilder2, MasterData.Machine.closeSilder2);
-            dgv_Machine.Columns.Add(MasterData.Machine.closeMold2, MasterData.Machine.closeMold2);
-            dgv_Machine.Columns.Add(MasterData.Machine.fillMaterial2, MasterData.Machine.fillMaterial2);
-            dgv_Machine.Columns.Add(MasterData.Machine.injectPartingAgent2, MasterData.Machine.injectPartingAgent2);
-            dgv_Machine.Columns.Add(MasterData.Machine.openSilder2, MasterData.Machine.openSilder2);
-            //dgv_Machine.Columns.Add(MasterData.Machine.openMold2, MasterData.Machine.openMold2);
-            //dgv_Machine.Columns.Add(MasterData.Machine.removeCast2, MasterData.Machine.removeCast2);
-            //dgv_Machine.Columns.Add(MasterData.Machine.retractEjector2, MasterData.Machine.retractEjector2);
-            //dgv_Machine.Columns.Add(MasterData.Machine.resetEjector2, MasterData.Machine.resetEjector2);
-            //dgv_Machine.Columns.Add(MasterData.Machine.shotTime2, MasterData.Machine.shotTime2);
         }
 
         private void InjectionColumn()
@@ -160,25 +144,22 @@ namespace TcPCM_Connect
             dgv_Machine.Columns.Add(MasterData.Machine.movePlasticizingUnit, MasterData.Machine.movePlasticizingUnit);
         }
 
-        private void PressColumn()
-        {
-            dgv_Machine.Columns.Add(MasterData.Machine.setupTime, MasterData.Machine.setupTime);
-            dgv_Machine.Columns.Add(MasterData.Machine.Foaming, MasterData.Machine.Foaming);
-            dgv_Machine.Columns.Add(MasterData.Machine.Drawing, MasterData.Machine.Drawing);
-            dgv_Machine.Columns.Add(MasterData.Machine.SPM, MasterData.Machine.SPM);
-        }
-
         private void Capitalcolumn()
         {
+            dgv_Machine.Columns.Add(MasterData.Machine.customer, "업체명");
+            dgv_Machine.Columns.Add(MasterData.Machine.designation1, MasterData.Machine.designation1);
+            dgv_Machine.Columns.Add(MasterData.Machine.maxClampingForce, MasterData.Machine.maxClampingForce);
             dgv_Machine.Columns.Add(MasterData.Machine.maker, MasterData.Machine.maker);
             dgv_Machine.Columns.Add(MasterData.Machine.manufacturer, MasterData.Machine.manufacturer);
             dgv_Machine.Columns.Add(MasterData.Machine.acquisition, MasterData.Machine.acquisition);
+            dgv_Machine.Columns[MasterData.Machine.acquisition].DefaultCellStyle.Format = "N2";
             dgv_Machine.Columns.Add(MasterData.Machine.imputed, MasterData.Machine.imputed);
             dgv_Machine.Columns.Add(MasterData.Machine.space, MasterData.Machine.space);
             dgv_Machine.Columns.Add(MasterData.Machine.ratedPower, MasterData.Machine.ratedPower);
             dgv_Machine.Columns.Add(MasterData.Machine.poweUtiliation, MasterData.Machine.poweUtiliation);
             dgv_Machine.Columns.Add(MasterData.Machine.acquisitionEx, MasterData.Machine.acquisitionEx);
-            dgv_Machine.Columns.Add("업체명","업체명");
+            dgv_Machine.Columns[MasterData.Machine.acquisitionEx].DefaultCellStyle.Format = "N2";
+            dgv_Machine.Columns.Add("내용년수", "기타 내용년수");
         }
     }
 }

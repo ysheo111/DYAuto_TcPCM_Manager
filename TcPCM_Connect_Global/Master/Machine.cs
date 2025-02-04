@@ -23,16 +23,16 @@ namespace TcPCM_Connect_Global
             String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/MasterData/Import";
             JArray header = new JArray();
             JArray detail = new JArray();
-            double meltingPower = 0;
+            //double meltingPower = 0;
 
             foreach (DataGridViewRow row in dgv.Rows)
             {
                 bool flag = true;
-                object force = row.Cells[MasterData.Machine.maxClampingForce].Value;
-                if (type == "프레스")
-                {
-                    force = null;
-                }
+                //object force = row.Cells[MasterData.Machine.maxClampingForce].Value;
+                //if (type == "프레스")
+                //{
+                //    force = null;
+                //}
                 //string designation = row.Cells[MasterData.Machine.designation2].Value?.ToString().Length > 0 ? "_": "";
                 JObject item = new JObject();
                 JObject detailitem = new JObject();
@@ -146,11 +146,10 @@ namespace TcPCM_Connect_Global
                     foreach(string config in MasterData.Machine.machineDetailList)
                     {
                         if (row.Cells["설비명"].Value == null || string.IsNullOrEmpty(row.Cells["설비명"].Value?.ToString())) continue;
+                        
                         if (config.Contains("설비명"))
                         {
-                            //item.Add("Designation", $"[DYA]{row.Cells[MasterData.Machine.designation1].Value}");
                             item.Add("Unique identifier", $"{row.Cells[MasterData.Machine.designation1].Value}");
-                            //detailitem.Add("Designation", $"{row.Cells[MasterData.Machine.designation1].Value}");
                             detailitem.Add("Unique identifier", $"{row.Cells[MasterData.Machine.designation1].Value}");
                         }
                         else if(config.Contains("최대 톤수"))

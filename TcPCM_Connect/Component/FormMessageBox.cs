@@ -83,12 +83,12 @@ public partial class FormMessageBox : Form
             this.PrimaryColor = primaryColor;
             this.labelMessage.Text = text;
             this.labelCaption.Text = caption;
+            this.panel1.Visible = true;
             this.txt_rich.Visible = true;
             this.txt_rich.Text = detail;
             SetFormSize();
             SetIcon(icon);
             SetButtons(buttons, MessageBoxDefaultButton.Button1);//Set [Default Button 1]
-
         }
         public FormMessageBox(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton)
     {
@@ -114,11 +114,15 @@ public partial class FormMessageBox : Form
         this.button1.Visible = false;
         this.button2.Visible = false;
         this.button3.Visible = false;
+        this.panel1.Visible = false;
+        this.txt_rich.Visible = false;
     }
     private void SetFormSize()
     {
         int widht = this.labelMessage.Width + this.pictureBoxIcon.Width + this.panelBody.Padding.Left;
-        int height = this.panelTitleBar.Height + this.labelMessage.Height + this.panelButtons.Height + this.panelBody.Padding.Top;
+        int height = this.panelTitleBar.Height + this.labelMessage.Height + this.panelButtons.Height + this.panelBody.Padding.Top;// + this.panel1.Height;
+        if (!string.IsNullOrEmpty(this.txt_rich.Text))
+            height += this.panel1.Height;
         this.Size = new Size(widht, height);
     }
     private void SetButtons(MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton)
