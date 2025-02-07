@@ -179,11 +179,11 @@ namespace TcPCM_Connect
             dgv_Overheads.Rows.Clear();
 
             string columnName = cb_Classification.SelectedItem == null ? "재료관리비" : cb_Classification.SelectedItem.ToString();
-            string inputString = "", searchQeury = "";
+            string inputString = "", searchQuery = "";
             inputString = searchButton1.text;
 
             //전체 검색
-            searchQeury = $@"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, BDSegments.UniqueKey, Value
+            searchQuery = $@"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, BDSegments.UniqueKey, Value
                             as name FROM MDOverheadDetails
                             LEFT join BDRegions ON RegionId = BDRegions.Id
                             LEFT join BDSegments ON SegmentId = BDSegments.Id
@@ -195,12 +195,12 @@ namespace TcPCM_Connect
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
-                searchQeury = searchQeury + $@" AND( CAST(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                searchQuery = searchQuery + $@" AND( CAST(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
                                                 OR CAST(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
                                                 OR CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
             }
 
-            DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+            DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
             if (dataTable == null) return;
 
             foreach (DataRow row in dataTable.Rows)

@@ -61,9 +61,10 @@ namespace TcPCM_Connect_Global
 
                     for (int row = 1; row < dgv.RowCount; row++)
                     {
-                        string input = dgv.Rows[row - 1].Cells[i].Value.ToString();
-                        string result = input.Replace("[DYA]","");
-                        worksheet.Cells[row+2, i + 2] = result;
+                        string input = dgv.Rows[row - 1].Cells[i].Value?.ToString();
+                        if(!string.IsNullOrEmpty(input))
+                            input = input.Replace("[DYA]","");
+                        worksheet.Cells[row+2, i + 2] = input;
                     }
                 }
                 string lastColumnAlpha = GetExcelColumnName(worksheet.UsedRange.Columns.Count + 1);

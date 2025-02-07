@@ -67,10 +67,10 @@ namespace TcPCM_Connect_Global
                     {
                         if(row.Cells[col.Name].Value == null)
                         {
-                            string searchQeury = $"select Name_LOC from BDRegions" +
+                            string searchQuery = $"select Name_LOC from BDRegions" +
                                 $" where CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{item["지역"].ToString()}%'" +
                                 $" And CAST(Name_LOC AS NVARCHAR(MAX)) like '%en-US%'";
-                            string result = global_DB.ScalarExecute(searchQeury, (int)global_DB.connDB.PCMDB);
+                            string result = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
                             USDesignName = NameSplit(result);
                             item.Add(col.Name, USDesignName);
                         }

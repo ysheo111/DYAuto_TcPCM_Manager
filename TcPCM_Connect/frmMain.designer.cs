@@ -65,6 +65,7 @@
             this.tmContraerMenu = new System.Windows.Forms.Timer(this.components);
             this.tmFechaHora = new System.Windows.Forms.Timer(this.components);
             this.tip_logout = new System.Windows.Forms.ToolTip(this.components);
+            this.sideButton2 = new CustomControls.RJControls.SideButton();
             this.panelContenedorPrincipal.SuspendLayout();
             this.panelMenu.SuspendLayout();
             this.p_Header.SuspendLayout();
@@ -88,26 +89,29 @@
             this.panelContenedorPrincipal.Controls.Add(this.PanelBarraTitulo);
             this.panelContenedorPrincipal.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelContenedorPrincipal.Location = new System.Drawing.Point(0, 0);
+            this.panelContenedorPrincipal.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panelContenedorPrincipal.Name = "panelContenedorPrincipal";
-            this.panelContenedorPrincipal.Size = new System.Drawing.Size(1137, 631);
+            this.panelContenedorPrincipal.Size = new System.Drawing.Size(1299, 789);
             this.panelContenedorPrincipal.TabIndex = 0;
             // 
             // panelContenedorForm
             // 
             this.panelContenedorForm.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panelContenedorForm.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelContenedorForm.Location = new System.Drawing.Point(206, 46);
+            this.panelContenedorForm.Location = new System.Drawing.Point(235, 58);
+            this.panelContenedorForm.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panelContenedorForm.Name = "panelContenedorForm";
-            this.panelContenedorForm.Size = new System.Drawing.Size(931, 556);
+            this.panelContenedorForm.Size = new System.Drawing.Size(1064, 695);
             this.panelContenedorForm.TabIndex = 6;
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(206, 602);
+            this.panel1.Location = new System.Drawing.Point(235, 753);
+            this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(931, 29);
+            this.panel1.Size = new System.Drawing.Size(1064, 36);
             this.panel1.TabIndex = 5;
             // 
             // panelMenu
@@ -118,9 +122,10 @@
             this.panelMenu.Controls.Add(this.p_Manu);
             this.panelMenu.Controls.Add(this.rjTextBox1);
             this.panelMenu.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelMenu.Location = new System.Drawing.Point(0, 46);
+            this.panelMenu.Location = new System.Drawing.Point(0, 58);
+            this.panelMenu.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panelMenu.Name = "panelMenu";
-            this.panelMenu.Size = new System.Drawing.Size(206, 585);
+            this.panelMenu.Size = new System.Drawing.Size(235, 731);
             this.panelMenu.TabIndex = 2;
             // 
             // p_Header
@@ -130,16 +135,18 @@
             this.p_Header.Controls.Add(this.p_Profile);
             this.p_Header.Dock = System.Windows.Forms.DockStyle.Top;
             this.p_Header.Location = new System.Drawing.Point(0, 0);
+            this.p_Header.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.p_Header.Name = "p_Header";
-            this.p_Header.Size = new System.Drawing.Size(206, 102);
+            this.p_Header.Size = new System.Drawing.Size(235, 128);
             this.p_Header.TabIndex = 0;
             // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::TcPCM_Connect.Properties.Resources.DY_AUTO__로고;
-            this.pictureBox1.Location = new System.Drawing.Point(26, 6);
+            this.pictureBox1.Location = new System.Drawing.Point(30, 8);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(157, 44);
+            this.pictureBox1.Size = new System.Drawing.Size(179, 55);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 6;
             this.pictureBox1.TabStop = false;
@@ -148,9 +155,10 @@
             // 
             this.p_Profile.Controls.Add(this.lb_name);
             this.p_Profile.ForeColor = System.Drawing.Color.DimGray;
-            this.p_Profile.Location = new System.Drawing.Point(6, 56);
+            this.p_Profile.Location = new System.Drawing.Point(7, 70);
+            this.p_Profile.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.p_Profile.Name = "p_Profile";
-            this.p_Profile.Size = new System.Drawing.Size(195, 32);
+            this.p_Profile.Size = new System.Drawing.Size(223, 40);
             this.p_Profile.TabIndex = 14;
             // 
             // lb_name
@@ -158,9 +166,9 @@
             this.lb_name.AutoSize = true;
             this.lb_name.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.lb_name.ForeColor = System.Drawing.Color.DimGray;
-            this.lb_name.Location = new System.Drawing.Point(8, 8);
+            this.lb_name.Location = new System.Drawing.Point(9, 10);
             this.lb_name.Name = "lb_name";
-            this.lb_name.Size = new System.Drawing.Size(69, 17);
+            this.lb_name.Size = new System.Drawing.Size(82, 20);
             this.lb_name.TabIndex = 5;
             this.lb_name.Text = "Nombres ";
             // 
@@ -169,9 +177,10 @@
             this.p_Footer.Controls.Add(this.btnSalir);
             this.p_Footer.Controls.Add(this.p_Date);
             this.p_Footer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.p_Footer.Location = new System.Drawing.Point(0, 492);
+            this.p_Footer.Location = new System.Drawing.Point(0, 615);
+            this.p_Footer.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.p_Footer.Name = "p_Footer";
-            this.p_Footer.Size = new System.Drawing.Size(206, 93);
+            this.p_Footer.Size = new System.Drawing.Size(235, 116);
             this.p_Footer.TabIndex = 15;
             // 
             // btnSalir
@@ -179,9 +188,10 @@
             this.btnSalir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnSalir.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnSalir.Image = global::TcPCM_Connect.Properties.Resources.logout;
-            this.btnSalir.Location = new System.Drawing.Point(1, 26);
+            this.btnSalir.Location = new System.Drawing.Point(1, 32);
+            this.btnSalir.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSalir.Name = "btnSalir";
-            this.btnSalir.Size = new System.Drawing.Size(50, 51);
+            this.btnSalir.Size = new System.Drawing.Size(57, 64);
             this.btnSalir.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.btnSalir.TabIndex = 13;
             this.btnSalir.TabStop = false;
@@ -193,9 +203,10 @@
             this.p_Date.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.p_Date.Controls.Add(this.lblHora);
             this.p_Date.Controls.Add(this.lbFecha);
-            this.p_Date.Location = new System.Drawing.Point(44, 12);
+            this.p_Date.Location = new System.Drawing.Point(50, 15);
+            this.p_Date.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.p_Date.Name = "p_Date";
-            this.p_Date.Size = new System.Drawing.Size(152, 74);
+            this.p_Date.Size = new System.Drawing.Size(174, 92);
             this.p_Date.TabIndex = 15;
             // 
             // lblHora
@@ -204,9 +215,9 @@
             this.lblHora.AutoSize = true;
             this.lblHora.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.lblHora.ForeColor = System.Drawing.Color.DimGray;
-            this.lblHora.Location = new System.Drawing.Point(14, 14);
+            this.lblHora.Location = new System.Drawing.Point(16, 18);
             this.lblHora.Name = "lblHora";
-            this.lblHora.Size = new System.Drawing.Size(103, 29);
+            this.lblHora.Size = new System.Drawing.Size(133, 36);
             this.lblHora.TabIndex = 1;
             this.lblHora.Text = "21:49:45";
             // 
@@ -217,9 +228,9 @@
             this.lbFecha.BackColor = System.Drawing.Color.Transparent;
             this.lbFecha.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.lbFecha.ForeColor = System.Drawing.Color.DimGray;
-            this.lbFecha.Location = new System.Drawing.Point(15, 48);
+            this.lbFecha.Location = new System.Drawing.Point(17, 60);
             this.lbFecha.Name = "lbFecha";
-            this.lbFecha.Size = new System.Drawing.Size(124, 13);
+            this.lbFecha.Size = new System.Drawing.Size(148, 17);
             this.lbFecha.TabIndex = 4;
             this.lbFecha.Text = "2022년 8월 25일 목요일";
             // 
@@ -232,10 +243,10 @@
             this.p_Manu.Controls.Add(this.p_Master);
             this.p_Manu.Controls.Add(this.btn_Master);
             this.p_Manu.Controls.Add(this.btn_Dashboard);
-            this.p_Manu.Location = new System.Drawing.Point(4, 107);
+            this.p_Manu.Location = new System.Drawing.Point(5, 134);
             this.p_Manu.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.p_Manu.Name = "p_Manu";
-            this.p_Manu.Size = new System.Drawing.Size(201, 380);
+            this.p_Manu.Size = new System.Drawing.Size(230, 475);
             this.p_Manu.TabIndex = 35;
             // 
             // btn_UserManage
@@ -252,12 +263,12 @@
             this.btn_UserManage.ForeColor = System.Drawing.Color.DimGray;
             this.btn_UserManage.Image = global::TcPCM_Connect.Properties.Resources.master_user;
             this.btn_UserManage.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_UserManage.Location = new System.Drawing.Point(0, 240);
+            this.btn_UserManage.Location = new System.Drawing.Point(0, 346);
             this.btn_UserManage.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btn_UserManage.MinimumSize = new System.Drawing.Size(201, 37);
+            this.btn_UserManage.MinimumSize = new System.Drawing.Size(230, 46);
             this.btn_UserManage.Name = "btn_UserManage";
-            this.btn_UserManage.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
-            this.btn_UserManage.Size = new System.Drawing.Size(201, 37);
+            this.btn_UserManage.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
+            this.btn_UserManage.Size = new System.Drawing.Size(230, 46);
             this.btn_UserManage.TabIndex = 0;
             this.btn_UserManage.Text = "  사용자 관리";
             this.btn_UserManage.TextColor = System.Drawing.Color.DimGray;
@@ -267,16 +278,17 @@
             // 
             // p_Master
             // 
+            this.p_Master.Controls.Add(this.sideButton2);
             this.p_Master.Controls.Add(this.sideButton1);
             this.p_Master.Controls.Add(this.btn_Overheads);
             this.p_Master.Controls.Add(this.btn_Category);
             this.p_Master.Controls.Add(this.btn_Material);
             this.p_Master.Controls.Add(this.btn_Exchange);
             this.p_Master.Dock = System.Windows.Forms.DockStyle.Top;
-            this.p_Master.Location = new System.Drawing.Point(0, 74);
+            this.p_Master.Location = new System.Drawing.Point(0, 92);
             this.p_Master.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.p_Master.Name = "p_Master";
-            this.p_Master.Size = new System.Drawing.Size(201, 166);
+            this.p_Master.Size = new System.Drawing.Size(230, 254);
             this.p_Master.TabIndex = 3;
             // 
             // sideButton1
@@ -292,11 +304,11 @@
             this.sideButton1.ForeColor = System.Drawing.Color.DimGray;
             this.sideButton1.Image = global::TcPCM_Connect.Properties.Resources.master_plant;
             this.sideButton1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.sideButton1.Location = new System.Drawing.Point(3, 133);
+            this.sideButton1.Location = new System.Drawing.Point(3, 166);
             this.sideButton1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.sideButton1.Name = "sideButton1";
-            this.sideButton1.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
-            this.sideButton1.Size = new System.Drawing.Size(196, 27);
+            this.sideButton1.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.sideButton1.Size = new System.Drawing.Size(224, 34);
             this.sideButton1.TabIndex = 0;
             this.sideButton1.Text = "   설비";
             this.sideButton1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -318,11 +330,11 @@
             this.btn_Overheads.ForeColor = System.Drawing.Color.DimGray;
             this.btn_Overheads.Image = global::TcPCM_Connect.Properties.Resources.master_overheads;
             this.btn_Overheads.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_Overheads.Location = new System.Drawing.Point(3, 101);
+            this.btn_Overheads.Location = new System.Drawing.Point(3, 126);
             this.btn_Overheads.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btn_Overheads.Name = "btn_Overheads";
-            this.btn_Overheads.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.btn_Overheads.Size = new System.Drawing.Size(196, 27);
+            this.btn_Overheads.Padding = new System.Windows.Forms.Padding(11, 0, 0, 0);
+            this.btn_Overheads.Size = new System.Drawing.Size(224, 34);
             this.btn_Overheads.TabIndex = 4;
             this.btn_Overheads.Text = "   Overheads";
             this.btn_Overheads.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -344,11 +356,11 @@
             this.btn_Category.ForeColor = System.Drawing.Color.DimGray;
             this.btn_Category.Image = global::TcPCM_Connect.Properties.Resources.master_factor;
             this.btn_Category.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_Category.Location = new System.Drawing.Point(2, 5);
+            this.btn_Category.Location = new System.Drawing.Point(2, 6);
             this.btn_Category.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btn_Category.Name = "btn_Category";
-            this.btn_Category.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
-            this.btn_Category.Size = new System.Drawing.Size(196, 27);
+            this.btn_Category.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
+            this.btn_Category.Size = new System.Drawing.Size(224, 34);
             this.btn_Category.TabIndex = 1;
             this.btn_Category.Text = "   Cost Factor";
             this.btn_Category.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -370,11 +382,11 @@
             this.btn_Material.ForeColor = System.Drawing.Color.DimGray;
             this.btn_Material.Image = global::TcPCM_Connect.Properties.Resources.master_material;
             this.btn_Material.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_Material.Location = new System.Drawing.Point(2, 69);
+            this.btn_Material.Location = new System.Drawing.Point(2, 86);
             this.btn_Material.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btn_Material.Name = "btn_Material";
-            this.btn_Material.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
-            this.btn_Material.Size = new System.Drawing.Size(196, 27);
+            this.btn_Material.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btn_Material.Size = new System.Drawing.Size(224, 34);
             this.btn_Material.TabIndex = 3;
             this.btn_Material.Text = "   재료";
             this.btn_Material.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -396,11 +408,11 @@
             this.btn_Exchange.ForeColor = System.Drawing.Color.DimGray;
             this.btn_Exchange.Image = global::TcPCM_Connect.Properties.Resources.master_exchange;
             this.btn_Exchange.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_Exchange.Location = new System.Drawing.Point(3, 37);
+            this.btn_Exchange.Location = new System.Drawing.Point(3, 46);
             this.btn_Exchange.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btn_Exchange.Name = "btn_Exchange";
-            this.btn_Exchange.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
-            this.btn_Exchange.Size = new System.Drawing.Size(196, 27);
+            this.btn_Exchange.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
+            this.btn_Exchange.Size = new System.Drawing.Size(224, 34);
             this.btn_Exchange.TabIndex = 2;
             this.btn_Exchange.Text = "   환율";
             this.btn_Exchange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -423,12 +435,12 @@
             this.btn_Master.ForeColor = System.Drawing.Color.DimGray;
             this.btn_Master.Image = global::TcPCM_Connect.Properties.Resources.master;
             this.btn_Master.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_Master.Location = new System.Drawing.Point(0, 37);
+            this.btn_Master.Location = new System.Drawing.Point(0, 46);
             this.btn_Master.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btn_Master.MinimumSize = new System.Drawing.Size(201, 37);
+            this.btn_Master.MinimumSize = new System.Drawing.Size(230, 46);
             this.btn_Master.Name = "btn_Master";
-            this.btn_Master.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
-            this.btn_Master.Size = new System.Drawing.Size(201, 37);
+            this.btn_Master.Padding = new System.Windows.Forms.Padding(7, 0, 0, 0);
+            this.btn_Master.Size = new System.Drawing.Size(230, 46);
             this.btn_Master.TabIndex = 2;
             this.btn_Master.Text = "  Master Data";
             this.btn_Master.TextColor = System.Drawing.Color.DimGray;
@@ -452,9 +464,9 @@
             this.btn_Dashboard.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btn_Dashboard.Location = new System.Drawing.Point(0, 0);
             this.btn_Dashboard.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btn_Dashboard.MinimumSize = new System.Drawing.Size(201, 37);
+            this.btn_Dashboard.MinimumSize = new System.Drawing.Size(230, 46);
             this.btn_Dashboard.Name = "btn_Dashboard";
-            this.btn_Dashboard.Size = new System.Drawing.Size(201, 37);
+            this.btn_Dashboard.Size = new System.Drawing.Size(230, 46);
             this.btn_Dashboard.TabIndex = 1;
             this.btn_Dashboard.Text = "Cost Break Down";
             this.btn_Dashboard.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -472,16 +484,16 @@
             this.rjTextBox1.BorderSize = 1;
             this.rjTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rjTextBox1.ForeColor = System.Drawing.Color.DimGray;
-            this.rjTextBox1.Location = new System.Drawing.Point(6, 62);
-            this.rjTextBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.rjTextBox1.Location = new System.Drawing.Point(7, 78);
+            this.rjTextBox1.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.rjTextBox1.Multiline = false;
             this.rjTextBox1.Name = "rjTextBox1";
-            this.rjTextBox1.Padding = new System.Windows.Forms.Padding(6);
+            this.rjTextBox1.Padding = new System.Windows.Forms.Padding(7, 8, 7, 8);
             this.rjTextBox1.PasswordChar = false;
             this.rjTextBox1.PlaceholderColor = System.Drawing.Color.DarkGray;
             this.rjTextBox1.PlaceholderText = "";
             this.rjTextBox1.ReadOnly = false;
-            this.rjTextBox1.Size = new System.Drawing.Size(192, 29);
+            this.rjTextBox1.Size = new System.Drawing.Size(219, 37);
             this.rjTextBox1.TabIndex = 15;
             this.rjTextBox1.Texts = "";
             this.rjTextBox1.UnderlinedStyle = true;
@@ -497,17 +509,19 @@
             this.PanelBarraTitulo.Controls.Add(this.btnCerrar);
             this.PanelBarraTitulo.Dock = System.Windows.Forms.DockStyle.Top;
             this.PanelBarraTitulo.Location = new System.Drawing.Point(0, 0);
+            this.PanelBarraTitulo.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.PanelBarraTitulo.Name = "PanelBarraTitulo";
-            this.PanelBarraTitulo.Size = new System.Drawing.Size(1137, 46);
+            this.PanelBarraTitulo.Size = new System.Drawing.Size(1299, 58);
             this.PanelBarraTitulo.TabIndex = 1;
             this.PanelBarraTitulo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelBarraTitulo_MouseDown);
             // 
             // pictureBox8
             // 
             this.pictureBox8.Image = global::TcPCM_Connect.Properties.Resources.PerfectProCalc_1;
-            this.pictureBox8.Location = new System.Drawing.Point(11, 11);
+            this.pictureBox8.Location = new System.Drawing.Point(13, 14);
+            this.pictureBox8.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBox8.Name = "pictureBox8";
-            this.pictureBox8.Size = new System.Drawing.Size(33, 26);
+            this.pictureBox8.Size = new System.Drawing.Size(38, 32);
             this.pictureBox8.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox8.TabIndex = 5;
             this.pictureBox8.TabStop = false;
@@ -519,9 +533,10 @@
             this.btnNormal.FlatAppearance.BorderSize = 0;
             this.btnNormal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNormal.Image = global::TcPCM_Connect.Properties.Resources._8530587_window_restore_icon__3_;
-            this.btnNormal.Location = new System.Drawing.Point(1056, 7);
+            this.btnNormal.Location = new System.Drawing.Point(1207, 9);
+            this.btnNormal.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnNormal.Name = "btnNormal";
-            this.btnNormal.Size = new System.Drawing.Size(36, 36);
+            this.btnNormal.Size = new System.Drawing.Size(41, 45);
             this.btnNormal.TabIndex = 3;
             this.btnNormal.UseVisualStyleBackColor = true;
             this.btnNormal.Visible = false;
@@ -534,9 +549,10 @@
             this.btnMinimizar.FlatAppearance.BorderSize = 0;
             this.btnMinimizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMinimizar.Image = global::TcPCM_Connect.Properties.Resources._8664917_window_minimize_icon__1_;
-            this.btnMinimizar.Location = new System.Drawing.Point(1020, 7);
+            this.btnMinimizar.Location = new System.Drawing.Point(1166, 9);
+            this.btnMinimizar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnMinimizar.Name = "btnMinimizar";
-            this.btnMinimizar.Size = new System.Drawing.Size(36, 36);
+            this.btnMinimizar.Size = new System.Drawing.Size(41, 45);
             this.btnMinimizar.TabIndex = 2;
             this.btnMinimizar.UseVisualStyleBackColor = true;
             this.btnMinimizar.Click += new System.EventHandler(this.btnMinimizar_Click);
@@ -546,9 +562,9 @@
             this.lb_Title.AutoSize = true;
             this.lb_Title.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.lb_Title.ForeColor = System.Drawing.Color.White;
-            this.lb_Title.Location = new System.Drawing.Point(54, 14);
+            this.lb_Title.Location = new System.Drawing.Point(62, 18);
             this.lb_Title.Name = "lb_Title";
-            this.lb_Title.Size = new System.Drawing.Size(153, 24);
+            this.lb_Title.Size = new System.Drawing.Size(195, 29);
             this.lb_Title.TabIndex = 4;
             this.lb_Title.Text = "TcPCM Manager";
             // 
@@ -559,9 +575,10 @@
             this.btnMaximizar.FlatAppearance.BorderSize = 0;
             this.btnMaximizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMaximizar.Image = global::TcPCM_Connect.Properties.Resources._8530693_window_maximize_icon;
-            this.btnMaximizar.Location = new System.Drawing.Point(1056, 7);
+            this.btnMaximizar.Location = new System.Drawing.Point(1207, 9);
+            this.btnMaximizar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnMaximizar.Name = "btnMaximizar";
-            this.btnMaximizar.Size = new System.Drawing.Size(36, 36);
+            this.btnMaximizar.Size = new System.Drawing.Size(41, 45);
             this.btnMaximizar.TabIndex = 1;
             this.btnMaximizar.UseVisualStyleBackColor = true;
             this.btnMaximizar.Click += new System.EventHandler(this.btnMaximizar_Click);
@@ -573,9 +590,10 @@
             this.btnCerrar.FlatAppearance.BorderSize = 0;
             this.btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCerrar.Image = global::TcPCM_Connect.Properties.Resources._1564505_close_delete_exit_remove_icon;
-            this.btnCerrar.Location = new System.Drawing.Point(1092, 7);
+            this.btnCerrar.Location = new System.Drawing.Point(1248, 9);
+            this.btnCerrar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnCerrar.Name = "btnCerrar";
-            this.btnCerrar.Size = new System.Drawing.Size(36, 36);
+            this.btnCerrar.Size = new System.Drawing.Size(41, 45);
             this.btnCerrar.TabIndex = 0;
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
@@ -595,16 +613,43 @@
             this.tmFechaHora.Enabled = true;
             this.tmFechaHora.Tick += new System.EventHandler(this.tmFechaHora_Tick);
             // 
+            // sideButton2
+            // 
+            this.sideButton2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.sideButton2.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(61)))), ((int)(((byte)(92)))));
+            this.sideButton2.BorderRadius = 0;
+            this.sideButton2.BorderSize = 0;
+            this.sideButton2.FlatAppearance.BorderSize = 0;
+            this.sideButton2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(105)))), ((int)(((byte)(105)))), ((int)(((byte)(105)))));
+            this.sideButton2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.sideButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.sideButton2.ForeColor = System.Drawing.Color.DimGray;
+            this.sideButton2.Image = global::TcPCM_Connect.Properties.Resources.master_factor;
+            this.sideButton2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.sideButton2.Location = new System.Drawing.Point(3, 208);
+            this.sideButton2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.sideButton2.Name = "sideButton2";
+            this.sideButton2.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.sideButton2.Size = new System.Drawing.Size(224, 34);
+            this.sideButton2.TabIndex = 5;
+            this.sideButton2.Text = "   표준 공정 라이브러리";
+            this.sideButton2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.sideButton2.TextColor = System.Drawing.Color.DimGray;
+            this.sideButton2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.sideButton2.UseVisualStyleBackColor = false;
+            this.sideButton2.Click += new System.EventHandler(this.sideButton2_Click);
+            // 
             // frmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1137, 631);
+            this.ClientSize = new System.Drawing.Size(1299, 789);
             this.Controls.Add(this.panelContenedorPrincipal);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(793, 530);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.MinimumSize = new System.Drawing.Size(906, 662);
             this.Name = "frmMain";
             this.Opacity = 0.95D;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -666,6 +711,7 @@
         private CustomControls.RJControls.SideButton btn_Overheads;
         private CustomControls.RJControls.SideButton sideButton1;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private CustomControls.RJControls.SideButton sideButton2;
     }
 }
 

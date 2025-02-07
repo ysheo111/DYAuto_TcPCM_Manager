@@ -113,7 +113,7 @@ namespace TcPCM_Connect_Global
                     if (firstRow != 0)
                         break;
                 }
-                for (int row = firstRow; firstRow <= rowCount; firstRow++)
+                for (int row = firstRow; row <= rowCount; row++)
                 {
                     for (int col = 1; col <= colCount; col++)
                     {
@@ -123,7 +123,7 @@ namespace TcPCM_Connect_Global
                         if (firstCol == 0)
                             firstCol = col;
 
-                        keys[col] = usedRange.Cells[firstRow, col]?.Value2;
+                        keys[col] = usedRange.Cells[row, col]?.Value2;
                     }
                     if (!keys.All(x => x == null)) break;
                 }

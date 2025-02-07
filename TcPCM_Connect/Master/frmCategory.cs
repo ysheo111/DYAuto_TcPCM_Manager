@@ -76,16 +76,16 @@ namespace TcPCM_Connect
                         err = costFactor.Import("Category", "Plant", dgv_Category);
                         if (err == null)
                         {
-                            string searchQeury = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
-                            List<string> segmantList = global_DB.ListSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+                            string searchQuery = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
+                            List<string> segmantList = global_DB.ListSelect(searchQuery, (int)global_DB.connDB.PCMDB);
                             err = costFactor.SegmantImport("Category", "업종", dgv_Category, segmantList);
                         }
                     }
                 }
                 else if (columnName == "업종")
                 {
-                    string searchQeury = $"SELECT UniqueKey as name FROM BDPlants where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
-                    List<string> regionList = global_DB.ListSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+                    string searchQuery = $"SELECT UniqueKey as name FROM BDPlants where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+                    List<string> regionList = global_DB.ListSelect(searchQuery, (int)global_DB.connDB.PCMDB);
                     foreach (string region in regionList)
                     {
                         foreach (DataGridViewRow row in dgv_Category.Rows)
@@ -260,7 +260,7 @@ namespace TcPCM_Connect
             //    row.Cells[e.ColumnIndex].Value = !double.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out double number) ?
             //        row.Cells[e.ColumnIndex].Value : number.ToString("N2");
             //}
-
+            global.CommaAdd(e, 2);
             if (!dgv_Category.Columns[e.ColumnIndex].Name.Contains("Valid")) return;
 
             DataGridViewRow row = dgv_Category.Rows[e.RowIndex];
@@ -320,17 +320,17 @@ namespace TcPCM_Connect
             dgv_Category.Rows.Clear();
 
             string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
-            string inputString = "", searchQeury = "", Aselect = "", Bselect = "", FullJoin = "";
+            string inputString = "", searchQuery = "", Aselect = "", Bselect = "", FullJoin = "";
             inputString = searchButton1.text;
 
             //전체 검색
             if (columnName == "지역")
-                searchQeury = $"SELECT UniqueKey,Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
-            //searchQeury = $"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+                searchQuery = $"SELECT UniqueKey,Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+            //searchQuery = $"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
             else if (columnName == "업종")
-                searchQeury = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
+                searchQuery = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
             else if (columnName == "단위")
-                searchQeury = $"SELECT DisplayName_LOC,FullName_LOC as name FROM Units";
+                searchQuery = $"SELECT DisplayName_LOC,FullName_LOC as name FROM Units";
             else if (columnName == "전력단가")
             {
                 Aselect = $@"With A AS(
@@ -358,11 +358,11 @@ namespace TcPCM_Connect
 	                                    B.Value As '탄소배출량'
                                     From A
                                     Full Outer Join B ON A.DateValidFrom = B.DateValidFrom And A.region = B.region";
-                searchQeury = Aselect + Bselect + FullJoin;
+                searchQuery = Aselect + Bselect + FullJoin;
             }
             else if(columnName == "임률")
             {
-                searchQeury = $@"With A as(
+                searchQuery = $@"With A as(
 	                        select DateValidFrom,RegionId,CurrencyId,Value*3600 as value,PlantId,SegmentId
 		                        from MDCostFactorDetails where CostFactorHeaderId in
 		                        (select Id from MDCostFactorHeaders where UniqueKey = N'직접노무비') 
@@ -396,28 +396,28 @@ namespace TcPCM_Connect
             {
                 if (columnName == "지역")
                 {
-                    searchQeury = searchQeury + $" And Cast(Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                    searchQuery = searchQuery + $" And Cast(Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
                 else if (columnName == "업종")
-                    searchQeury = searchQeury + $" And UniqueKey LIKE N'%{inputString}%'";
+                    searchQuery = searchQuery + $" And UniqueKey LIKE N'%{inputString}%'";
                 else if (columnName == "단위")
                 {
-                    searchQeury = searchQeury + $" where CAST(DisplayName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
+                    searchQuery = searchQuery + $" where CAST(DisplayName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
                                                 $" or Cast(FullName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
                 else if (columnName == "전력단가")
                 {
-                    searchQeury = Aselect + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'"
+                    searchQuery = Aselect + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'"
                                 + Bselect + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" + FullJoin;
                 }
                 else if (columnName == "임률")
                 {
-                    searchQeury = searchQeury + $@" where CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                    searchQuery = searchQuery + $@" where CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
                                                 or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
                                                 or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
             }
-            DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+            DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
             if (dataTable == null) return;
 
             foreach (DataRow row in dataTable.Rows)
