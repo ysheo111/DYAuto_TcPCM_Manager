@@ -111,11 +111,11 @@ namespace TcPCM_Connect
             dgv_ExchangeRate.Rows.Clear();
 
             string columnName = "환율";
-            string inputString = "", searchQeury = "";
+            string inputString = "", searchQuery = "";
             inputString = searchButton1.text;
 
             //전체 검색
-            searchQeury = $"SELECT MDExchangeRateDetails.DateValidFrom, MDExchangeRateDetails.StateId, MDExchangeRateHeaders.Name_LOC, Currencies.IsoCode, MDExchangeRateDetails.ExchangeRate" +
+            searchQuery = $"SELECT MDExchangeRateDetails.DateValidFrom, MDExchangeRateDetails.StateId, MDExchangeRateHeaders.Name_LOC, Currencies.IsoCode, MDExchangeRateDetails.ExchangeRate" +
                 $" as name FROM MDExchangeRateHeaders" +
                 $" JOIN MDExchangeRateDetails ON MDExchangeRateHeaders.Id = MDExchangeRateDetails.ExchangeRateHeaderId" +
                 $" JOIN Currencies ON MDExchangeRateHeaders.CurrencyId = Currencies.Id";
@@ -123,11 +123,11 @@ namespace TcPCM_Connect
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
-                searchQeury = searchQeury + $" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
+                searchQuery = searchQuery + $" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
                             $" or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'";
             }
 
-            DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+            DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
             if (dataTable == null) return;
 
             foreach (DataRow row in dataTable.Rows)

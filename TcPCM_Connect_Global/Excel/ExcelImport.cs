@@ -299,6 +299,167 @@ namespace TcPCM_Connect_Global
             }
             return items;
         }
+        
+        public string LoadPartManufacturing(string worksheetName, DataGridView dgv)
+        {
+            dgv.AllowUserToAddRows = false;
+            dgv.Rows.Clear();
+            List<Dictionary<string, object>> items = new List<Dictionary<string, object>>();
+            Microsoft.Office.Interop.Excel.Application application = null;
+            Excel.Workbook workBook = null;
+            try
+            {
+                OpenFileDialog dlg = new OpenFileDialog();
+
+                DialogResult dialog = dlg.ShowDialog();
+                if (dialog == DialogResult.Cancel) return null;
+                else if (dialog != DialogResult.OK) return "ERROR : 파일 오픈에 실패하였습니다.";
+
+                //Excel 프로그램 실행
+                application = new Microsoft.Office.Interop.Excel.Application();
+                //Excel 화면 띄우기 옵션
+                application.Visible = false;
+                //파일로부터 불러오기
+                workBook = application.Workbooks.Open(dlg.FileName);
+
+                List<string> workSheetList = new List<string>();
+                foreach (Excel.Worksheet sheet in workBook.Worksheets)
+                {
+                    if (sheet.Visible == Excel.XlSheetVisibility.xlSheetVisible) workSheetList.Add(sheet.Name);
+                }
+                workSheetSelect sheetSelect = new workSheetSelect();
+                sheetSelect.workSheet = workSheetList;
+
+                if (sheetSelect.ShowDialog() == DialogResult.Cancel) return null;
+
+                Excel.Worksheet worksheet = null;
+                List<string> resultValueList = new List<string>();
+
+                if (sheetSelect.ReturnValues == null)
+                    resultValueList.Add(sheetSelect.ReturnValue1);
+                else
+                    resultValueList = sheetSelect.ReturnValues;
+
+                foreach (string returnValue in resultValueList)
+                {
+                    int firstCol = 0, firstRow = 0;
+                    worksheet = workBook.Worksheets.Item[returnValue];
+
+                    Excel.Range usedRange = worksheet.UsedRange;
+                    int rowCount = usedRange.Rows.Count;
+                    int colCount = usedRange.Columns.Count;
+
+                    string[] keys = new string[colCount + 1];
+                    string keyId = usedRange.Cells[2, 2]?.Value2?.ToString();
+                    #region 헤더 만들기
+                    for (int row = 1; row <= rowCount; row++)
+                    {
+                        for (int col = 1; col <= colCount; col++)
+                        {
+                            object headerValue = usedRange.Cells[row, col]?.Value2;
+                            if (headerValue == null) continue;
+                            else if (headerValue.ToString().Contains("설비명"))
+                            {
+                                firstRow = row;
+                                break;
+                            }
+                        }
+                        if (firstRow != 0)
+                            break;
+                    }
+                    for (int row = firstRow; row <= rowCount; row++)
+                    {
+                        for (int col = 1; col <= colCount; col++)
+                        {
+                            string cellValue = usedRange.Cells[row, col]?.Value2;
+                            if (cellValue == null)
+                                continue;
+                            if (firstCol == 0)
+                                firstCol = col;
+
+                            if (cellValue.Contains("Q'ty"))
+                                cellValue = "Quantity";
+
+                            keys[col] = cellValue;
+                        }
+                        if (!keys.All(x => x == null)) break;
+                    }
+                    #endregion
+
+                    for (int row = firstRow + 1; row <= rowCount; row++)
+                    {
+                        dgv.Rows.Add();
+                        bool flag = false;
+                        foreach (DataGridViewColumn col in dgv.Columns)
+                        {
+                            if(col.Name == "품명" && !string.IsNullOrEmpty(keyId))
+                            {
+                                dgv.Rows[dgv.Rows.Count - 1].Cells["품명"].Value = keyId;
+                            }
+                            for (int category = 1; category < keys.Length; category++)
+                            {
+                                if (keys[category] == null) continue;
+                                if (keys[category].Contains(col.Name) && !keys.Where(key => key != keys[category]).Any(key => key == col.Name))
+                                {
+                                    object cellValue = usedRange.Cells[row, category]?.Value2;
+                                    if (cellValue == null)
+                                    {
+                                        dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Red;
+                                        if(keys[category].Contains("설비명") || keys[category].Contains("세부 공정명"))
+                                        {
+                                            flag = false;
+                                            break;
+                                        }
+                                        continue;
+                                    }
+                                    string resultValue = cellValue.ToString();
+
+                                    flag = true;
+
+                                    //if (col.Name.Contains("Cycle time") || col.Name.Contains("Number of workers"))
+                                    //{
+                                    //    double num = Convert.ToDouble(cellValue);
+                                    //    resultValue = num.ToString("0.0");
+                                    //}
+                                    if (col.Name.Contains("Utilization") && double.Parse(resultValue) < 1)
+                                        resultValue = (double.Parse(resultValue) * 100).ToString();
+
+                                    dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue;
+                                    if (new List<string>() { "품명","설비명", "업종", "세부 공정명" }.Contains(col.Name)) continue;
+
+                                    if (!double.TryParse(resultValue, out double resultDouble)) dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
+                                }
+                            }
+                        }
+                        if (!flag)
+                        {
+                            dgv.Rows.RemoveAt(dgv.Rows.Count - 1);
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                return exc.Message;
+            }
+            finally
+            {
+                if (workBook != null)
+                {
+                    //변경점 저장 안하면서 닫기
+                    workBook.Close(false);
+                    //Excel 프로그램 종료
+                    application.Quit();
+                    //오브젝트 해제1
+                    ExcelCommon.ReleaseExcelObject(workBook);
+                    ExcelCommon.ReleaseExcelObject(application);
+                }
+            }
+
+            dgv.AllowUserToAddRows = true;
+            return null;
+        }
 
         public string LoadMasterData(string worksheetName, DataGridView dgv)
         {
@@ -366,7 +527,7 @@ namespace TcPCM_Connect_Global
                                 key = "재질명";
                             else if (key == "segmant")
                                 key = "업종";
-                            
+
                             if (worksheetName == "Machine" && key == "OTHER UTILITY")
                             {
                                 key = "기타비용";

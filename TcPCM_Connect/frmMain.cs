@@ -281,6 +281,15 @@ namespace TcPCM_Connect
 
         }
 
+        private void sideButton2_Click(object sender, EventArgs e)
+        {
+            ChangeButtonColor("btn_Master", p_Manu);
+            ChangeButtonColor(((Button)sender).Name, p_Master);
+
+            frmPartManufacturing frm = new frmPartManufacturing();
+            frmApply(frm, ref panelContenedorForm);
+        }
+
         private void btnNormal_Click(object sender, EventArgs e)
         {
             this.Size = new Size(sw, sh);

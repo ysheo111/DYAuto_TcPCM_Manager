@@ -73,7 +73,7 @@ namespace TcPCM_Connect
 
                 dgv_Material.Rows.Clear();
 
-                string searchQeury = @"With A as(
+                string searchQuery = @"With A as(
 	                                            select distinct
 		                                            BDRegions.UniqueKey as region,
 		                                            Currencies.IsoCode As IsoCode,
@@ -131,7 +131,7 @@ namespace TcPCM_Connect
                                             Where
 	                                            COALESCE(A.region, B.region, C.region) IS NOT NULL
 	                                            And A.[원재료 단위] is not null";
-                DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+                DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
                 if (dataTable == null) return;
 
                 foreach (DataRow row in dataTable.Rows)
@@ -239,10 +239,10 @@ namespace TcPCM_Connect
                 string nameValue = row.Cells["재질명"].Value?.ToString();
                 string grandValue = row.Cells["GRADE"].Value?.ToString();
 
-                string searchQeury = $@"select UniqueKey as name from MDSubstances
+                string searchQuery = $@"select UniqueKey as name from MDSubstances
                                         where CAST(UniqueKey AS NVARCHAR(MAX)) = N'{nameValue}_{grandValue}'";
 
-                string result = global_DB.ScalarExecute(searchQeury, (int)global_DB.connDB.PCMDB);
+                string result = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
 
                 if (string.IsNullOrEmpty(result))
                 {
@@ -263,7 +263,7 @@ namespace TcPCM_Connect
         {
             List<string> list = new List<string>();
             List<int> numList = new List<int>();
-            string searchQeury = $@"With A as(
+            string searchQuery = $@"With A as(
 	                                    select Name_LOC,Id from MDMaterialHeaders
 	                                    where CAST(MDMaterialHeaders.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'
                                     ), B as(
@@ -278,7 +278,7 @@ namespace TcPCM_Connect
                                     as name from A
                                     Full Outer Join B ON A.Id = B.MaterialHeaderId";
 
-            DataTable resultData = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+            DataTable resultData = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
 
             if (resultData.Rows.Count == 0) return false;
 
@@ -430,11 +430,11 @@ namespace TcPCM_Connect
             dgv_Material.Rows.Clear();
 
             string columnName = cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString();
-            string inputString = "", searchQeury = "", colQeury = "", havingQuery = ""; ;
+            string inputString = "", searchQuery = "", colQuery = "", havingQuery = ""; ;
             inputString = searchButton1.text;
             if (columnName == "원소재 단가")
             {
-                //searchQeury = @"With A as(
+                //searchQuery = @"With A as(
 	               //                     select distinct
 		              //                      BDRegions.UniqueKey as region,
 		              //                      DateValidFrom,
@@ -509,7 +509,7 @@ namespace TcPCM_Connect
             {
                 if (columnName == "다이캐스팅")
                 {
-                    colQeury = @",MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 332 THEN MDSubstancePropertyValues.DecimalValue END) AS '주조 온도 최소',
+                    colQuery = @",MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 332 THEN MDSubstancePropertyValues.DecimalValue END) AS '주조 온도 최소',
 	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 331 THEN MDSubstancePropertyValues.DecimalValue END) AS '주조 온도 최대',
 	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 330 THEN MDSubstancePropertyValues.DecimalValue END) AS 'T-factor'";
                     havingQuery = @"Group by UniqueKey,Density HAVING 
@@ -519,7 +519,7 @@ namespace TcPCM_Connect
                 }
                 else if (columnName == "사출")
                 {
-                    colQeury = @",MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 328 THEN MDSubstancePropertyValues.DecimalValue END) AS '탈형 온도',
+                    colQuery = @",MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 328 THEN MDSubstancePropertyValues.DecimalValue END) AS '탈형 온도',
 	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 329 THEN MDSubstancePropertyValues.DecimalValue END) AS '사출 온도',
 	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 327 THEN MDSubstancePropertyValues.DecimalValue END) AS '금형 온도',
 	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 326 THEN MDSubstancePropertyValues.DecimalValue * 1000000 END) AS '열확산도'";
@@ -531,7 +531,7 @@ namespace TcPCM_Connect
                 }
                 else if (columnName == "프레스")
                 {
-                    colQeury = @",MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 324 THEN MDSubstancePropertyValues.DecimalValue / 1000000 END) AS '인장 강도',
+                    colQuery = @",MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 324 THEN MDSubstancePropertyValues.DecimalValue / 1000000 END) AS '인장 강도',
 	                            MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 296 THEN MDSubstancePropertyValues.DecimalValue / 1000000 END) AS '전단 강도'";
                     havingQuery = @"Group by UniqueKey,Density HAVING
 	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 324 THEN MDSubstancePropertyValues.DecimalValue END) IS NOT NULL AND
@@ -550,7 +550,7 @@ namespace TcPCM_Connect
 	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 324 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL AND
 	                                MAX(CASE WHEN MDSubstancePropertyValues.ClassificationPropertyId = 296 THEN MDSubstancePropertyValues.DecimalValue END) IS NULL";
                 }
-                searchQeury = $@"select DISTINCT UniqueKey,Density*0.001 as Density {colQeury}
+                searchQuery = $@"select DISTINCT UniqueKey,Density*0.001 as Density {colQuery}
                                 from MDSubstances
                                 LEFT join MDSubstancePropertyValues on MDSubstances.id = MDSubstancePropertyValues.SubstanceId
                                 where MDSubstances.id in (select SubstanceId from MDSubstanceStandardNames where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
@@ -558,10 +558,10 @@ namespace TcPCM_Connect
             }
             if (!string.IsNullOrEmpty(inputString))
             {
-                searchQeury = searchQeury + $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                searchQuery = searchQuery + $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
             }
 
-            DataTable dataTable = global_DB.MutiSelect(searchQeury, (int)global_DB.connDB.PCMDB);
+            DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
             if (dataTable == null) return;
 
             foreach (DataRow row in dataTable.Rows)
