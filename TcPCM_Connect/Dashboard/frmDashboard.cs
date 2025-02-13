@@ -40,7 +40,8 @@ namespace TcPCM_Connect
             myimageList.Images.Add(Properties.Resources.icon5); //열린 프로젝트 아이콘
             myimageList.Images.Add(Properties.Resources.tool); //툴아이콘
             tv_Bom.ImageList = myimageList;
-
+            eXCEL올리기ToolStripMenuItem.Visible = false;
+            eXCELBulk업로드ToolStripMenuItem.Visible = false;
             pb_Refresh_Click(this.pb_Refresh, null);
             BasicInfoColumn();
         }
@@ -271,8 +272,7 @@ namespace TcPCM_Connect
         }
 
         private void eXCELBulk업로드ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
+        {            
             PartExcel import = new PartExcel();
             Dictionary<string, string> id = GetTargetTypeID();
             string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]), "자동");
@@ -280,6 +280,22 @@ namespace TcPCM_Connect
             if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
             
+        }
+
+        private void 테스트ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void eXCEL업로드ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            btn_Create.PerformClick();
+        }
+
+        private void btn_Create_Click(object sender, EventArgs e)
+        {
+            PartExcel import = new PartExcel();
+            string err = import.BulkImport("자동");
         }
 
         private void eXCEL다운로드ToolStripMenuItem_Click(object sender, EventArgs e)

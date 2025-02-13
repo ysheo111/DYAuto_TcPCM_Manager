@@ -6,6 +6,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System.Data;
 
 namespace TcPCM_Connect_Global
 {
@@ -35,7 +36,7 @@ namespace TcPCM_Connect_Global
         public void CellVaildation(string colName, int nameRow, int rowCol, int colCol, int rowValue, int colValue, Excel.Worksheet worksheet, ref JObject value, int cbd2)
         {
             string name = CombineString(nameRow, rowCol, colCol, worksheet);
-            if (!name.Replace("전략","전력").Contains(cbd.FindValue(cbd2, colCol)))
+            if (!name.Replace("개발비용",Report.Summary.rnd).Replace("전략","전력").Contains(cbd.FindValue(cbd2, colCol)))
             {
                 incorrect.Add($"{cbd.FindValue(cbd2, colCol)}을 다시 확인해주세요. ({name} {rowCol} {colCol})");
                 //(worksheet.Cells[row, excelCol]).Interior.Color = Excel.XlRgbColor.rgbYellow;
@@ -53,162 +54,40 @@ namespace TcPCM_Connect_Global
             }
             else value.Add(colName, JToken.FromObject(data));
         }
-
-        public string Manufacturing(string tagetType, double tagetID)
+        public void CellVaildationDT(string colName, int nameRow, int rowCol, int colCol, int rowValue, int colValue, Excel.Worksheet worksheet, ref DataTable value, int cbd2)
         {
-            Microsoft.Office.Interop.Excel.Application application = null;
-            Excel.Workbook workBook = null;
-            string err = null;
-            try
+            string name = CombineString(nameRow, rowCol, colCol, worksheet);
+            if (!name.Replace("개발비용", Report.Summary.rnd).Replace("전략", "전력").Contains(cbd.FindValue(cbd2, colCol)))
             {
-                OpenFileDialog dlg = new OpenFileDialog();
-
-                DialogResult dialog = dlg.ShowDialog();
-                if (dialog == DialogResult.Cancel) return null;
-                else if (dialog != DialogResult.OK) return $"Error : 파일 오픈에 실패하였습니다.";
-
-                //Excel 프로그램 실행
-                application = new Microsoft.Office.Interop.Excel.Application();
-                //Excel 화면 띄우기 옵션
-                application.Visible = true;
-                //파일로부터 불러오기
-                workBook = application.Workbooks.Open(dlg.FileName);
-
-                List<string> workSheetList = new List<string>();
-                foreach (Excel.Worksheet sheet in workBook.Worksheets)
-                {
-                    if (sheet.Visible != Excel.XlSheetVisibility.xlSheetVisible) continue;
-                    workSheetList.Add(sheet.Name);
-                }
-                workSheetSelect sheetSelect = new workSheetSelect();
-                sheetSelect.workSheet = workSheetList;
-
-                if (sheetSelect.ShowDialog() == DialogResult.Cancel) return null;
-                string val = sheetSelect.ReturnValue1;
-
-                Excel.Worksheet worksheet = workBook.Worksheets.Item[val];
-                worksheet.Activate();
-                //CBD의 기본정보
-                worksheet.get_Range("G2", "G2").Select();
-
-                JArray data = new JArray();
-
-                JObject header = new JObject();
-                header.Add("Designation", worksheet.Cells[6, 2].Value);
-                header.Add("Designation (Calculation)", "Benchmark price");
-                header.Add("Assembly hierarchy level", "1");
-                header.Add("Line type", "P");
-                header.Add("Designation(Manufacturing)", "");
-                header.Add("Cycle time (Manufacturing step)", "");
-                header.Add("Cycle time unit (Manufacturing step)", "");
-                header.Add("Quantity", "");
-                header.Add("Tool", "");
-                header.Add("MFG", "");
-                header.Add("JT Number", "");
-                header.Add("JT", "");
-                header.Add("내역", "");
-
-                data.Add(header);
-                int row = 11;
-                JArray ops = new JArray();
-                while (true)
-                {
-                    if (worksheet.Cells[row, 1].Value == null) break;
-                    JObject item = new JObject();
-
-                    item.Add("Designation", worksheet.Cells[6, 2].Value);
-                    item.Add("내역", "");
-                    item.Add("Assembly hierarchy level", "2");
-                    item.Add("Line type", "D");
-                    item.Add("Designation(Manufacturing)", worksheet.Cells[row, 1].Value);
-                    item.Add("Cycle time (Manufacturing step)", worksheet.Cells[row, 4].Value);
-                    item.Add("MFG", (row - 11) * 10);
-
-                    ops.Add(item);
-                    row++;
-                }
-
-                frmMachineSelect machine = new frmMachineSelect(ops.Count);
-                DialogResult dialogResult = machine.ShowDialog();
-                List<string> machineName = machine.ReturnValue1;
-                if (dialogResult == DialogResult.Cancel)
-                {
-                    MessageBox.Show("설비를 제외하고 Import 합니다.");
-                    data.Merge(ops, new JsonMergeSettings
-                    {
-                        MergeArrayHandling = MergeArrayHandling.Concat
-                    });
-                }
-                else
-                {
-                    int i = 1;
-                    header["내역"] = machineName[0];
-                    foreach (JObject op in ops)
-                    {
-                        op["내역"] = machineName[0];
-                        data.Add(op);
-
-                        JObject item = new JObject();
-
-                        item.Add("Designation", worksheet.Cells[6, 2].Value);
-                        item.Add("Tool", $"[DYA]{machineName[i]}");
-                        item.Add("Assembly hierarchy level", "2");
-                        item.Add("Line type", "M");
-                        item.Add("MFG", (i - 1) * 10);
-                        item.Add("내역", machineName[0]);
-                        item.Add("Quantity", 1);
-
-                        i++;
-                        data.Add(item);
-                    }
-                }
-
-
-                String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Import";
-                string response = WebAPI.POST(callUrl, new JObject
-                {
-                    { "Data", data },
-                    { "ConfigurationGuid", global_iniLoad.GetConfig("CBD", "NX") },
-                    { "TargetType", tagetType},
-                    { "TargetId",  tagetID.ToString()},
-                });
-
-                try
-                {
-                    JObject postResult = JObject.Parse(response);
-                    if ((bool)postResult["success"] == false) err = postResult["message"].ToString();
-                }
-                catch
-                {
-                    err = response;
-                }
+                incorrect.Add($"{cbd.FindValue(cbd2, colCol)}을 다시 확인해주세요. ({name} {rowCol} {colCol})");
+                //(worksheet.Cells[row, excelCol]).Interior.Color = Excel.XlRgbColor.rgbYellow;
             }
-            catch (Exception exc)
+            else
             {
-                return exc.Message;
+                if (!value.Columns.Contains(colName)) value.Columns.Add(colName);
+                value.Rows[value.Rows.Count - 1][colName] = $"{worksheet.Cells[rowValue, colValue].Value}";
             }
-            finally
-            {
-                if (workBook != null)
-                {
-                    //변경점 저장하면서 닫기
-                    workBook.Close(true);
-                    //Excel 프로그램 종료
-                    application.Quit();
-                    //오브젝트 해제1
-                    ExcelCommon.ReleaseExcelObject(workBook);
-                    ExcelCommon.ReleaseExcelObject(application);
-                }
-            }
+        }
 
-            if (incorrect.Count > 0) err += ("\n" + string.Join("", incorrect));
-            return err;
+        public void CellVaildationDT(string colName, int nameRow, int rowCol, int colCol, Excel.Worksheet worksheet, object data, ref DataTable value, int cbd2)
+        {
+            string name = CombineString(nameRow, rowCol, colCol, worksheet);
+            if (!name.Contains(cbd.FindValue(cbd2, colCol)))
+            {
+                incorrect.Add($"{cbd.FindValue(cbd2, colCol)}을 다시 확인해주세요. ({rowCol} {colCol})");
+                //(worksheet.Cells[row, excelCol]).Interior.Color = Excel.XlRgbColor.rgbYellow;
+            }
+            else
+            {
+                if (!value.Columns.Contains(colName)) value.Columns.Add(colName);
+                value.Rows[value.Rows.Count - 1][colName] = data;
+            }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        
+
 
         public List<Dictionary<string, object>> AllImport(string worksheetName)
         {

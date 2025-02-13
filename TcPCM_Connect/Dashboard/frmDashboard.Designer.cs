@@ -31,11 +31,11 @@ namespace TcPCM_Connect
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmDashboard));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.테스트ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXCEL올리기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,6 +53,7 @@ namespace TcPCM_Connect
             this.pressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.coreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diecastingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eXCEL업로드ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.roundBorderPanel2 = new TcPCM_Connect.RoundBorderPanel();
             this.p_lang = new System.Windows.Forms.Panel();
             this.rb_CHN = new System.Windows.Forms.RadioButton();
@@ -63,6 +64,7 @@ namespace TcPCM_Connect
             this.btn_Configuration = new CustomControls.RJControls.RJButton();
             this.dgv_BaicInfo = new System.Windows.Forms.DataGridView();
             this.tv_Bom = new System.Windows.Forms.TreeView();
+            this.btn_Create = new CustomControls.RJControls.RJButton();
             this.contextMenuStrip1.SuspendLayout();
             this.roundBorderPanel2.SuspendLayout();
             this.p_lang.SuspendLayout();
@@ -83,31 +85,33 @@ namespace TcPCM_Connect
             // 테스트ToolStripMenuItem
             // 
             this.테스트ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.eXCEL올리기ToolStripMenuItem,
+            this.eXCEL업로드ToolStripMenuItem,
             this.eXCEL내려받기ToolStripMenuItem,
-            this.eXCELBulk업로드ToolStripMenuItem});
+            this.eXCELBulk업로드ToolStripMenuItem,
+            this.eXCEL올리기ToolStripMenuItem});
             this.테스트ToolStripMenuItem.Name = "테스트ToolStripMenuItem";
             this.테스트ToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.테스트ToolStripMenuItem.Text = "부품원가계산서";
+            this.테스트ToolStripMenuItem.Click += new System.EventHandler(this.테스트ToolStripMenuItem_Click);
             // 
             // eXCEL올리기ToolStripMenuItem
             // 
             this.eXCEL올리기ToolStripMenuItem.Name = "eXCEL올리기ToolStripMenuItem";
-            this.eXCEL올리기ToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-            this.eXCEL올리기ToolStripMenuItem.Text = "EXCEL 업로드";
+            this.eXCEL올리기ToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.eXCEL올리기ToolStripMenuItem.Text = "EXCEL 단일 업로드";
             this.eXCEL올리기ToolStripMenuItem.Click += new System.EventHandler(this.eXCEL올리기ToolStripMenuItem_Click);
             // 
             // eXCEL내려받기ToolStripMenuItem
             // 
             this.eXCEL내려받기ToolStripMenuItem.Name = "eXCEL내려받기ToolStripMenuItem";
-            this.eXCEL내려받기ToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.eXCEL내려받기ToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.eXCEL내려받기ToolStripMenuItem.Text = "EXCEL 다운로드";
             this.eXCEL내려받기ToolStripMenuItem.Click += new System.EventHandler(this.eXCEL내려받기ToolStripMenuItem_Click);
             // 
             // eXCELBulk업로드ToolStripMenuItem
             // 
             this.eXCELBulk업로드ToolStripMenuItem.Name = "eXCELBulk업로드ToolStripMenuItem";
-            this.eXCELBulk업로드ToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.eXCELBulk업로드ToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.eXCELBulk업로드ToolStripMenuItem.Text = "EXCEL Bulk 업로드";
             this.eXCELBulk업로드ToolStripMenuItem.Click += new System.EventHandler(this.eXCELBulk업로드ToolStripMenuItem_Click);
             // 
@@ -181,6 +185,13 @@ namespace TcPCM_Connect
             this.diecastingToolStripMenuItem.Name = "diecastingToolStripMenuItem";
             this.diecastingToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
+            // eXCEL업로드ToolStripMenuItem
+            // 
+            this.eXCEL업로드ToolStripMenuItem.Name = "eXCEL업로드ToolStripMenuItem";
+            this.eXCEL업로드ToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.eXCEL업로드ToolStripMenuItem.Text = "EXCEL 업로드";
+            this.eXCEL업로드ToolStripMenuItem.Click += new System.EventHandler(this.eXCEL업로드ToolStripMenuItem_Click);
+            // 
             // roundBorderPanel2
             // 
             this.roundBorderPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -190,6 +201,7 @@ namespace TcPCM_Connect
             this.roundBorderPanel2.BorderColor = System.Drawing.Color.Gainsboro;
             this.roundBorderPanel2.BorderRadius = 10;
             this.roundBorderPanel2.BorderSize = 1;
+            this.roundBorderPanel2.Controls.Add(this.btn_Create);
             this.roundBorderPanel2.Controls.Add(this.p_lang);
             this.roundBorderPanel2.Controls.Add(this.searchButton1);
             this.roundBorderPanel2.Controls.Add(this.pb_Refresh);
@@ -305,9 +317,9 @@ namespace TcPCM_Connect
             // dgv_BaicInfo
             // 
             this.dgv_BaicInfo.AllowUserToAddRows = false;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Menu;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.DimGray;
-            this.dgv_BaicInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle16.SelectionBackColor = System.Drawing.SystemColors.Menu;
+            dataGridViewCellStyle16.SelectionForeColor = System.Drawing.Color.DimGray;
+            this.dgv_BaicInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle16;
             this.dgv_BaicInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgv_BaicInfo.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
@@ -315,44 +327,44 @@ namespace TcPCM_Connect
             this.dgv_BaicInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgv_BaicInfo.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgv_BaicInfo.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Menu;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_BaicInfo.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle17.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle17.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Menu;
+            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_BaicInfo.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle17;
             this.dgv_BaicInfo.ColumnHeadersHeight = 40;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_BaicInfo.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            dataGridViewCellStyle18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle18.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
+            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_BaicInfo.DefaultCellStyle = dataGridViewCellStyle18;
             this.dgv_BaicInfo.EnableHeadersVisualStyles = false;
             this.dgv_BaicInfo.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
             this.dgv_BaicInfo.Location = new System.Drawing.Point(250, 60);
             this.dgv_BaicInfo.Name = "dgv_BaicInfo";
             this.dgv_BaicInfo.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.PaleVioletRed;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_BaicInfo.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle19.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+            dataGridViewCellStyle19.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle19.ForeColor = System.Drawing.Color.PaleVioletRed;
+            dataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_BaicInfo.RowHeadersDefaultCellStyle = dataGridViewCellStyle19;
             this.dgv_BaicInfo.RowHeadersVisible = false;
             this.dgv_BaicInfo.RowHeadersWidth = 51;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.White;
-            this.dgv_BaicInfo.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle20.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle20.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            dataGridViewCellStyle20.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            dataGridViewCellStyle20.SelectionForeColor = System.Drawing.Color.White;
+            this.dgv_BaicInfo.RowsDefaultCellStyle = dataGridViewCellStyle20;
             this.dgv_BaicInfo.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.White;
             this.dgv_BaicInfo.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dgv_BaicInfo.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -376,6 +388,27 @@ namespace TcPCM_Connect
             this.tv_Bom.TabIndex = 60;
             this.tv_Bom.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.tv_Bom_AfterExpand);
             this.tv_Bom.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tv_Bom_MouseDown);
+            // 
+            // btn_Create
+            // 
+            this.btn_Create.AllowDrop = true;
+            this.btn_Create.BackColor = System.Drawing.Color.White;
+            this.btn_Create.BackgroundColor = System.Drawing.Color.White;
+            this.btn_Create.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Create.BorderRadius = 5;
+            this.btn_Create.BorderSize = 1;
+            this.btn_Create.FlatAppearance.BorderSize = 0;
+            this.btn_Create.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_Create.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_Create.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Create.Location = new System.Drawing.Point(632, 18);
+            this.btn_Create.Name = "btn_Create";
+            this.btn_Create.Size = new System.Drawing.Size(87, 31);
+            this.btn_Create.TabIndex = 68;
+            this.btn_Create.Text = "엑셀 Import";
+            this.btn_Create.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Create.UseVisualStyleBackColor = false;
+            this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
             // 
             // frmDashboard
             // 
@@ -426,5 +459,7 @@ namespace TcPCM_Connect
         private System.Windows.Forms.RadioButton rb_ENG;
         private System.Windows.Forms.RadioButton rb_KOR;
         private System.Windows.Forms.ToolStripMenuItem eXCELBulk업로드ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eXCEL업로드ToolStripMenuItem;
+        private CustomControls.RJControls.RJButton btn_Create;
     }
 }
