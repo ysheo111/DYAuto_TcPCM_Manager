@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using Application = System.Windows.Forms.Application;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Threading;
+using System.Text;
 
 namespace TcPCM_Connect_Global
 {
@@ -72,7 +73,7 @@ namespace TcPCM_Connect_Global
                 Excel.Worksheet worksheet = workbook.Sheets[sheetName];
                 Excel.Worksheet worksheet2 = workbook.Sheets[sheetName2];
 
-                foreach(Excel.Worksheet sheet in workbook.Sheets)
+                foreach (Excel.Worksheet sheet in workbook.Sheets)
                 {
                     if (sheet != worksheet && sheet != worksheet2) sheet.Visible = Excel.XlSheetVisibility.xlSheetHidden;
                 }
@@ -106,15 +107,15 @@ namespace TcPCM_Connect_Global
 
                 row = 2; excelCol = 19;
                 worksheet.Cells[row++, excelCol].Value = part.header.dateOfCalc.ToString("yyyy-MM-dd");
-                worksheet.Cells[row++, excelCol].Value = part.header.author?.Replace("[DYA]", "");                
+                worksheet.Cells[row++, excelCol].Value = part.header.author?.Replace("[DYA]", "");
 
                 //summary
                 row = 13; excelCol = 8;
                 worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.administrationCosts);
                 worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.profit);
                 worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.materialOverhead);
-                                                         
-                row = 14; excelCol = 11;                 
+
+                row = 14; excelCol = 11;
                 worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.rnd);
                 worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.packageTransport);
                 worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.etc);
@@ -125,7 +126,7 @@ namespace TcPCM_Connect_Global
                     row = 25 + i;
                     excelCol = 2;
                     Excel.Range cell = worksheet.Cells[row, excelCol] as Excel.Range;
-                    cell.Select();                    
+                    cell.Select();
                     worksheet.Cells[row, excelCol++].Value = i + 1;
                     worksheet.Cells[row, excelCol++].Value = part.material[i].name?.Replace("[DYA]", "");
                     excelCol++;
@@ -171,7 +172,7 @@ namespace TcPCM_Connect_Global
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(num);
 
                     string etc = "";
-                    for (int cnt = start; cnt < machineName.Length ; cnt++)
+                    for (int cnt = start; cnt < machineName.Length; cnt++)
                     {
                         etc += machineName[cnt];
                     }
@@ -246,7 +247,7 @@ namespace TcPCM_Connect_Global
             }
             catch (Exception e)
             {
-                 return $"{e.Message}";
+                return $"{e.Message}";
             }
             return null;
         }
@@ -377,7 +378,7 @@ namespace TcPCM_Connect_Global
                     Thread.Sleep(100);
                     LoadingScreen.UdpateStatusTextWithStatus($"{cnt}/{dlg.FileNames.Length}");
                     //Excel 프로그램 실행
-                    application = new Microsoft.Office.Interop.Excel.Application();                    
+                    application = new Microsoft.Office.Interop.Excel.Application();
                     //파일로부터 불러오기
                     workBook = application.Workbooks.Open(file);
 
@@ -391,7 +392,7 @@ namespace TcPCM_Connect_Global
                     string val2 = "";
                     if (mode == "자동")
                     {
-                        val = workSheetList[workSheetList.Count- 2];
+                        val = workSheetList[workSheetList.Count - 2];
                         val2 = workSheetList[workSheetList.Count - 1];
                         application.Visible = false;
                     }
@@ -441,13 +442,13 @@ namespace TcPCM_Connect_Global
                                 date = DateTime.Now.ToString("yyyy-MM-dd");
                                 Console.WriteLine($"Error retrieving date: {ex.Message}");  // Log error message
                             }
-                            excel.CellVaildation(colName[i], nameRow, row++, excelCol, worksheet, date, ref header,row-1);
+                            excel.CellVaildation(colName[i], nameRow, row++, excelCol, worksheet, date, ref header, row - 1);
                         }
                         else if (i == 10) header.Add(Report.Header.exchangeRateCurrency, worksheet.Cells[row++, excelCol + 1].Value);
                         else if (colName[i] == Report.Header.category) segment = $"{worksheet.Cells[row++, excelCol + 1].Value}";
                         else
                         {
-                            excel.CellVaildation(colName[i], nameRow, row, excelCol, row++, excelCol + 1, worksheet, ref header,row-1);
+                            excel.CellVaildation(colName[i], nameRow, row, excelCol, row++, excelCol + 1, worksheet, ref header, row - 1);
                         }
 
                         if (i == 6)  // Adjusted condition to avoid unnecessary checks
@@ -466,11 +467,11 @@ namespace TcPCM_Connect_Global
                     excelCol = 8; row = 11;
                     for (int i = 13; i < 16; i++)
                     {
-                        excel.CellVaildation(colName[i], 2, row, excelCol, row + 2, excelCol++, worksheet, ref header,row);
+                        excel.CellVaildation(colName[i], 2, row, excelCol, row + 2, excelCol++, worksheet, ref header, row);
                     }
                     for (int i = 16; i < 19; i++)
                     {
-                        excel.CellVaildation(colName[i], 3, row, excelCol, row + 3, excelCol++, worksheet, ref header,row);
+                        excel.CellVaildation(colName[i], 3, row, excelCol, row + 3, excelCol++, worksheet, ref header, row);
                     }
                     header.Add(Report.LineType.comment, $"{worksheet.Cells[14, 15].Value}");
                     string query = $@"select Value as name from DoubleDefaultValues as a 
@@ -491,7 +492,7 @@ namespace TcPCM_Connect_Global
                     int cntMaterial = 0;
                     try
                     {
-                        while(true)
+                        while (true)
                         {
                             int j = 25 + cntMaterial;
                             cntMaterial++;
@@ -538,7 +539,7 @@ namespace TcPCM_Connect_Global
                                     excelCol = i;
 
 
-                                    if (!values.Contains(i)) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref part,22);
+                                    if (!values.Contains(i)) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref part, 22);
                                     else if (net != 0)
                                     {
                                         if (i == 14) excel.CellVaildation(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material, 22);
@@ -615,9 +616,9 @@ namespace TcPCM_Connect_Global
                                 {
                                     part.Add(Report.LineType.method, "Siemens.TCPCM.CalculationQuality.Estimation(rough)");
                                     excel.CellVaildation(Report.Material.unit, nameRow, 22, 13, j, 13, worksheet, ref part, 22);
-                                    part[Report.Material.quantity] 
+                                    part[Report.Material.quantity]
                                         = global.ConvertDouble($"{worksheet.Cells[j, 12].Value}") * global.ConvertDouble(part[Report.Material.quantity]);
-                                    excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, 14, j, 14, worksheet, ref part,22);
+                                    excel.CellVaildation(Report.Material.rawMaterial, nameRow, 22, 14, j, 14, worksheet, ref part, 22);
                                     materials.Add(part);
                                 }
                             }
@@ -655,11 +656,11 @@ namespace TcPCM_Connect_Global
                     int cntJ = 0;
                     cntMaterial += 25;
                     while (true)
-                    {                         
-                        int j = cntMaterial+2 + cntJ;
+                    {
+                        int j = cntMaterial + 2 + cntJ;
                         int machinLine = 8 + cntJ;
                         cntJ++;
-                        
+
                         int colIndex = 32;
                         int nameRow = 2;
 
@@ -710,7 +711,7 @@ namespace TcPCM_Connect_Global
                         {
                             for (int i = 3; i < 20; i++)
                             {
-                                if (i == 4 || (16 <=i  && i<= 18) )
+                                if (i == 4 || (16 <= i && i <= 18))
                                 {
                                     colIndex--;
                                     continue;
@@ -718,8 +719,8 @@ namespace TcPCM_Connect_Global
 
                                 else if (colName[colIndex + i] == Report.Manufacturing.category)
                                 {
-                                    excel.CellVaildation(colName[colIndex + i], nameRow, cntMaterial, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref manufacturing,55);
-                                    excel.CellVaildation(colName[colIndex + i], nameRow, cntMaterial, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref labor,55);
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, cntMaterial, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref manufacturing, 55);
+                                    excel.CellVaildation(colName[colIndex + i], nameRow, cntMaterial, i, worksheet, $"{header[Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref labor, 55);
                                 }
                                 else if (colName[colIndex + i] == Report.Manufacturing.machineName)
                                 {
@@ -749,7 +750,7 @@ namespace TcPCM_Connect_Global
                                     }
                                     else if (colName[colIndex + i] == Report.Manufacturing.category)
                                     {
-                                        excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, worksheet2, $"{header[Report.Header.suppier]}||{worksheet2.Cells[machinLine, i].Value}", ref machine,4);
+                                        excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, worksheet2, $"{header[Report.Header.suppier]}||{worksheet2.Cells[machinLine, i].Value}", ref machine, 4);
                                     }
                                     else if (colName[colIndex + i] == Report.Manufacturing.machineName)
                                     {
@@ -760,14 +761,14 @@ namespace TcPCM_Connect_Global
                                         }
                                         else machine.Add(Report.Manufacturing.machineName, worksheet2.Cells[machinLine, i].Value?.ToString());
                                     }
-                                    else if (machine.ContainsKey(Report.Manufacturing.rationForSupplementaryMachine3)&& machine.ContainsKey(colName[colIndex + i])) continue;
-                                    else if(colName[colIndex + i] == Report.Manufacturing.otherYearOfMachine)
+                                    else if (machine.ContainsKey(Report.Manufacturing.rationForSupplementaryMachine3) && machine.ContainsKey(colName[colIndex + i])) continue;
+                                    else if (colName[colIndex + i] == Report.Manufacturing.otherYearOfMachine)
                                     {
-                                        machine.Add(Report.Manufacturing.otherYearOfMachine, $"{worksheet2.Cells[machinLine, i].Value}" );
+                                        machine.Add(Report.Manufacturing.otherYearOfMachine, $"{worksheet2.Cells[machinLine, i].Value}");
                                     }
                                     else if (machine.ContainsKey(colName[colIndex + i])) excel.CellVaildation(Report.Manufacturing.rationForSupplementaryMachine3, nameRow, 4, i, machinLine, i, worksheet2, ref machine, 4);
-                                    else if (worksheet2.Cells[machinLine, i].Value == null) continue;                                    
-                                    else excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, machinLine, i, worksheet2, ref machine,4);
+                                    else if (worksheet2.Cells[machinLine, i].Value == null) continue;
+                                    else excel.CellVaildation(colName[colIndex + i], nameRow, 4, i, machinLine, i, worksheet2, ref machine, 4);
                                 }
                                 catch (Exception e)
                                 {
@@ -864,6 +865,488 @@ namespace TcPCM_Connect_Global
 
             return err;
         }
+        public string BulkImport(string mode)
+        {
+            Microsoft.Office.Interop.Excel.Application application = null;
+            Excel.Workbook workBook = null;
+            ExcelImport excel = new ExcelImport();
+            string err = null;
+            try
+            {
+                OpenFileDialog dlg = new OpenFileDialog();
+                int cnt = 0;
+                dlg.Multiselect = true;
+                DialogResult dialog = dlg.ShowDialog();
+                if (dialog == DialogResult.Cancel) return null;
+                else if (dialog != DialogResult.OK) return $"Error : 파일 오픈에 실패하였습니다.";
 
+                if (mode == "자동")
+                {
+                    Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+                    splashthread.IsBackground = true;
+                    splashthread.Start();
+                }
+                foreach (string file in dlg.FileNames)
+                {
+                    cnt++;
+                    Thread.Sleep(100);
+                    LoadingScreen.UdpateStatusTextWithStatus($"{cnt}/{dlg.FileNames.Length}");
+                    //Excel 프로그램 실행
+                    application = new Microsoft.Office.Interop.Excel.Application();
+                    //파일로부터 불러오기
+                    workBook = application.Workbooks.Open(file);
+
+                    List<string> workSheetList = new List<string>();
+                    foreach (Excel.Worksheet sheet in workBook.Worksheets)
+                    {
+                        if (sheet.Visible != Excel.XlSheetVisibility.xlSheetVisible) continue;
+                        workSheetList.Add(sheet.Name);
+                    }
+                    string val = "";
+                    string val2 = "";
+                    if (mode == "자동")
+                    {
+                        val = workSheetList[workSheetList.Count - 2];
+                        val2 = workSheetList[workSheetList.Count - 1];
+                        application.Visible = false;
+                    }
+                    else
+                    {
+                        //Excel 화면 띄우기 옵션
+                        application.Visible = true;
+
+                        frmPartWorkSheetSelect workSheetSelect = new frmPartWorkSheetSelect();
+                        workSheetSelect.workSheet = workSheetList;
+                        if (workSheetSelect.ShowDialog() == DialogResult.Cancel) return null;
+                        val = workSheetSelect.ReturnValue1;
+                        val2 = workSheetSelect.ReturnValue2;
+                    }
+                    Excel.Worksheet worksheet = workBook.Worksheets.Item[val];
+                    Excel.Worksheet worksheet2 = workBook.Worksheets.Item[val2];
+
+                    worksheet.Activate();
+
+                    //CBD의 기본정보
+                    worksheet.get_Range("G2", "G2").Select();
+
+                    //Basic
+                    int row = 2, excelCol = 2;
+                    string segment = "";
+                    List<string> colName = excel.cbd.column.Values.ToList();
+                    DataTable header = new DataTable();
+                    header.Rows.Add();
+                    for (int i = 0; i < 13; i++)
+                    {
+                        int nameRow = i < 9 ? 1 : 2;  // Conditional assignment for nameRow
+
+                        if (i == 11)
+                        {
+                            string date;
+                            try
+                            {
+                                date = worksheet.Cells[row, excelCol + 1].Value.ToString("yyyy-MM-dd");
+                            }
+                            catch (Exception ex)
+                            {
+                                date = DateTime.Now.ToString("yyyy-MM-dd");
+                                Console.WriteLine($"Error retrieving date: {ex.Message}");  // Log error message
+                            }
+                            excel.CellVaildationDT(colName[i], nameRow, row++, excelCol, worksheet, date, ref header, row - 1);
+                        }
+                        else if (i == 10)
+                        {
+                            if (!header.Columns.Contains(Report.Header.exchangeRateCurrency)) header.Columns.Add(Report.Header.exchangeRateCurrency);
+                            header.Rows[header.Rows.Count - 1][Report.Header.exchangeRateCurrency] = worksheet.Cells[row++, excelCol + 1].Value;
+                        }
+                        else if (colName[i] == Report.Header.category) segment = $"{worksheet.Cells[row++, excelCol + 1].Value}";
+                        else
+                        {
+                            excel.CellVaildationDT(colName[i], nameRow, row, excelCol, row++, excelCol + 1, worksheet, ref header, row - 1);
+                        }
+
+                        if (i == 6)  // Adjusted condition to avoid unnecessary checks
+                        {
+                            excelCol = 5;
+                            row = 5;
+                        }
+                        if (i == 10)
+                        {
+                            excelCol = 18;
+                            row = 2;
+                        }
+
+                    }
+
+                    if (!header.Columns.Contains(Report.Header.category)) header.Columns.Add(Report.Header.category);
+                    header.Rows[header.Rows.Count - 1][Report.Header.category] = $"{header.Rows[header.Rows.Count - 1][Report.Header.suppier]}||{segment}";
+
+                    excelCol = 8; row = 11;
+                    for (int i = 13; i < 16; i++)
+                    {
+                        excel.CellVaildationDT(colName[i], 2, row, excelCol, row + 2, excelCol++, worksheet, ref header, row);
+                    }
+                    for (int i = 16; i < 19; i++)
+                    {
+                        excel.CellVaildationDT(colName[i], 3, row, excelCol, row + 3, excelCol++, worksheet, ref header, row);
+                    }
+
+                    if (!header.Columns.Contains(Report.LineType.comment)) header.Columns.Add(Report.LineType.comment);
+                    header.Rows[header.Rows.Count - 1][Report.LineType.comment] = $"{worksheet.Cells[14, 15].Value}";
+
+                    //원/부재료
+                    int materialDefault = 3;
+                    JArray materials = new JArray();
+                    int cntMaterial = 0;
+
+                    DataTable material = new DataTable();
+                    DataTable manufacturing = new DataTable();
+                    try
+                    {
+                        while (true)
+                        {
+                            int j = 25 + cntMaterial;
+                            cntMaterial++;
+                            worksheet.get_Range($"C{j}", $"C{j}").Select();
+
+                            int colIndex = 17, nameRow = 3;
+                            int[] values = { 11, 12, 13, 14, 17 };
+
+                            double unit = 1, net = global.ConvertDouble(worksheet.Cells[j, 11].Value);
+
+                            if (((Excel.Range)worksheet.Cells[j, 2]).Value?.ToString().Contains("가  공  비") == true) break;
+                            if (((Excel.Range)worksheet.Cells[j, 3]).Value == null) continue;
+
+                            if (worksheet.Cells[j, 5].Value?.ToString().Contains("외주") == true)
+                            {
+                                manufacturing.Rows.Add();
+
+                                if (!manufacturing.Columns.Contains(Report.Manufacturing.externalPrice)) manufacturing.Columns.Add(Report.Manufacturing.externalPrice);
+                                manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.externalPrice] = worksheet.Cells[j, 20].Value;
+
+                                if (!manufacturing.Columns.Contains(Report.Manufacturing.externalQuntity)) manufacturing.Columns.Add(Report.Manufacturing.externalQuntity);
+                                manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.externalQuntity] = 1;
+
+                                if (!manufacturing.Columns.Contains(Report.Manufacturing.manufacturingName)) manufacturing.Columns.Add(Report.Manufacturing.manufacturingName);
+                                manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.manufacturingName] = worksheet.Cells[j, 3].Value;
+
+                                if (!manufacturing.Columns.Contains(Report.LineType.comment)) manufacturing.Columns.Add(Report.LineType.comment);
+                                manufacturing.Rows[manufacturing.Rows.Count - 1][Report.LineType.comment] = worksheet.Cells[j, 21].Value;
+
+                                //manufacturing.Add(Report.Manufacturing.sequence, j * 10);
+                                //manufacturing.Add(Report.LineType.lineType, "F");
+                                //manufacturing.Add(Report.LineType.level, "2");
+                                //manufacturing.Add(Report.Header.partName, header[Report.Header.partName]);
+                                //manufacturing.Add(Report.Header.suppier, header[Report.Header.suppier]);
+                                //manufacturing.Add(Report.Header.currency, header[Report.Header.currency]);
+                                //manufacturing.Add(Report.Manufacturing.externalPrice, worksheet.Cells[j, 20].Value);
+                                //manufacturing.Add(Report.Manufacturing.externalQuntity, 1);
+                                //manufacturing.Add(Report.Manufacturing.partName, worksheet.Cells[j, 3].Value);
+                                //manufacturing.Add(Report.LineType.comment, worksheet.Cells[j, 21].Value);
+
+                                //manufacturings.Add(manufacturing);
+                            }
+                            else
+                            {
+                                material.Rows.Add();
+
+                                for (int i = 3; i < 22; i++)
+                                {
+                                    if (i == 4 || i == 16 || i == 18 || i == 20)
+                                    {
+                                        colIndex--;
+                                        continue;
+                                    }
+                                    excelCol = i;
+
+
+                                    if (!values.Contains(i)) excel.CellVaildationDT(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material, 22);
+                                    else if (net != 0)
+                                    {
+                                        if (i == 14) excel.CellVaildationDT(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material, 22);
+                                        else if (i == 17) excel.CellVaildationDT(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material, 22);
+                                        else if (i == 13)
+                                        {
+                                            excel.CellVaildationDT(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material, 22);
+
+                                            if (worksheet.Cells[j, excelCol].Value.ToString().ToLower().Contains("kg")) unit /= Math.Pow(10, 3);
+                                            else if (worksheet.Cells[j, excelCol].Value.ToString().ToLower().Contains("t")) unit /= Math.Pow(10, 6);
+                                        }
+                                    }
+
+                                }
+
+                                if (net > 0)
+                                {
+                                    excel.CellVaildationDT(colName[colIndex + excelCol], nameRow, 22, excelCol, j, excelCol, worksheet, ref material, 22);
+
+                                    excel.CellVaildationDT(Report.Material.netWeight, nameRow, 22, 11, j, 11, worksheet, ref material, 22);
+                                    excel.CellVaildationDT(Report.Material.grossWeight, nameRow, 22, 12, j, 12, worksheet, ref material, 22);
+                                }
+
+                                else
+                                {
+                                    excel.CellVaildationDT(Report.Material.unit, nameRow, 22, 13, j, 13, worksheet, ref material, 22);
+                                    material.Rows[material.Rows.Count - 1][Report.Material.quantity]
+                                        = global.ConvertDouble($"{worksheet.Cells[j, 12].Value}") * global.ConvertDouble(material.Rows[material.Rows.Count - 1][Report.Material.quantity]);
+                                    excel.CellVaildationDT(Report.Material.rawMaterial, nameRow, 22, 14, j, 14, worksheet, ref material, 22);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        err = e.Message + "\n";
+                    }
+
+                    int[] manufacturingList = { 12, 17, 19, 23, 26, 27, 29 };
+                    int manufacturingDefault = 3;
+
+                    int cntJ = 0;
+                    cntMaterial += 25;
+                    while (true)
+                    {
+                        int j = cntMaterial + 2 + cntJ;
+                        int machinLine = 8 + cntJ;
+                        cntJ++;
+
+                        int colIndex = 32;
+                        int nameRow = 2;
+
+                        worksheet.get_Range($"C{j}", $"C{j}").Select();
+
+                        if (((Excel.Range)worksheet.Cells[j, 3]).Value == null)
+                        {
+                            if (cntJ == 1) continue;
+                            break;
+                        }
+                        manufacturing.Rows.Add();
+                        if (worksheet.Cells[j, 5].Value?.ToString().Contains("외주") == true)
+                        {
+                            //manufacturing[Report.LineType.lineType] = "F";
+                            //manufacturing.Add(Report.Manufacturing.partName, worksheet.Cells[j, 3].Value);
+                            //manufacturing.Add(Report.Manufacturing.externalPrice, worksheet.Cells[j, 18].Value);
+                            //manufacturing.Add(Report.Manufacturing.externalQuntity, 1);
+
+                            //manufacturings.Add(manufacturing);
+                            
+                            if (!manufacturing.Columns.Contains(Report.Manufacturing.externalPrice)) manufacturing.Columns.Add(Report.Manufacturing.externalPrice);
+                            manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.externalPrice] = worksheet.Cells[j, 20].Value;
+
+                            if (!manufacturing.Columns.Contains(Report.Manufacturing.externalQuntity)) manufacturing.Columns.Add(Report.Manufacturing.externalQuntity);
+                            manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.externalQuntity] = 1;
+
+                            if (!manufacturing.Columns.Contains(Report.Manufacturing.manufacturingName)) manufacturing.Columns.Add(Report.Manufacturing.manufacturingName);
+                            manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.manufacturingName] = worksheet.Cells[j, 3].Value;
+
+                            if (!manufacturing.Columns.Contains(Report.LineType.comment)) manufacturing.Columns.Add(Report.LineType.comment);
+                            manufacturing.Rows[manufacturing.Rows.Count - 1][Report.LineType.comment] = worksheet.Cells[j, 21].Value;
+                        }
+                        else
+                        {
+                            for (int i = 3; i < 20; i++)
+                            {
+                                if (i == 4 || (16 <= i && i <= 18))
+                                {
+                                    colIndex--;
+                                    continue;
+                                }
+
+                                else if (colName[colIndex + i] == Report.Manufacturing.category)
+                                {
+                                    excel.CellVaildationDT(colName[colIndex + i], nameRow, cntMaterial, i, worksheet, $"{header.Rows[header.Rows.Count - 1][Report.Header.suppier]}||{worksheet.Cells[j, i].Value}", ref manufacturing, 55);
+                                }
+                                else if (colName[colIndex + i] == Report.Manufacturing.machineName)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    excel.CellVaildationDT(colName[colIndex + i], nameRow, cntMaterial, i, j, i, worksheet, ref manufacturing, 55);
+                                }
+
+                                //excel.CellVaildation(colName[colIndex + i], nameRow, 55, i, j, i, worksheet, ref machine);
+                            }
+
+                            colIndex += 17;
+                            nameRow = 4;
+
+                            for (int i = 3; i < 30; i++)
+                            {
+
+                                try
+                                {
+                                    if (manufacturingList.Contains(i))
+                                    {
+                                        colIndex--;
+                                        continue;
+                                    }
+                                    else if (colName[colIndex + i] == Report.Manufacturing.category)
+                                    {
+                                        excel.CellVaildationDT(colName[colIndex + i], nameRow, 4, i, worksheet2, $"{header.Rows[header.Rows.Count - 1][Report.Header.suppier]}||{worksheet2.Cells[machinLine, i].Value}", ref manufacturing, 4);
+                                    }
+                                    else if (colName[colIndex + i] == Report.Manufacturing.machineName)
+                                    {
+                                        if (!manufacturing.Columns.Contains(Report.Manufacturing.machineName)) manufacturing.Columns.Add(Report.Manufacturing.machineName);
+                                        if (manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.machineName] != DBNull.Value)
+                                        {
+                                            manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.machineName] +=
+                                                worksheet2.Cells[machinLine, i].Value == null ? "" : $"_{worksheet2.Cells[machinLine, i].Value.ToString()}";
+                                        }
+                                        else
+                                        {
+                                            manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.machineName] = worksheet2.Cells[machinLine, i].Value;
+                                        }
+                                    }
+                                    else if (manufacturing.Columns.Contains(Report.Manufacturing.rationForSupplementaryMachine3) &&  manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.rationForSupplementaryMachine3] != DBNull.Value
+                                      && manufacturing.Columns.Contains(colName[colIndex + i])  && manufacturing.Rows[manufacturing.Rows.Count - 1][colName[colIndex + i]] != DBNull.Value) continue;
+                                    else if (colName[colIndex + i] == Report.Manufacturing.otherYearOfMachine)
+                                    {
+                                        if (!manufacturing.Columns.Contains(Report.Manufacturing.otherYearOfMachine)) manufacturing.Columns.Add(Report.Manufacturing.otherYearOfMachine);
+                                        manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.otherYearOfMachine] = $"{worksheet2.Cells[machinLine, i].Value}";
+                                    }
+                                    else if ( colName[colIndex + i] == Report.Manufacturing.amotizingYearOfMachine && manufacturing.Columns.Contains(Report.Manufacturing.amotizingYearOfMachine) && manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.amotizingYearOfMachine] != DBNull.Value)  
+                                    {
+                                        if (!manufacturing.Columns.Contains(Report.Manufacturing.rationForSupplementaryMachine3)) manufacturing.Columns.Add(Report.Manufacturing.rationForSupplementaryMachine3);
+                                        excel.CellVaildationDT(Report.Manufacturing.rationForSupplementaryMachine3, nameRow, 4, i, machinLine, i, worksheet2, ref manufacturing, 4);
+                                    }
+                                    else if (worksheet2.Cells[machinLine, i].Value == null) continue;
+                                    else excel.CellVaildationDT(colName[colIndex + i], nameRow, 4, i, machinLine, i, worksheet2, ref manufacturing, 4);
+                                }
+                                catch (Exception e)
+                                {
+                                    err += e.Message + "\n";
+                                }
+
+                            }
+
+                            double rationForSupplementaryMachine = global.ConvertDouble(manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.rationForSupplementaryMachine3]) != 0 ?
+                                   global.ConvertDouble(manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.rationForSupplementaryMachine1])
+                               * global.ConvertDouble(manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.rationForSupplementaryMachine2])
+                               / global.ConvertDouble(manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.rationForSupplementaryMachine3]) : 0;
+
+                            if (!manufacturing.Columns.Contains(Report.Manufacturing.spaceCost)) manufacturing.Columns.Add(Report.Manufacturing.spaceCost);
+                            manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.spaceCost] = rationForSupplementaryMachine;
+
+                            if (!manufacturing.Columns.Contains(Report.Manufacturing.productionTime)) manufacturing.Columns.Add(Report.Manufacturing.productionTime);
+                            manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.productionTime] =
+                                global.ConvertDouble(manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.productionDay])
+                                * global.ConvertDouble(manufacturing.Rows[manufacturing.Rows.Count - 1][Report.Manufacturing.productionTime]); 
+                        }
+                    }
+
+                    String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Import";
+                    string query = GenerateInsertQuery(header.Rows[0], manufacturing, material);
+                    query = query.Replace("\r\n", " ");
+                    string result = global_DB.ScalarExecute(query, ((int)global_DB.connDB.selfDB));
+                    if (workBook != null)
+                    {
+                        //변경점 저장하면서 닫기
+                        workBook.Close(true);
+                        //Excel 프로그램 종료
+                        application.Quit();
+                        //오브젝트 해제1
+                        ExcelCommon.ReleaseExcelObject(workBook);
+                        ExcelCommon.ReleaseExcelObject(application);
+                    }
+                }
+
+                LoadingScreen.CloseSplashScreen();
+            }
+            catch (Exception exc)
+            {
+                LoadingScreen.CloseSplashScreen();
+                return exc.Message;
+            }
+
+            return err;
+        }
+        private string GenerateInsertQuery(DataRow vendorInfo, DataTable vendorManufacturing, DataTable vendorMaterial)
+        {
+            try
+            {
+                StringBuilder query = new StringBuilder();
+                query.AppendLine("BEGIN TRANSACTION;");
+                query.AppendLine("DECLARE @InsertedVendorInfo TABLE (NewId INT);");
+
+                // 1. VendorInfo 데이터 삽입 및 중복 검사
+                string vendorInfoColumns = string.Join(", ", vendorInfo.Table.Columns.Cast<DataColumn>().Select(col => $"[{col.ColumnName}]"));
+                string vendorInfoValues = string.Join(", ", vendorInfo.Table.Columns.Cast<DataColumn>().Select(col => FormatValue(vendorInfo[col])));
+                string vendorInfoPkColumn = "Id";
+                query.AppendLine($@"
+    DECLARE @ExistingId INT;
+    SELECT @ExistingId = {vendorInfoPkColumn} FROM VendorInfo WHERE Left([품번], 7) = '{vendorInfo["품번"].ToString().Substring(0,7)}';
+    
+    IF @ExistingId IS NULL
+    BEGIN
+        INSERT INTO VendorInfo ({vendorInfoColumns})
+        OUTPUT INSERTED.Id INTO @InsertedVendorInfo (NewId)
+        VALUES ({vendorInfoValues});
+        SELECT @ExistingId = NewId FROM @InsertedVendorInfo;
+END
+    ELSE
+BEGIN
+        UPDATE VendorInfo
+        SET {string.Join(", ", vendorInfo.Table.Columns.Cast<DataColumn>().Select(col => $"[{col.ColumnName}] = {FormatValue(vendorInfo[col])}"))}
+        WHERE {vendorInfoPkColumn} = @ExistingId;
+        
+    END;");
+
+                // 2. VendorManufacturing 데이터 삽입 및 중복 제거
+                if (vendorManufacturing.Rows.Count > 0)
+                {
+                    string vendorManufacturingColumns = string.Join(", ", vendorManufacturing.Columns.Cast<DataColumn>().Select(col => $"[{col.ColumnName}]"));
+                    query.AppendLine($"DELETE FROM VendorManufacturing WHERE VendorInfoId IN (@ExistingId);");
+                    query.AppendLine($"INSERT INTO VendorManufacturing ({vendorManufacturingColumns}, VendorInfoId)");
+                    query.AppendLine("SELECT * FROM (VALUES");
+
+                    int count = 0;
+                    foreach (DataRow row in vendorManufacturing.Rows)
+                    {
+                        if (count++ > 0) query.AppendLine(",");
+                        query.Append($"({string.Join(", ", vendorManufacturing.Columns.Cast<DataColumn>().Select(col => FormatValue(row[col])))}, @ExistingId)");
+                    }
+
+                    query.AppendLine($") AS tmp ({vendorManufacturingColumns}, VendorInfoId);");
+                }
+
+                // 3. VendorMaterial 데이터 삽입 및 중복 제거
+                if (vendorMaterial.Rows.Count > 0)
+                {
+                    string vendorMaterialColumns = string.Join(", ", vendorMaterial.Columns.Cast<DataColumn>().Select(col => $"[{col.ColumnName}]"));
+                    query.AppendLine($"DELETE FROM VendorMaterial WHERE VendorInfoId IN (@ExistingId);");
+                    query.AppendLine($"INSERT INTO VendorMaterial ({vendorMaterialColumns}, VendorInfoId)");
+                    query.AppendLine("SELECT * FROM (VALUES");
+
+                    int count = 0;
+                    foreach (DataRow row in vendorMaterial.Rows)
+                    {
+                        if (count++ > 0) query.AppendLine(",");
+                        query.Append($"({string.Join(", ", vendorMaterial.Columns.Cast<DataColumn>().Select(col => FormatValue(row[col])))}, @ExistingId)");
+                    }
+
+                    query.AppendLine($") AS tmp ({vendorMaterialColumns}, VendorInfoId);");
+                }
+
+                query.AppendLine("COMMIT TRANSACTION;");
+                return query.ToString();
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return null;
+            }            
+        }
+
+        // 데이터 값 형식 변환 함수 (문자열에는 '' 추가, 숫자는 그대로, NULL 처리)
+        private string FormatValue(object value)
+        {
+            if (value == null || value == DBNull.Value)
+                return "NULL";
+
+            if ( value is DateTime) return $"'{value}'";
+            else if(value is string) return $"'{((string)value).Replace("'","''")}'";
+
+            return value.ToString();
+        }
     }
 }
