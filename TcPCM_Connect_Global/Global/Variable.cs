@@ -611,6 +611,7 @@ namespace TcPCM_Connect_Global
             public static List<string> plate = new List<string>() { "재질명", "GRADE", "비중", "인장 강도", "전단 강도"};//{ "재료명", "구분", "비중", "인장 강도(N/mm²)", "전단 강도(N/mm²)" ,"생산 계수"};
             public static List<string> price = new List<string>() { "Valid From", "지역", "통화", "소재명", "재질명", "GRADE", "원재료 단가", "원재료 단위", "스크랩 단가", "스크랩 단위", "탄소발생량", "탄소발생량 단위" };
             public static List<string> material = new List<string>() { "재질명", "GRADE", "비중"};//{ "Valid From", "지역", "구분", "재료명", "비중", "통화", "가격", "가격 단위", "스크랩 비용", "스크랩 비용 단위"};
+            public static List<string> management = new List<string>() { "Valid From", "지역", "통화", "품번", "참고품명", "단가" };
         }
 
         public class Machine
