@@ -34,21 +34,25 @@ namespace TcPCM_Connect
         {
             dgv_PartManufacturing.Columns.Clear();
 
-            dgv_PartManufacturing.Columns.Add("품명", "품명");
-            dgv_PartManufacturing.Columns.Add("설비명", "설비명");
-            dgv_PartManufacturing.Columns.Add("업종", "업종");
+            dgv_PartManufacturing.Columns.Add("품번", "품번");
+            dgv_PartManufacturing.Columns.Add("대표품명", "대표품명");
             dgv_PartManufacturing.Columns.Add("세부 공정명", "세부 공정명");
+            dgv_PartManufacturing.Columns.Add("업종", "업종");
+            dgv_PartManufacturing.Columns.Add("기계명", "기계명");
+            dgv_PartManufacturing.Columns.Add("톤수", "톤수");
+            dgv_PartManufacturing.Columns.Add("메이커", "메이커");
+            dgv_PartManufacturing.Columns.Add("Number of workers", "Number of workers");
             dgv_PartManufacturing.Columns.Add("Cycle time", "Cycle time");
             dgv_PartManufacturing.Columns.Add("Cavity", "Cavity");
-            dgv_PartManufacturing.Columns.Add("Quantity", "Quantity");
+            dgv_PartManufacturing.Columns.Add("Q'ty", "Q'ty");
             dgv_PartManufacturing.Columns.Add("Utilization ratio", "Utilization ratio");
-            dgv_PartManufacturing.Columns.Add("Number of workers", "Number of workers");
+            dgv_PartManufacturing.Columns.Add("comment", "comment");
         }
         
         private void btn_Create_Click(object sender, EventArgs e)
         {
             ExcelImport excel = new ExcelImport();
-            string err = excel.LoadPartManufacturing("표준 공정", dgv_PartManufacturing);
+            string err = excel.LoadMasterData("표준 공정", dgv_PartManufacturing);
 
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Exchange", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -74,31 +78,47 @@ namespace TcPCM_Connect
                 for(int rowIndex = 0; rowIndex < dgv_PartManufacturing.Rows.Count-1; rowIndex++)
                 {
                     DataGridViewRow row = dgv_PartManufacturing.Rows[rowIndex];
-                    string searchQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where Info = '{row.Cells["품명"].Value}'";
+                    if (string.IsNullOrEmpty(row.Cells["세부 공정명"].Value?.ToString()))
+                    {
+                        err = "세부 공정명에는 빈 값이 있으면 안됩니다.";
+                        break;
+                    }
+                    string searchQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where Info = '{row.Cells["품번"].Value}' And PartName = N'{row.Cells["대표품명"].Value}'";
                     string partId = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
                     //
                     if (string.IsNullOrEmpty(partId))
                     {
+                        searchQuery = $"Insert into [PCI].[dbo].[PartInfo] (Info, PartName) Values (N'{row.Cells["품번"].Value}', N'{row.Cells["대표품명"].Value}' )";
+                        err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
+                        searchQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where Info = '{row.Cells["품번"].Value}' And PartName = N'{row.Cells["대표품명"].Value}'";
                         partId = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
                         partIds.Add(partId);
-                        searchQuery = $"Insert into [PCI].[dbo].[PartInfo] (Info) Values ('{row.Cells["품명"].Value}')";
                     }
                     else if(!partIds.Contains(partId))
                     {
-                        searchQuery = $"delete from [PCI].[dbo].[Manufacturing] where PartId = '{partId}'";
                         partIds.Add(partId);
+                        searchQuery = $"delete from [PCI].[dbo].[Manufacturing] where PartId = '{partId}'";
+                        string result = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
                     }
 
-                    string result = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
-                    
-                    double ratio = double.Parse(row.Cells["Utilization ratio"].Value?.ToString());
-                    if (ratio>1)
+                    object ratioValue = row.Cells["Utilization ratio"].Value;
+                    string ratio = null;
+                    if(ratioValue != null)
                     {
-                        ratio = ratio / 100;
+                        double ratioFlot = double.Parse(ratioValue.ToString());
+                        if (ratioFlot > 1)
+                        {
+                            ratioFlot = ratioFlot / 100;
+                        }
+                        ratio = ratioFlot.ToString();
                     }
+                    string itemName = string.Join("_",new[] {row.Cells["기계명"].Value, row.Cells["톤수"].Value, row.Cells["메이커"].Value }
+                    .Select(obj => obj?.ToString())
+                    .Where(n => !string.IsNullOrEmpty(n)));
+
                     string insertQuery = $@"Insert into [PCI].[dbo].[Manufacturing]
-                                            (PartId,Name,Machine,Category,Cycletime,Cavity,Quantity,Utilization,NumberOfWorkers)
-                                            Values ('{partId}',N'{row.Cells["설비명"].Value}',N'{row.Cells["세부 공정명"].Value}',N'{row.Cells["업종"].Value}','{row.Cells["Cycle time"].Value}','{row.Cells["Cavity"].Value}','{row.Cells["Quantity"].Value}','{ratio}','{row.Cells["Number of workers"].Value}')";
+                                            (PartId,Name,Machine,Category,Cycletime,Cavity,Quantity,Utilization,NumberOfWorkers,Comment)
+                                            Values ({partId},N'{row.Cells["세부 공정명"].Value}',N'{itemName}',N'{row.Cells["업종"].Value}',{global.ConvertDouble(row.Cells["Cycle time"].Value)},{global.ConvertDouble(row.Cells["Cavity"].Value)},{global.ConvertDouble(row.Cells["Q'ty"].Value)},{global.ConvertDouble(ratio)},{global.ConvertDouble(row.Cells["Number of workers"].Value)},N'{row.Cells["comment"].Value}')";
                     err = global_DB.ScalarExecute(insertQuery, (int)global_DB.connDB.PCMDB);
                     if (!string.IsNullOrEmpty(err)) break;
                 }
@@ -139,7 +159,7 @@ namespace TcPCM_Connect
             inputString = searchButton1.text;
 
             //전체 검색
-            searchQuery = @"select Info,Name,Category,Machine,Cycletime,Cavity,Quantity,Utilization,NumberOfWorkers as name from [PCI].[dbo].[Manufacturing]
+            searchQuery = @"select Info,PartName,Name,Category,Machine,Cycletime,Cavity,Quantity,Utilization,NumberOfWorkers,Comment from [PCI].[dbo].[Manufacturing]
                                 join[PCI].[dbo].[PartInfo] on[PCI].[dbo].[PartInfo].Id = [PCI].[dbo].[Manufacturing].PartId";
 
             //입력값 검색
@@ -161,9 +181,28 @@ namespace TcPCM_Connect
                 {
                     string result = row[col].ToString();
                     int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
-                    dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells[count].Value = result;
+                    if (col.ColumnName == "Machine")
+                    {
+                        string[] splitResult = result.Split('_');
+                        if(splitResult.Length == 2)
+                        {
+                            dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells["기계명"].Value = splitResult[0].Trim();
+                            dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells["메이커"].Value = splitResult[1].Trim();
+                            i += 2;
+                        }
+                        else if(splitResult.Length == 3)
+                        {
+                            dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells["기계명"].Value = splitResult[0].Trim();
+                            dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells["톤수"].Value = splitResult[1].Trim();
+                            dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells["메이커"].Value = splitResult[2].Trim();
+                            i += 2;
+                        }
+                    }
+                    else
+                        dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells[count].Value = result.Trim();
                 }
             }
+            dgv_PartManufacturing.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
     }
 }

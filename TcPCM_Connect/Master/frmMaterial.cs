@@ -366,6 +366,8 @@ namespace TcPCM_Connect
                 Material(MasterData.Material.price); //PriceColumn();
                 btn_DBLoad.Visible = true;
             }
+            else if (combo.SelectedItem?.ToString() == "단가 관리 리스트")
+                Material(MasterData.Material.management);
             else
                 Material(MasterData.Material.material);
 
@@ -556,6 +558,7 @@ namespace TcPCM_Connect
                                 where MDSubstances.id in (select SubstanceId from MDSubstanceStandardNames where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
                                 {havingQuery}";
             }
+
             if (!string.IsNullOrEmpty(inputString))
             {
                 searchQuery = searchQuery + $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";

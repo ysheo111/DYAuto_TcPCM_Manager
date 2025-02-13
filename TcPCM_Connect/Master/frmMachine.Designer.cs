@@ -41,6 +41,7 @@
             this.btn_Save = new CustomControls.RJControls.RJButton();
             this.dgv_Machine = new System.Windows.Forms.DataGridView();
             this.btn_Create = new CustomControls.RJControls.RJButton();
+            this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.roundBorderPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Machine)).BeginInit();
             this.SuspendLayout();
@@ -54,6 +55,7 @@
             this.roundBorderPanel2.BorderColor = System.Drawing.Color.Gainsboro;
             this.roundBorderPanel2.BorderRadius = 10;
             this.roundBorderPanel2.BorderSize = 1;
+            this.roundBorderPanel2.Controls.Add(this.searchButton1);
             this.roundBorderPanel2.Controls.Add(this.btn_Shift);
             this.roundBorderPanel2.Controls.Add(this.label2);
             this.roundBorderPanel2.Controls.Add(this.cb_Classification);
@@ -80,7 +82,7 @@
             this.btn_Shift.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Shift.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Shift.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.btn_Shift.Location = new System.Drawing.Point(734, 20);
+            this.btn_Shift.Location = new System.Drawing.Point(742, 20);
             this.btn_Shift.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Shift.Name = "btn_Shift";
             this.btn_Shift.Size = new System.Drawing.Size(105, 39);
@@ -96,7 +98,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.label2.ForeColor = System.Drawing.Color.DimGray;
-            this.label2.Location = new System.Drawing.Point(33, 34);
+            this.label2.Location = new System.Drawing.Point(23, 30);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 18);
             this.label2.TabIndex = 66;
@@ -115,7 +117,7 @@
             "설비"});
             this.cb_Classification.ListBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;
-            this.cb_Classification.Location = new System.Drawing.Point(118, 22);
+            this.cb_Classification.Location = new System.Drawing.Point(105, 21);
             this.cb_Classification.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cb_Classification.Name = "cb_Classification";
             this.cb_Classification.Padding = new System.Windows.Forms.Padding(1);
@@ -136,7 +138,7 @@
             this.btn_Configuration.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Configuration.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Configuration.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.btn_Configuration.Location = new System.Drawing.Point(845, 20);
+            this.btn_Configuration.Location = new System.Drawing.Point(853, 20);
             this.btn_Configuration.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Configuration.Name = "btn_Configuration";
             this.btn_Configuration.Size = new System.Drawing.Size(168, 39);
@@ -158,7 +160,7 @@
             this.btn_Save.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Save.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Save.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.btn_Save.Location = new System.Drawing.Point(553, 20);
+            this.btn_Save.Location = new System.Drawing.Point(580, 20);
             this.btn_Save.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Save.Name = "btn_Save";
             this.btn_Save.Size = new System.Drawing.Size(55, 39);
@@ -243,15 +245,29 @@
             this.btn_Create.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Create.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Create.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Create.Location = new System.Drawing.Point(614, 20);
+            this.btn_Create.Location = new System.Drawing.Point(641, 20);
             this.btn_Create.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Create.Name = "btn_Create";
-            this.btn_Create.Size = new System.Drawing.Size(114, 39);
+            this.btn_Create.Size = new System.Drawing.Size(95, 39);
             this.btn_Create.TabIndex = 58;
             this.btn_Create.Text = "엑셀 Import";
             this.btn_Create.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
             this.btn_Create.UseVisualStyleBackColor = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
+            // 
+            // searchButton1
+            // 
+            this.searchButton1.BackColor = System.Drawing.Color.Transparent;
+            this.searchButton1.DetailSearchButtonBackColor = System.Drawing.Color.White;
+            this.searchButton1.Location = new System.Drawing.Point(247, 21);
+            this.searchButton1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.searchButton1.Name = "searchButton1";
+            this.searchButton1.PanelBackColor = System.Drawing.Color.Transparent;
+            this.searchButton1.Size = new System.Drawing.Size(327, 38);
+            this.searchButton1.TabIndex = 68;
+            this.searchButton1.text = "";
+            this.searchButton1.TextBoxBackColor = System.Drawing.Color.WhiteSmoke;
+            this.searchButton1.SearchButtonClick += new System.EventHandler(this.searchButton1_SearchButtonClick);
             // 
             // frmMachine
             // 
@@ -280,5 +296,6 @@
         private System.Windows.Forms.Label label2;
         private CustomControls.RJControls.RJComboBox cb_Classification;
         private CustomControls.RJControls.RJButton btn_Shift;
+        private Controller.SearchButton searchButton1;
     }
 }

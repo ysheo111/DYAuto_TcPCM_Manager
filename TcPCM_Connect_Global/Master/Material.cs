@@ -39,6 +39,8 @@ namespace TcPCM_Connect_Global
             }
             else if(type == "원소재 단가")
                 materialType = MasterData.Material.price;
+            else if (type == "단가 관리 리스트")
+                materialType = MasterData.Material.management;
             else
                 materialType = MasterData.Material.material;
 
@@ -52,7 +54,8 @@ namespace TcPCM_Connect_Global
                 JObject item = new JObject();
                 JObject scrapItem = new JObject();
                 string materialName = null;
-                if (row.Cells["재질명"].Value == null || row.Cells["재질명"].Value?.ToString().Length <= 0) continue;
+                if(dgv.Columns.Contains("재질명"))
+                    if (row.Cells["재질명"].Value == null || row.Cells["재질명"].Value?.ToString().Length <= 0) continue;
                 foreach (string category in materialType) 
                 {
                     if (category.Contains("소재명"))
@@ -104,17 +107,33 @@ namespace TcPCM_Connect_Global
                         }
                     }
                     else if (category.Contains("원재료 단위"))
+                    {
                         item.Add("단위", row.Cells[category].Value?.ToString().ToLower());
+                    }
                     else if (category.Contains("스크랩 단위"))
+                    {
                         scrapItem.Add("단위", row.Cells[category].Value?.ToString().ToLower());
+                    }
                     else if (category.Contains("원재료 단가"))
-                        item.Add("단가", row.Cells[category].Value?.ToString().ToLower());
+                        item.Add("단가", row.Cells[category].Value?.ToString());
                     else if (category.Contains("스크랩 단가"))
-                        scrapItem.Add("단가", row.Cells[category].Value?.ToString().ToLower());
+                        scrapItem.Add("단가", row.Cells[category].Value?.ToString());
                     else if (category.Contains("탄소발생량 단위"))
                     {
                         item.Add(category, row.Cells["단위"].Value?.ToString().ToLower());
                         scrapItem.Add(category, row.Cells["단위"].Value?.ToString().ToLower());
+                    }
+                    else if (category.Contains("탄소발생량"))
+                    {
+                        item.Add(category, row.Cells["탄소발생량"].Value?.ToString().ToLower());
+                        scrapItem.Add(category, row.Cells["탄소발생량"].Value?.ToString().ToLower());
+                    }
+                    else if (category.Contains("품번"))
+                    {
+                        string idValue = row.Cells["품번"].Value?.ToString();
+                        item.Add(category, idValue.Substring(0, 7));
+                        item.Add("revision", $"{idValue.Substring(0, 7)}||{idValue.Substring(7)}");
+                        item.Add("revision number", idValue.Substring(7));
                     }
                     else
                     {
@@ -133,11 +152,11 @@ namespace TcPCM_Connect_Global
             };
             string err = null;
 
-            if(type == "원소재 단가")
+            if (type == "원소재 단가")
             {
                 postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Header");
                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
-                if(err == null)
+                if (err == null)
                 {
                     postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "Import_Revision");
                     err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
@@ -171,6 +190,21 @@ namespace TcPCM_Connect_Global
                                 }
                             }
                         }
+                    }
+                }
+            }
+            else if (type == "단가 관리 리스트")
+            {
+                postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "단가_Header");
+                err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                if (err == null)
+                {
+                    postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "단가_Revision");
+                    err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
+                    if (err == null)
+                    {
+                        postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "단가_Detail");
+                        err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
                     }
                 }
             }
