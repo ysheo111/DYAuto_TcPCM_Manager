@@ -48,11 +48,6 @@ namespace TcPCM_Connect_Global
                         break;
                     }
 
-                    //if (name == "직접임률" && (col.Name.Contains("간접") || col.Name.Contains("경비")))
-                    //    continue;
-                    //else if (name == "간접임률" && (col.Name.Contains("직접") || col.Name.Contains("경비")))
-                    //    continue;
-
                     if (col.Name.Contains("연간 작업 일수"))
                         item.Add(col.Name, global.ConvertDouble(row.Cells[col.Name].Value) * global.ConvertDouble(row.Cells["Shift 당 작업 시간"].Value) * global.ConvertDouble(row.Cells["Shift"].Value));
                     else if (col.Name.Contains("Labor"))
@@ -77,15 +72,17 @@ namespace TcPCM_Connect_Global
                         else
                             item.Add(col.Name, "[DYA]"+row.Cells[col.Name].Value?.ToString());
                     }
+                    else if (name == "공간 생산 비용" && col.Name.Contains("업종"))
+                    {
+                        item.Add(col.Name, $"{row.Cells["지역"].Value}||{row.Cells[col.Name].Value}");
+                    }
                     else
                         item.Add(col.Name, row.Cells[col.Name].Value?.ToString());
                 }
                 if (name == "공간 생산 비용")
                 {
-                    item.Add("결과"
-                        , global.ConvertDouble(item["건축비"]) * global.ConvertDouble(item["건물점유비율"]) / 100 / global.ConvertDouble(item["건물상각년수"]) / 12 );
-                    item.Add("건물상각년수(년)"
-                        , $@"건축비 : {global.ConvertDouble(item["건축비"])} 건물점유비율 : {global.ConvertDouble(item["건물점유비율"])} 건물상각년수 : {global.ConvertDouble(item["건물상각년수"])} 계산수식 : 건축비 * 건물점유비율 / 건물상각년수 / 100 / 12");
+                    item.Add("Value", global.ConvertDouble(item["건축비"]) * global.ConvertDouble(item["부대설비비율"]) / 100/ global.ConvertDouble(item["내용년수"]));
+                    item.Add("comment", $"{row.Cells["부대설비비율"].Value}_{row.Cells["건축비"].Value}_{row.Cells["내용년수"].Value}");
                 }
 
                 if (nullCheck) category.Add(item);

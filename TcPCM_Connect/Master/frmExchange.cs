@@ -46,7 +46,7 @@ namespace TcPCM_Connect
         {
             ExcelExport excel = new ExcelExport();
             string err = excel.ExportLocationGrid(dgv_ExchangeRate, "환율");
-            if (err != null) CustomMessageBox.RJMessageBox.Show($"Export 실패하였습니다\n{err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"Export 실패하였습니다\n{err}", "Exchange", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("Export 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -110,21 +110,20 @@ namespace TcPCM_Connect
         {
             dgv_ExchangeRate.Rows.Clear();
 
-            string columnName = "환율";
             string inputString = "", searchQuery = "";
             inputString = searchButton1.text;
 
             //전체 검색
-            searchQuery = $"SELECT MDExchangeRateDetails.DateValidFrom, MDExchangeRateDetails.StateId, MDExchangeRateHeaders.Name_LOC, Currencies.IsoCode, MDExchangeRateDetails.ExchangeRate" +
-                $" as name FROM MDExchangeRateHeaders" +
-                $" JOIN MDExchangeRateDetails ON MDExchangeRateHeaders.Id = MDExchangeRateDetails.ExchangeRateHeaderId" +
-                $" JOIN Currencies ON MDExchangeRateHeaders.CurrencyId = Currencies.Id";
+            searchQuery = $@"SELECT MDExchangeRateDetails.DateValidFrom, MDExchangeRateDetails.StateId, MDExchangeRateHeaders.Name_LOC, Currencies.IsoCode, MDExchangeRateDetails.ExchangeRate
+                             FROM MDExchangeRateHeaders
+                             JOIN MDExchangeRateDetails ON MDExchangeRateHeaders.Id = MDExchangeRateDetails.ExchangeRateHeaderId
+                             JOIN Currencies ON MDExchangeRateHeaders.CurrencyId = Currencies.Id";
 
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
-                searchQuery = searchQuery + $" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
-                            $" or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                searchQuery = searchQuery + $@" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                             or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'";
             }
 
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);

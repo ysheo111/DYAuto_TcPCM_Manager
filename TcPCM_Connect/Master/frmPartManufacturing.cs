@@ -112,13 +112,14 @@ namespace TcPCM_Connect
                         }
                         ratio = ratioFlot.ToString();
                     }
-                    string itemName = string.Join("_",new[] {row.Cells["기계명"].Value, row.Cells["톤수"].Value, row.Cells["메이커"].Value }
-                    .Select(obj => obj?.ToString())
-                    .Where(n => !string.IsNullOrEmpty(n)));
+                    string name = row.Cells["세부 공정명"].Value?.ToString().Trim();
+                    string itemName = string.Join("_",new[] {row.Cells["기계명"].Value, row.Cells["톤수"].Value, row.Cells["메이커"].Value }.Select(obj => obj?.ToString()).Where(n => !string.IsNullOrEmpty(n))).Trim();
+                    string sagName = row.Cells["업종"].Value?.ToString().Trim();
+                    string comment = row.Cells["comment"].Value?.ToString().Trim();
 
                     string insertQuery = $@"Insert into [PCI].[dbo].[Manufacturing]
                                             (PartId,Name,Machine,Category,Cycletime,Cavity,Quantity,Utilization,NumberOfWorkers,Comment)
-                                            Values ({partId},N'{row.Cells["세부 공정명"].Value}',N'{itemName}',N'{row.Cells["업종"].Value}',{global.ConvertDouble(row.Cells["Cycle time"].Value)},{global.ConvertDouble(row.Cells["Cavity"].Value)},{global.ConvertDouble(row.Cells["Q'ty"].Value)},{global.ConvertDouble(ratio)},{global.ConvertDouble(row.Cells["Number of workers"].Value)},N'{row.Cells["comment"].Value}')";
+                                            Values ({partId},N'{name}',N'{itemName}',N'{sagName}',{global.ConvertDouble(row.Cells["Cycle time"].Value)},{global.ConvertDouble(row.Cells["Cavity"].Value)},{global.ConvertDouble(row.Cells["Q'ty"].Value)},{global.ConvertDouble(ratio)},{global.ConvertDouble(row.Cells["Number of workers"].Value)},N'{comment}')";
                     err = global_DB.ScalarExecute(insertQuery, (int)global_DB.connDB.PCMDB);
                     if (!string.IsNullOrEmpty(err)) break;
                 }

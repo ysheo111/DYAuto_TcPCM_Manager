@@ -164,13 +164,13 @@ namespace TcPCM_Connect
             }
             else if (columnName == "공간 생산 비용")
             {
-                dgv_Category.Columns.Add("지역", "지역");
-                CurrencyAdd("통화");
                 ValidFromAdd("Valid From");
+                dgv_Category.Columns.Add("지역", "지역");
                 dgv_Category.Columns.Add("업종", "업종");
-                dgv_Category.Columns.Add("건물상각년수", "건물상각년수");
-                dgv_Category.Columns.Add("건물점유비율", "건물점유비율");
+                CurrencyAdd("통화");
+                dgv_Category.Columns.Add("부대설비비율", "부대설비비율");
                 dgv_Category.Columns.Add("건축비", "건축비");
+                dgv_Category.Columns.Add("내용년수", "내용년수");
             }
             else if (columnName == "전력단가")
             {
@@ -278,7 +278,13 @@ namespace TcPCM_Connect
             
             if(dgv_Category.Columns.Contains("Designation") && dgv_Category.Columns[e.ColumnIndex].Name != "Designation")
             {
-                if(dgv_Category.Columns[e.ColumnIndex].Name != "Designation-US")
+                //if(dgv_Category.Columns[e.ColumnIndex].Name != "Designation-US")
+                string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+                if (columnName == "업종")
+                {
+                    dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells["업종"].Value}";
+                }
+                else
                     dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
             }
             else if(dgv_Category.Columns[e.ColumnIndex].Name == "UOM Code")
@@ -298,7 +304,6 @@ namespace TcPCM_Connect
         {
             CustomMessageBox.RJMessageBox.Show(global.dgv_Category_DataError((DataGridView)sender, e), "DataError", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
-
 
         private void searchButton1_SearchButtonClick(object sender, EventArgs e)
         {
@@ -326,7 +331,6 @@ namespace TcPCM_Connect
             //전체 검색
             if (columnName == "지역")
                 searchQuery = $"SELECT UniqueKey,Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
-            //searchQuery = $"SELECT Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
             else if (columnName == "업종")
                 searchQuery = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
             else if (columnName == "단위")
@@ -390,6 +394,19 @@ namespace TcPCM_Connect
                             join Currencies ON COALESCE(A.CurrencyId, B.CurrencyId) = Currencies.Id
                             join BDSegments ON COALESCE(A.SegmentId, B.SegmentId) = BDSegments.Id";
             }
+            else if(columnName == "공간 생산 비용")
+            {
+                searchQuery = $@"select DateValidFrom,BDRegions.UniqueKey As region,BDSegments.UniqueKey,Currencies.IsoCode,Text_LOC AS comment from MDCostFactorDetails
+                                JOIN BDRegions ON RegionId = BDRegions.Id
+                                JOIN Currencies ON CurrencyId = Currencies.Id
+                                JOIN BDPlants ON PlantId = BDPlants.Id
+                                JOIN BDSegments on SegmentId = BDSegments.Id
+                                join MDCostFactorDetailComments on MDCostFactorDetails.Id = MDCostFactorDetailComments.ParentId
+                                where CostFactorHeaderId in
+                                (
+	                                select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ProductionSpaceCosts'
+                                )";
+            }
 
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
@@ -416,6 +433,13 @@ namespace TcPCM_Connect
                                                 or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
                                                 or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
+                else if(columnName == "공간 생산 비용")
+                {
+                    searchQuery = searchQuery + $@"And (CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                                or CAST(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                                or CAST(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                                or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
+                }
             }
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
             if (dataTable == null) return;
@@ -428,14 +452,18 @@ namespace TcPCM_Connect
                 {
                     string result = row[col].ToString();
                     result = NameSplit(result);
-                    //if (columnName == "전력단가" && double.TryParse(result, out double numResult))
-                    //{
-                    //    result = (double.Parse(result) * 3600 * 1000).ToString();
-                    //    //int dotIndex = result.IndexOf('.');
-                    //    //result = result.Substring(0, dotIndex + 3);
-                    //}
                     int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
-                    dgv_Category.Rows[dgv_Category.Rows.Count-2].Cells[count].Value = result;
+                    if (columnName == "공간 생산 비용" && col.ColumnName == "comment")
+                    {
+                        string[] splitResult = result.Split('_');
+                        dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells["부대설비비율"].Value = splitResult[0];
+                        dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells["건축비"].Value = splitResult[1];
+                        dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells["내용년수"].Value = splitResult[2];
+                    }
+                    else
+                    {
+                        dgv_Category.Rows[dgv_Category.Rows.Count-2].Cells[count].Value = result;
+                    }
                 }
             }
 

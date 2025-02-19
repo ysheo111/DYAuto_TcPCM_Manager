@@ -34,6 +34,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.roundBorderPanel2 = new TcPCM_Connect.RoundBorderPanel();
+            this.rjButton1 = new CustomControls.RJControls.RJButton();
             this.btn_ExcelCreate = new CustomControls.RJControls.RJButton();
             this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.btn_DBLoad = new CustomControls.RJControls.RJButton();
@@ -56,6 +57,7 @@
             this.roundBorderPanel2.BorderColor = System.Drawing.Color.Gainsboro;
             this.roundBorderPanel2.BorderRadius = 10;
             this.roundBorderPanel2.BorderSize = 1;
+            this.roundBorderPanel2.Controls.Add(this.rjButton1);
             this.roundBorderPanel2.Controls.Add(this.btn_ExcelCreate);
             this.roundBorderPanel2.Controls.Add(this.searchButton1);
             this.roundBorderPanel2.Controls.Add(this.btn_DBLoad);
@@ -72,9 +74,32 @@
             this.roundBorderPanel2.Size = new System.Drawing.Size(1050, 615);
             this.roundBorderPanel2.TabIndex = 62;
             // 
+            // rjButton1
+            // 
+            this.rjButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.rjButton1.BackColor = System.Drawing.Color.White;
+            this.rjButton1.BackgroundColor = System.Drawing.Color.White;
+            this.rjButton1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.rjButton1.BorderRadius = 5;
+            this.rjButton1.BorderSize = 1;
+            this.rjButton1.FlatAppearance.BorderSize = 0;
+            this.rjButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.rjButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rjButton1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.rjButton1.Location = new System.Drawing.Point(939, 68);
+            this.rjButton1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.rjButton1.Name = "rjButton1";
+            this.rjButton1.Size = new System.Drawing.Size(83, 39);
+            this.rjButton1.TabIndex = 68;
+            this.rjButton1.Text = "SPRUE";
+            this.rjButton1.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.rjButton1.UseVisualStyleBackColor = false;
+            this.rjButton1.Click += new System.EventHandler(this.rjButton1_Click);
+            // 
             // btn_ExcelCreate
             // 
             this.btn_ExcelCreate.AllowDrop = true;
+            this.btn_ExcelCreate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_ExcelCreate.BackColor = System.Drawing.Color.White;
             this.btn_ExcelCreate.BackgroundColor = System.Drawing.Color.White;
             this.btn_ExcelCreate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
@@ -84,7 +109,7 @@
             this.btn_ExcelCreate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_ExcelCreate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_ExcelCreate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_ExcelCreate.Location = new System.Drawing.Point(900, 68);
+            this.btn_ExcelCreate.Location = new System.Drawing.Point(816, 68);
             this.btn_ExcelCreate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_ExcelCreate.Name = "btn_ExcelCreate";
             this.btn_ExcelCreate.Size = new System.Drawing.Size(119, 39);
@@ -111,6 +136,7 @@
             // btn_DBLoad
             // 
             this.btn_DBLoad.AllowDrop = true;
+            this.btn_DBLoad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_DBLoad.BackColor = System.Drawing.Color.White;
             this.btn_DBLoad.BackgroundColor = System.Drawing.Color.White;
             this.btn_DBLoad.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
@@ -120,7 +146,7 @@
             this.btn_DBLoad.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_DBLoad.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_DBLoad.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_DBLoad.Location = new System.Drawing.Point(650, 68);
+            this.btn_DBLoad.Location = new System.Drawing.Point(566, 68);
             this.btn_DBLoad.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_DBLoad.Name = "btn_DBLoad";
             this.btn_DBLoad.Size = new System.Drawing.Size(119, 39);
@@ -146,20 +172,20 @@
             // cb_Classification
             // 
             this.cb_Classification.BackColor = System.Drawing.Color.White;
-            this.cb_Classification.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(61)))), ((int)(((byte)(92)))));
+            this.cb_Classification.BorderColor = System.Drawing.Color.DimGray;
             this.cb_Classification.BorderSize = 1;
             this.cb_Classification.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
             this.cb_Classification.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.cb_Classification.ForeColor = System.Drawing.Color.DimGray;
-            this.cb_Classification.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(61)))), ((int)(((byte)(92)))));
+            this.cb_Classification.IconColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Items.AddRange(new object[] {
             "사출",
             "다이캐스팅",
             "프레스",
             "기타",
             "원소재 단가",
-            "단가 관리 리스트"});
-            this.cb_Classification.ListBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
+            "단가 관리"});
+            this.cb_Classification.ListBackColor = System.Drawing.Color.White;
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Location = new System.Drawing.Point(105, 21);
             this.cb_Classification.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -195,6 +221,7 @@
             // btn_Save
             // 
             this.btn_Save.AllowDrop = true;
+            this.btn_Save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Save.BackColor = System.Drawing.Color.White;
             this.btn_Save.BackgroundColor = System.Drawing.Color.White;
             this.btn_Save.BorderColor = System.Drawing.Color.DodgerBlue;
@@ -283,6 +310,7 @@
             // btn_Create
             // 
             this.btn_Create.AllowDrop = true;
+            this.btn_Create.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Create.BackColor = System.Drawing.Color.White;
             this.btn_Create.BackgroundColor = System.Drawing.Color.White;
             this.btn_Create.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
@@ -292,7 +320,7 @@
             this.btn_Create.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Create.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Create.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Create.Location = new System.Drawing.Point(775, 68);
+            this.btn_Create.Location = new System.Drawing.Point(691, 68);
             this.btn_Create.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Create.Name = "btn_Create";
             this.btn_Create.Size = new System.Drawing.Size(119, 39);
@@ -331,5 +359,6 @@
         private CustomControls.RJControls.RJButton btn_DBLoad;
         private Controller.SearchButton searchButton1;
         private CustomControls.RJControls.RJButton btn_ExcelCreate;
+        private CustomControls.RJControls.RJButton rjButton1;
     }
 }
