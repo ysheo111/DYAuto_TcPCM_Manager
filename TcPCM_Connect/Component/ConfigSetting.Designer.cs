@@ -44,6 +44,8 @@
             this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.GUID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btn_Load = new CustomControls.RJControls.RJButton();
+            this.btn_Excel = new CustomControls.RJControls.RJButton();
             this.panelTitleBar.SuspendLayout();
             this.panelBody.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Config)).BeginInit();
@@ -65,11 +67,11 @@
             // labelCaption
             // 
             this.labelCaption.AutoSize = true;
-            this.labelCaption.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.labelCaption.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.labelCaption.ForeColor = System.Drawing.Color.White;
             this.labelCaption.Location = new System.Drawing.Point(11, 14);
             this.labelCaption.Name = "labelCaption";
-            this.labelCaption.Size = new System.Drawing.Size(147, 19);
+            this.labelCaption.Size = new System.Drawing.Size(137, 20);
             this.labelCaption.TabIndex = 4;
             this.labelCaption.Text = "Configuration 설정";
             // 
@@ -79,7 +81,7 @@
             this.btnClose.FlatAppearance.BorderSize = 0;
             this.btnClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(79)))), ((int)(((byte)(95)))));
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnClose.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClose.ForeColor = System.Drawing.Color.White;
             this.btnClose.Location = new System.Drawing.Point(626, 0);
             this.btnClose.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -93,6 +95,8 @@
             // panelBody
             // 
             this.panelBody.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panelBody.Controls.Add(this.btn_Load);
+            this.panelBody.Controls.Add(this.btn_Excel);
             this.panelBody.Controls.Add(this.btn_Cancel);
             this.panelBody.Controls.Add(this.btn_Create);
             this.panelBody.Controls.Add(this.dgv_Config);
@@ -115,7 +119,7 @@
             this.btn_Cancel.BorderSize = 1;
             this.btn_Cancel.FlatAppearance.BorderSize = 0;
             this.btn_Cancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Cancel.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.btn_Cancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_Cancel.ForeColor = System.Drawing.Color.Crimson;
             this.btn_Cancel.Location = new System.Drawing.Point(589, 343);
             this.btn_Cancel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -138,7 +142,7 @@
             this.btn_Create.BorderSize = 1;
             this.btn_Create.FlatAppearance.BorderSize = 0;
             this.btn_Create.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Create.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.btn_Create.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_Create.ForeColor = System.Drawing.Color.DodgerBlue;
             this.btn_Create.Location = new System.Drawing.Point(512, 343);
             this.btn_Create.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -166,7 +170,7 @@
             this.dgv_Config.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 9F);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Menu;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
@@ -179,7 +183,7 @@
             this.GUID});
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle4.ForeColor = System.Drawing.Color.Black;
             dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
             dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.ButtonHighlight;
@@ -193,7 +197,7 @@
             this.dgv_Config.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle5.ForeColor = System.Drawing.Color.PaleVioletRed;
             dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
@@ -202,14 +206,14 @@
             this.dgv_Config.RowHeadersVisible = false;
             this.dgv_Config.RowHeadersWidth = 32;
             dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
             dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.White;
             this.dgv_Config.RowsDefaultCellStyle = dataGridViewCellStyle6;
             this.dgv_Config.RowTemplate.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dgv_Config.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.White;
-            this.dgv_Config.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.dgv_Config.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.dgv_Config.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.dgv_Config.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.dgv_Config.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
@@ -239,6 +243,52 @@
             this.GUID.MinimumWidth = 6;
             this.GUID.Name = "GUID";
             this.GUID.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // btn_Load
+            // 
+            this.btn_Load.AllowDrop = true;
+            this.btn_Load.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_Load.BackColor = System.Drawing.Color.White;
+            this.btn_Load.BackgroundColor = System.Drawing.Color.White;
+            this.btn_Load.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Load.BorderRadius = 5;
+            this.btn_Load.BorderSize = 1;
+            this.btn_Load.FlatAppearance.BorderSize = 0;
+            this.btn_Load.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_Load.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_Load.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Load.Location = new System.Drawing.Point(300, 343);
+            this.btn_Load.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_Load.Name = "btn_Load";
+            this.btn_Load.Size = new System.Drawing.Size(100, 39);
+            this.btn_Load.TabIndex = 67;
+            this.btn_Load.Text = "불러오기";
+            this.btn_Load.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Load.UseVisualStyleBackColor = false;
+            this.btn_Load.Visible = false;
+            // 
+            // btn_Excel
+            // 
+            this.btn_Excel.AllowDrop = true;
+            this.btn_Excel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_Excel.BackColor = System.Drawing.Color.White;
+            this.btn_Excel.BackgroundColor = System.Drawing.Color.White;
+            this.btn_Excel.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Excel.BorderRadius = 5;
+            this.btn_Excel.BorderSize = 1;
+            this.btn_Excel.FlatAppearance.BorderSize = 0;
+            this.btn_Excel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_Excel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_Excel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Excel.Location = new System.Drawing.Point(406, 343);
+            this.btn_Excel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_Excel.Name = "btn_Excel";
+            this.btn_Excel.Size = new System.Drawing.Size(100, 39);
+            this.btn_Excel.TabIndex = 66;
+            this.btn_Excel.Text = "엑셀 Import";
+            this.btn_Excel.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Excel.UseVisualStyleBackColor = false;
+            this.btn_Excel.Visible = false;
             // 
             // ConfigSetting
             // 
@@ -270,5 +320,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Id;
         private System.Windows.Forms.DataGridViewTextBoxColumn Name;
         private System.Windows.Forms.DataGridViewTextBoxColumn GUID;
+        private CustomControls.RJControls.RJButton btn_Load;
+        private CustomControls.RJControls.RJButton btn_Excel;
     }
 }

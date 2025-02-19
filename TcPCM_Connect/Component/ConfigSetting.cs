@@ -16,6 +16,8 @@ namespace TcPCM_Connect
     public partial class ConfigSetting : Form
     {
         public string className = "";
+        public string buttonName = "";
+
         public ConfigSetting()
         {
             InitializeComponent();
@@ -51,15 +53,26 @@ namespace TcPCM_Connect
 
         private void LoadConfiguration()
         {
-            string query = $@"Select Id, Concat(Class, '_', Name) as Name, GUID From Configuration Where Class = '{className}'";
-
-            DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
-
-            if (dataTable == null) return;
             dgv_Config.Columns.Clear();
-            dgv_Config.DataSource = dataTable;
-            dgv_Config.Columns["Id"].Visible = false;
-            dgv_Config.Columns["Name"].ReadOnly = true;
+            if(buttonName == "Sprue")
+            {
+                dgv_Config.Columns.Add("업종", "업종");
+                dgv_Config.Columns.Add("반영율", "반영율");
+
+                btn_Load.Visible = true;
+                btn_Excel.Visible = true;
+                dgv_Config.AllowUserToAddRows = true;
+            }
+            else
+            {
+                string query = $@"Select Id, Concat(Class, '_', Name) as Name, GUID From Configuration Where Class = '{className}'";
+                DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
+                if (dataTable == null) return;
+
+                dgv_Config.DataSource = dataTable;
+                dgv_Config.Columns["Id"].Visible = false;
+                dgv_Config.Columns["Name"].ReadOnly = true;
+            }
             dgv_Config.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 

@@ -443,7 +443,7 @@ namespace TcPCM_Connect_Global
                                         else
                                             dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue;
                                     }
-                                    else if (worksheetName == "단가 관리 리스트" && col.Name == "통화")
+                                    else if (worksheetName == "단가 관리" && col.Name == "통화")
                                     {
                                         dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue.Trim();
                                     }

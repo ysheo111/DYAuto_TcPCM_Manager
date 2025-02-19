@@ -39,7 +39,7 @@ namespace TcPCM_Connect_Global
             }
             else if(type == "원소재 단가")
                 materialType = MasterData.Material.price;
-            else if (type == "단가 관리 리스트")
+            else if (type == "단가 관리")
                 materialType = MasterData.Material.management;
             else
                 materialType = MasterData.Material.material;
@@ -193,7 +193,7 @@ namespace TcPCM_Connect_Global
                     }
                 }
             }
-            else if (type == "단가 관리 리스트")
+            else if (type == "단가 관리")
             {
                 postData["ConfigurationGuid"] = global_iniLoad.GetConfig("Material", "단가_Header");
                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);

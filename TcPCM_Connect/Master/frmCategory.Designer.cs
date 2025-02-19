@@ -73,6 +73,7 @@
             // btn_ExcelCreate
             // 
             this.btn_ExcelCreate.AllowDrop = true;
+            this.btn_ExcelCreate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_ExcelCreate.BackColor = System.Drawing.Color.White;
             this.btn_ExcelCreate.BackgroundColor = System.Drawing.Color.White;
             this.btn_ExcelCreate.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
@@ -172,6 +173,7 @@
             // btn_Save
             // 
             this.btn_Save.AllowDrop = true;
+            this.btn_Save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Save.BackColor = System.Drawing.Color.White;
             this.btn_Save.BackgroundColor = System.Drawing.Color.White;
             this.btn_Save.BorderColor = System.Drawing.Color.DodgerBlue;
@@ -261,6 +263,7 @@
             // btn_Create
             // 
             this.btn_Create.AllowDrop = true;
+            this.btn_Create.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Create.BackColor = System.Drawing.Color.White;
             this.btn_Create.BackgroundColor = System.Drawing.Color.White;
             this.btn_Create.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));

@@ -34,6 +34,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.roundBorderPanel2 = new TcPCM_Connect.RoundBorderPanel();
+            this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.btn_Shift = new CustomControls.RJControls.RJButton();
             this.label2 = new System.Windows.Forms.Label();
             this.cb_Classification = new CustomControls.RJControls.RJComboBox();
@@ -41,7 +42,6 @@
             this.btn_Save = new CustomControls.RJControls.RJButton();
             this.dgv_Machine = new System.Windows.Forms.DataGridView();
             this.btn_Create = new CustomControls.RJControls.RJButton();
-            this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.roundBorderPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Machine)).BeginInit();
             this.SuspendLayout();
@@ -69,6 +69,20 @@
             this.roundBorderPanel2.Name = "roundBorderPanel2";
             this.roundBorderPanel2.Size = new System.Drawing.Size(1050, 615);
             this.roundBorderPanel2.TabIndex = 62;
+            // 
+            // searchButton1
+            // 
+            this.searchButton1.BackColor = System.Drawing.Color.Transparent;
+            this.searchButton1.DetailSearchButtonBackColor = System.Drawing.Color.White;
+            this.searchButton1.Location = new System.Drawing.Point(247, 21);
+            this.searchButton1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.searchButton1.Name = "searchButton1";
+            this.searchButton1.PanelBackColor = System.Drawing.Color.Transparent;
+            this.searchButton1.Size = new System.Drawing.Size(327, 38);
+            this.searchButton1.TabIndex = 68;
+            this.searchButton1.text = "";
+            this.searchButton1.TextBoxBackColor = System.Drawing.Color.WhiteSmoke;
+            this.searchButton1.SearchButtonClick += new System.EventHandler(this.searchButton1_SearchButtonClick);
             // 
             // btn_Shift
             // 
@@ -107,15 +121,15 @@
             // cb_Classification
             // 
             this.cb_Classification.BackColor = System.Drawing.Color.White;
-            this.cb_Classification.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(61)))), ((int)(((byte)(92)))));
+            this.cb_Classification.BorderColor = System.Drawing.Color.DimGray;
             this.cb_Classification.BorderSize = 1;
             this.cb_Classification.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
             this.cb_Classification.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.cb_Classification.ForeColor = System.Drawing.Color.DimGray;
-            this.cb_Classification.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(61)))), ((int)(((byte)(92)))));
+            this.cb_Classification.IconColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Items.AddRange(new object[] {
             "설비"});
-            this.cb_Classification.ListBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
+            this.cb_Classification.ListBackColor = System.Drawing.Color.White;
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Location = new System.Drawing.Point(105, 21);
             this.cb_Classification.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -151,6 +165,7 @@
             // btn_Save
             // 
             this.btn_Save.AllowDrop = true;
+            this.btn_Save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Save.BackColor = System.Drawing.Color.White;
             this.btn_Save.BackgroundColor = System.Drawing.Color.White;
             this.btn_Save.BorderColor = System.Drawing.Color.DodgerBlue;
@@ -236,6 +251,7 @@
             // btn_Create
             // 
             this.btn_Create.AllowDrop = true;
+            this.btn_Create.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_Create.BackColor = System.Drawing.Color.White;
             this.btn_Create.BackgroundColor = System.Drawing.Color.White;
             this.btn_Create.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
@@ -254,20 +270,6 @@
             this.btn_Create.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
             this.btn_Create.UseVisualStyleBackColor = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
-            // 
-            // searchButton1
-            // 
-            this.searchButton1.BackColor = System.Drawing.Color.Transparent;
-            this.searchButton1.DetailSearchButtonBackColor = System.Drawing.Color.White;
-            this.searchButton1.Location = new System.Drawing.Point(247, 21);
-            this.searchButton1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.searchButton1.Name = "searchButton1";
-            this.searchButton1.PanelBackColor = System.Drawing.Color.Transparent;
-            this.searchButton1.Size = new System.Drawing.Size(327, 38);
-            this.searchButton1.TabIndex = 68;
-            this.searchButton1.text = "";
-            this.searchButton1.TextBoxBackColor = System.Drawing.Color.WhiteSmoke;
-            this.searchButton1.SearchButtonClick += new System.EventHandler(this.searchButton1_SearchButtonClick);
             // 
             // frmMachine
             // 

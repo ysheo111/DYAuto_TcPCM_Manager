@@ -348,6 +348,12 @@ namespace TcPCM_Connect
             config.className = "Material' or Class = 'Substance";
             config.Show();
         }
+        private void rjButton1_Click(object sender, EventArgs e)
+        {
+            ConfigSetting config = new ConfigSetting();
+            config.buttonName = "Sprue";
+            config.Show();
+        }
 
         private void cb_Classification_OnSelectedIndexChanged(object sender, EventArgs e)
         {
@@ -366,7 +372,7 @@ namespace TcPCM_Connect
                 Material(MasterData.Material.price); //PriceColumn();
                 btn_DBLoad.Visible = true;
             }
-            else if (combo.SelectedItem?.ToString() == "단가 관리 리스트")
+            else if (combo.SelectedItem?.ToString() == "단가 관리")
                 Material(MasterData.Material.management);
             else
                 Material(MasterData.Material.material);
