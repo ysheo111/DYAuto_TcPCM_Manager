@@ -16,6 +16,7 @@ namespace TcPCM_Connect
     public partial class Select : Form
     {
         public string className = "";
+        public string query = "";
         public Select()
         {
             InitializeComponent();
@@ -27,7 +28,13 @@ namespace TcPCM_Connect
 
         private void btn_Create_Click(object sender, EventArgs e)
         {
-            //string query = "";
+            //if (className == "Material")
+            //    query = " AND";
+            //else
+            //    query = "Where";
+            query += $" DateValidFrom BETWEEN '{rjDatePicker1.Value.ToString("yyyy-MM-dd")}' AND '{rjDatePicker2.Value.ToString("yyyy-MM-dd")}'";
+            this.DialogResult = DialogResult.OK;
+            this.Close();
 
             //foreach (DataGridViewRow row in dgv_Config.Rows)
             //{

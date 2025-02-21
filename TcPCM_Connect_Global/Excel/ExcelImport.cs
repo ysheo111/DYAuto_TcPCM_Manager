@@ -246,24 +246,29 @@ namespace TcPCM_Connect_Global
                             else if (key == "segmant")
                                 key = "업종";
 
-                            if (worksheetName == "Machine" && key == "OTHER UTILITY")
+                            if (worksheetName == "Machine")
                             {
-                                key = "기타비용";
-                                keys[col + 1] = "내용년수";
+                                if (key == "OTHER UTILITY")
+                                {
+                                    key = "기타비용";
+                                    keys[col + 1] = "내용년수";
+                                }
+                                else if (key.Contains("설비가") || key.Contains("사양") || key.Contains("기계상각년수") || key.Contains("설치면적") || key.Contains("전력"))
+                                {
+                                    int index = key.IndexOf('(');
+                                    if (index != -1)
+                                        key = key.Substring(0, index).Trim();
+                                }
                             }
-
-                            if (worksheetName == "재료관리비")
+                            else if (worksheetName == "재료관리비")
                             {
                                 if (key.Contains("재료") && key.Contains("Loss") && key.Contains("율"))
                                     key = "재료 관리비율";
                             }
-                            if (worksheetName == "Machine" && (key.Contains("설비가") || key.Contains("사양") || key.Contains("기계상각년수") || key.Contains("설치면적") || key.Contains("전력")))
+                            else if (worksheetName == "Sprue" && key == "1차 기준")
                             {
-                                int index = key.IndexOf('(');
-                                if(index != -1)
-                                    key = key.Substring(0,index).Trim();
+                                key = "반영율";
                             }
-
                             if (!keys.Any(item => item == key))// && keys[col] == null)
                                 keys[col] = key;
                             //keys[col] = key;
@@ -329,7 +334,7 @@ namespace TcPCM_Connect_Global
                                     else
                                         dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue;
 
-                                    if (new List<string>() { "지역", "공정", "업종", "설비명", "설비구분", "통화", "Valid From", "구분자", "재질명", "소재명", "메이커", "구분", "비중", "비중 단위", "가격 단위", "이름", "ISO", "UOM Code", "UOM 명", "Plant", "GRADE", "단위", "사양 정보", "업체명", "품번", "대표품명", "기계명", "톤수", "메이커", "세부 공정명", "comment", "원재료 단위", "스크랩 단위", "참고품명" }.Contains(col.Name)) continue;
+                                    if (new List<string>() { "지역", "공정", "업종", "설비명", "설비구분", "통화", "Valid From", "구분자", "재질명", "소재명", "메이커", "구분", "비중", "비중 단위", "가격 단위", "이름", "ISO", "UOM Code", "UOM 명", "Plant", "GRADE", "단위", "사양 정보", "업체명", "품번", "대표품명", "기계명", "톤수", "메이커", "세부 공정명", "comment", "원재료 단위", "스크랩 단위", "참고품명", "type" }.Contains(col.Name)) continue;
 
                                     if ((((col.Name.Contains("율") || col.Name.Contains("률")) && !col.Name.Contains("임률") && !col.Name.Contains("환율"))) && !col.Name.Contains("수선비율"))
                                     {

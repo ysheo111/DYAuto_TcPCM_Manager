@@ -38,14 +38,14 @@
             this.labelCaption = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.panelBody = new System.Windows.Forms.Panel();
+            this.btn_Load = new CustomControls.RJControls.RJButton();
+            this.btn_Excel = new CustomControls.RJControls.RJButton();
             this.btn_Cancel = new CustomControls.RJControls.RJButton();
             this.btn_Create = new CustomControls.RJControls.RJButton();
             this.dgv_Config = new System.Windows.Forms.DataGridView();
             this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.GUID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btn_Load = new CustomControls.RJControls.RJButton();
-            this.btn_Excel = new CustomControls.RJControls.RJButton();
             this.panelTitleBar.SuspendLayout();
             this.panelBody.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Config)).BeginInit();
@@ -107,6 +107,54 @@
             this.panelBody.Padding = new System.Windows.Forms.Padding(14, 11, 0, 0);
             this.panelBody.Size = new System.Drawing.Size(680, 395);
             this.panelBody.TabIndex = 5;
+            // 
+            // btn_Load
+            // 
+            this.btn_Load.AllowDrop = true;
+            this.btn_Load.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_Load.BackColor = System.Drawing.Color.White;
+            this.btn_Load.BackgroundColor = System.Drawing.Color.White;
+            this.btn_Load.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Load.BorderRadius = 5;
+            this.btn_Load.BorderSize = 1;
+            this.btn_Load.FlatAppearance.BorderSize = 0;
+            this.btn_Load.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_Load.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_Load.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Load.Location = new System.Drawing.Point(300, 343);
+            this.btn_Load.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_Load.Name = "btn_Load";
+            this.btn_Load.Size = new System.Drawing.Size(100, 39);
+            this.btn_Load.TabIndex = 67;
+            this.btn_Load.Text = "불러오기";
+            this.btn_Load.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Load.UseVisualStyleBackColor = false;
+            this.btn_Load.Visible = false;
+            this.btn_Load.Click += new System.EventHandler(this.btn_Load_Click);
+            // 
+            // btn_Excel
+            // 
+            this.btn_Excel.AllowDrop = true;
+            this.btn_Excel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_Excel.BackColor = System.Drawing.Color.White;
+            this.btn_Excel.BackgroundColor = System.Drawing.Color.White;
+            this.btn_Excel.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Excel.BorderRadius = 5;
+            this.btn_Excel.BorderSize = 1;
+            this.btn_Excel.FlatAppearance.BorderSize = 0;
+            this.btn_Excel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_Excel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_Excel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Excel.Location = new System.Drawing.Point(406, 343);
+            this.btn_Excel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_Excel.Name = "btn_Excel";
+            this.btn_Excel.Size = new System.Drawing.Size(100, 39);
+            this.btn_Excel.TabIndex = 66;
+            this.btn_Excel.Text = "엑셀 Import";
+            this.btn_Excel.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
+            this.btn_Excel.UseVisualStyleBackColor = false;
+            this.btn_Excel.Visible = false;
+            this.btn_Excel.Click += new System.EventHandler(this.btn_Excel_Click);
             // 
             // btn_Cancel
             // 
@@ -244,52 +292,6 @@
             this.GUID.Name = "GUID";
             this.GUID.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
-            // btn_Load
-            // 
-            this.btn_Load.AllowDrop = true;
-            this.btn_Load.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Load.BackColor = System.Drawing.Color.White;
-            this.btn_Load.BackgroundColor = System.Drawing.Color.White;
-            this.btn_Load.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Load.BorderRadius = 5;
-            this.btn_Load.BorderSize = 1;
-            this.btn_Load.FlatAppearance.BorderSize = 0;
-            this.btn_Load.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Load.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Load.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Load.Location = new System.Drawing.Point(300, 343);
-            this.btn_Load.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btn_Load.Name = "btn_Load";
-            this.btn_Load.Size = new System.Drawing.Size(100, 39);
-            this.btn_Load.TabIndex = 67;
-            this.btn_Load.Text = "불러오기";
-            this.btn_Load.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Load.UseVisualStyleBackColor = false;
-            this.btn_Load.Visible = false;
-            // 
-            // btn_Excel
-            // 
-            this.btn_Excel.AllowDrop = true;
-            this.btn_Excel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Excel.BackColor = System.Drawing.Color.White;
-            this.btn_Excel.BackgroundColor = System.Drawing.Color.White;
-            this.btn_Excel.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Excel.BorderRadius = 5;
-            this.btn_Excel.BorderSize = 1;
-            this.btn_Excel.FlatAppearance.BorderSize = 0;
-            this.btn_Excel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Excel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Excel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Excel.Location = new System.Drawing.Point(406, 343);
-            this.btn_Excel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btn_Excel.Name = "btn_Excel";
-            this.btn_Excel.Size = new System.Drawing.Size(100, 39);
-            this.btn_Excel.TabIndex = 66;
-            this.btn_Excel.Text = "엑셀 Import";
-            this.btn_Excel.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Excel.UseVisualStyleBackColor = false;
-            this.btn_Excel.Visible = false;
-            // 
             // ConfigSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -317,10 +319,10 @@
         private System.Windows.Forms.DataGridView dgv_Config;
         private CustomControls.RJControls.RJButton btn_Create;
         private CustomControls.RJControls.RJButton btn_Cancel;
+        private CustomControls.RJControls.RJButton btn_Load;
+        private CustomControls.RJControls.RJButton btn_Excel;
         private System.Windows.Forms.DataGridViewTextBoxColumn Id;
         private System.Windows.Forms.DataGridViewTextBoxColumn Name;
         private System.Windows.Forms.DataGridViewTextBoxColumn GUID;
-        private CustomControls.RJControls.RJButton btn_Load;
-        private CustomControls.RJControls.RJButton btn_Excel;
     }
 }

@@ -132,6 +132,7 @@
             this.searchButton1.text = "";
             this.searchButton1.TextBoxBackColor = System.Drawing.Color.WhiteSmoke;
             this.searchButton1.SearchButtonClick += new System.EventHandler(this.searchButton1_SearchButtonClick);
+            this.searchButton1.DetailSearchButtonClick += new System.EventHandler(this.searchButton1_DetailSearchButtonClick);
             // 
             // btn_DBLoad
             // 
@@ -184,7 +185,8 @@
             "프레스",
             "기타",
             "원소재 단가",
-            "단가 관리"});
+            "단가 관리",
+            "마그넷 와이어"});
             this.cb_Classification.ListBackColor = System.Drawing.Color.White;
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Location = new System.Drawing.Point(105, 21);
