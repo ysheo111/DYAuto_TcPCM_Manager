@@ -83,10 +83,10 @@
             this.btn_ExcelCreate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_ExcelCreate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_ExcelCreate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_ExcelCreate.Location = new System.Drawing.Point(769, 23);
+            this.btn_ExcelCreate.Location = new System.Drawing.Point(932, 70);
             this.btn_ExcelCreate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_ExcelCreate.Name = "btn_ExcelCreate";
-            this.btn_ExcelCreate.Size = new System.Drawing.Size(99, 39);
+            this.btn_ExcelCreate.Size = new System.Drawing.Size(112, 39);
             this.btn_ExcelCreate.TabIndex = 66;
             this.btn_ExcelCreate.Text = "엑셀 Export";
             this.btn_ExcelCreate.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
@@ -97,11 +97,11 @@
             // 
             this.searchButton1.BackColor = System.Drawing.Color.Transparent;
             this.searchButton1.DetailSearchButtonBackColor = System.Drawing.Color.White;
-            this.searchButton1.Location = new System.Drawing.Point(209, 24);
+            this.searchButton1.Location = new System.Drawing.Point(255, 24);
             this.searchButton1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.searchButton1.Name = "searchButton1";
             this.searchButton1.PanelBackColor = System.Drawing.Color.Transparent;
-            this.searchButton1.Size = new System.Drawing.Size(389, 38);
+            this.searchButton1.Size = new System.Drawing.Size(517, 38);
             this.searchButton1.TabIndex = 65;
             this.searchButton1.text = "";
             this.searchButton1.TextBoxBackColor = System.Drawing.Color.WhiteSmoke;
@@ -114,7 +114,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.label2.ForeColor = System.Drawing.Color.DimGray;
-            this.label2.Location = new System.Drawing.Point(15, 34);
+            this.label2.Location = new System.Drawing.Point(35, 34);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(46, 18);
             this.label2.TabIndex = 64;
@@ -139,7 +139,7 @@
             "단위"});
             this.cb_Classification.ListBackColor = System.Drawing.Color.White;
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;
-            this.cb_Classification.Location = new System.Drawing.Point(67, 24);
+            this.cb_Classification.Location = new System.Drawing.Point(87, 24);
             this.cb_Classification.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cb_Classification.Name = "cb_Classification";
             this.cb_Classification.Padding = new System.Windows.Forms.Padding(1);
@@ -160,7 +160,7 @@
             this.btn_Configuration.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Configuration.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_Configuration.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.btn_Configuration.Location = new System.Drawing.Point(878, 23);
+            this.btn_Configuration.Location = new System.Drawing.Point(878, 24);
             this.btn_Configuration.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Configuration.Name = "btn_Configuration";
             this.btn_Configuration.Size = new System.Drawing.Size(166, 39);
@@ -183,10 +183,10 @@
             this.btn_Save.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Save.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_Save.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.btn_Save.Location = new System.Drawing.Point(603, 24);
+            this.btn_Save.Location = new System.Drawing.Point(814, 24);
             this.btn_Save.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Save.Name = "btn_Save";
-            this.btn_Save.Size = new System.Drawing.Size(55, 39);
+            this.btn_Save.Size = new System.Drawing.Size(58, 39);
             this.btn_Save.TabIndex = 59;
             this.btn_Save.Text = "저장";
             this.btn_Save.TextColor = System.Drawing.Color.DodgerBlue;
@@ -227,7 +227,7 @@
             this.dgv_Category.DefaultCellStyle = dataGridViewCellStyle3;
             this.dgv_Category.EnableHeadersVisualStyles = false;
             this.dgv_Category.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            this.dgv_Category.Location = new System.Drawing.Point(26, 78);
+            this.dgv_Category.Location = new System.Drawing.Point(38, 117);
             this.dgv_Category.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dgv_Category.Name = "dgv_Category";
             this.dgv_Category.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
@@ -273,10 +273,10 @@
             this.btn_Create.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Create.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_Create.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Create.Location = new System.Drawing.Point(664, 23);
+            this.btn_Create.Location = new System.Drawing.Point(814, 70);
             this.btn_Create.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Create.Name = "btn_Create";
-            this.btn_Create.Size = new System.Drawing.Size(99, 39);
+            this.btn_Create.Size = new System.Drawing.Size(112, 39);
             this.btn_Create.TabIndex = 58;
             this.btn_Create.Text = "엑셀 Import";
             this.btn_Create.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));

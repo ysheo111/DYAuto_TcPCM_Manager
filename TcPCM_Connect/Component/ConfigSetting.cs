@@ -33,11 +33,21 @@ namespace TcPCM_Connect
 
             foreach (DataGridViewRow row in dgv_Config.Rows)
             {
-                if (row.Cells["Name"].Value == null || row.Cells["GUID"].Value==null) continue;
-                query += $@"Update Configuration 
-                    Set Name=N'{row.Cells["Name"].Value.ToString().Replace(row.Cells["Name"].Value.ToString().Split('_')[0]+"_","")}',GUID='{row.Cells["GUID"].Value}'
-                    Where ID={row.Cells["Id"].Value};
-                    ";
+                if (buttonName == "Sprue")
+                {
+                    if (row.Cells["업종"].Value == null) continue;
+                    double value = 0;
+                    if ((double)row.Cells["반영율"].Value > 1)
+                        value = (double)row.Cells["반영율"].Value * 0.01;
+                    query = $@"Update Sprue Set 반영율 = '{value}' Where 업종 = N'{row.Cells["업종"].Value}' ";
+                }
+                else
+                {
+                    if (row.Cells["Name"].Value == null || row.Cells["GUID"].Value==null) continue;
+                    query += $@"Update Configuration 
+                        Set Name=N'{row.Cells["Name"].Value.ToString().Replace(row.Cells["Name"].Value.ToString().Split('_')[0]+"_","")}',GUID='{row.Cells["GUID"].Value}'
+                        Where ID={row.Cells["Id"].Value}; ";
+                }
             }
             global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
             LoadConfiguration();
@@ -56,12 +66,27 @@ namespace TcPCM_Connect
             dgv_Config.Columns.Clear();
             if(buttonName == "Sprue")
             {
-                dgv_Config.Columns.Add("업종", "업종");
-                dgv_Config.Columns.Add("반영율", "반영율");
+                //string query = $@"SELECT DISTINCT UniqueKey as '업종' FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
+                string query = $@"SELECT 업종,반영율*100 as 반영율 FROM [PCI].[dbo].[Sprue]";
+
+                DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
+                if (dataTable == null) return;
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    foreach (DataColumn col in dataTable.Columns)
+                    {
+                        row[col] = row[col]?.ToString().Trim();
+                    }
+                }
+                dgv_Config.DataSource = dataTable;
+                //dgv_Config.Columns.Add("업종", "업종");
+                dgv_Config.Columns["업종"].ReadOnly = true;
+                //dgv_Config.Columns.Add("반영율", "반영율");
 
                 btn_Load.Visible = true;
                 btn_Excel.Visible = true;
-                dgv_Config.AllowUserToAddRows = true;
+                dgv_Config.AllowUserToAddRows = false;
             }
             else
             {
@@ -88,5 +113,42 @@ namespace TcPCM_Connect
         }
         #endregion
 
+        private void btn_Excel_Click(object sender, EventArgs e)
+        {
+            dgv_Config.DataSource = null;
+            dgv_Config.Columns.Clear();
+
+            dgv_Config.Columns.Add("업종", "업종");
+            dgv_Config.Columns["업종"].ReadOnly = true;
+            dgv_Config.Columns.Add("반영율", "반영율");
+
+            ExcelImport excel = new ExcelImport();
+            string err = excel.LoadMasterData("Sprue", dgv_Config);
+            dgv_Config.AllowUserToAddRows = false;
+
+            if (err != null)
+                CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Sprue", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void btn_Load_Click(object sender, EventArgs e)
+        {
+            dgv_Config.Columns.Clear();
+            string query = $@"SELECT 업종,반영율*100 as 반영율 FROM [PCI].[dbo].[Sprue]";
+            //string query = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
+
+            DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
+            if (dataTable == null) return;
+
+            foreach(DataRow row in dataTable.Rows)
+            {
+                foreach(DataColumn col in dataTable.Columns)
+                {
+                    row[col] = row[col]?.ToString().Trim();
+                }
+            }
+            dgv_Config.DataSource = dataTable;
+            //dgv_Config.Columns["Id"].Visible = false;
+            dgv_Config.Columns["업종"].ReadOnly = true;
+        }
     }
 }

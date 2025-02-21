@@ -195,7 +195,80 @@ namespace TcPCM_Connect
 
         private void btn_Save_Click(object sender, EventArgs e)
         {
-            ImportMethod();
+            string columnName = cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString();
+            if(columnName == "마그넷 와이어")
+            {
+                ImportMagnetWire();
+            }
+            else
+                ImportMethod();
+        }
+        private DataTable NoDupleTable()
+        {
+            DataTable cloneTable = new DataTable();
+
+            return cloneTable;
+        }
+        private void ImportMagnetWire()
+        {
+            Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+            splashthread.IsBackground = true;
+            splashthread.Start();
+            try
+            {
+                string err = null;
+                //List<string> thickTypeList = new List<string>();
+                for (int rowIndex = 0; rowIndex < dgv_Material.Rows.Count - 1; rowIndex++)
+                {
+                    DataGridViewRow row = dgv_Material.Rows[rowIndex];
+                    if (string.IsNullOrEmpty(row.Cells["type"].Value?.ToString())) continue;
+
+                    string thickType = $"{row.Cells["두께"].Value}_{row.Cells["type"].Value}";
+
+                    string searchQuery = $@"SELECT id FROM MD_MagnetWire
+                                    where ValidFrom = '{row.Cells["Valid From"].Value}'
+                                    And 두께 = '{global.ConvertDouble(row.Cells["두께"].Value)}'
+                                    And type = '{row.Cells["type"].Value}'";
+                    string partId = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.selfDB);
+                    
+                    if (string.IsNullOrEmpty(partId))
+                    {
+                        searchQuery = $@"Insert into MD_MagnetWire (ValidFrom, 가공비, 두께, type)
+                            Values('{row.Cells["Valid From"].Value}', {global.ConvertDouble(row.Cells["가공비"].Value)}, {global.ConvertDouble(row.Cells["두께"].Value)}, '{row.Cells["type"].Value}')";
+                        err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.selfDB);
+                        //thickTypeList.Add(thickType);
+                    }
+                    //else if (thickTypeList.Contains(thickType))
+                    //{
+                    //    searchQuery = $@"select 가공비 from MD_MagnetWire where Id = {partId}";
+                    //    string result = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.selfDB);
+
+                    //    if(int.Parse(result) < int.Parse(row.Cells["가공비"].Value?.ToString()))
+                    //    {
+                    //        searchQuery = $@"Update MD_MagnetWire
+                    //            Set ValidFrom='{row.Cells["Valid From"].Value}', 가공비='{global.ConvertDouble(row.Cells["가공비"].Value)}',두께='{global.ConvertDouble(row.Cells["두께"].Value)}', type = '{row.Cells["type"].Value}'
+                    //            where Id = {partId}";
+                    //        err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.selfDB);
+                    //    }
+                    //}
+                    else
+                    {
+                        searchQuery = $@"Update MD_MagnetWire
+                            Set ValidFrom='{row.Cells["Valid From"].Value}', 가공비='{global.ConvertDouble(row.Cells["가공비"].Value)}',두께='{global.ConvertDouble(row.Cells["두께"].Value)}', type = '{row.Cells["type"].Value}'
+                            where Id = {partId}";
+                        err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.selfDB);
+                        //thickTypeList.Add(thickType);
+                    }
+                }
+                if (!string.IsNullOrEmpty(err)) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "마그넷 와이어", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "마그넷 와이어", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch
+            {
+                CustomMessageBox.RJMessageBox.Show($"Error : 작업중 오류가 발생하였습니다. 다시 시도해주세요.", "마그넷 와이어", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            Thread.Sleep(100);
+            LoadingScreen.CloseSplashScreen();
         }
         private void ImportMethod()
         {
@@ -374,6 +447,8 @@ namespace TcPCM_Connect
             }
             else if (combo.SelectedItem?.ToString() == "단가 관리")
                 Material(MasterData.Material.management);
+            else if (combo.SelectedItem?.ToString() == "마그넷 와이어")
+                Material(MasterData.Material.magnet);
             else
                 Material(MasterData.Material.material);
 
@@ -431,6 +506,10 @@ namespace TcPCM_Connect
         }
         private void searchButton1_SearchButtonClick(object sender, EventArgs e)
         {
+            searchMethod(null);
+        }
+        public void searchMethod(string dateQuery)
+        {
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
             splashthread.Start();
@@ -442,76 +521,57 @@ namespace TcPCM_Connect
             inputString = searchButton1.text;
             if (columnName == "원소재 단가")
             {
-                //searchQuery = @"With A as(
-	               //                     select distinct
-		              //                      BDRegions.UniqueKey as region,
-		              //                      DateValidFrom,
-		              //                      Currencies.IsoCode As IsoCode,
-		              //                      MDMaterialHeaders.UniqueKey As UniqueKey,
-		              //                      Price,
-		              //                      Units.Name As '원재료 단위'
-		              //                      ,MDMaterialHeaders.Name_LOC_Extracted As '소재명'
-	               //                     from MDMaterialDetails
-		              //                      left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
-		              //                      left join Units on MDMaterialDetails.UnitId = Units.Id
-		              //                      LEFT join BDRegions on RegionId = BDRegions.Id
-		              //                      LEFT join Currencies on CurrencyId = Currencies.Id
-	               //                     where MaterialHeaderId in
-		              //                      (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
-		              //                      And MDMaterialHeaders.UniqueKey not like '%_scrap'
-                //                    ),
-                //                    B as(
-	               //                     select distinct
-		              //                      BDRegions.UniqueKey as region,
-		              //                      Currencies.IsoCode As IsoCode,
-		              //                      MDMaterialHeaders.UniqueKey As sName,
-		              //                      Price,
-		              //                      Units.Name As '스크랩 단위'
-	               //                     from MDMaterialDetails
-		              //                      left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
-		              //                      left join Units on MDMaterialDetails.UnitId = Units.Id
-		              //                      LEFT join BDRegions on RegionId = BDRegions.Id
-		              //                      LEFT join Currencies on CurrencyId = Currencies.Id
-	               //                     where MaterialHeaderId in
-		              //                      (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
-		              //                      And MDMaterialHeaders.UniqueKey like '%_scrap'
-                //                    ),
-                //                    C as(
-	               //                     select distinct
-		              //                      BDRegions.UniqueKey as region,
-		              //                      MDMaterialHeaders.UniqueKey As sName,
-		              //                      MDMaterialCo2Details.value,
-		              //                      Units.Name As '탄소발생량 단위'
-	               //                     from MDMaterialCo2Details
-		              //                      left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
-		              //                      left join Units on MDMaterialCo2Details.UnitId = Units.Id
-		              //                      LEFT join BDRegions on RegionId = BDRegions.Id
-	               //                     where MaterialHeaderId in
-		              //                      (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
-		              //                      And MDMaterialHeaders.UniqueKey like '%_scrap'
-                //                    )
-                //                    select
-                //                    A.DateValidFrom as 'Valid From',
-                //                    COALESCE(A.region, B.region, C.region) as '지역',
-                //                    COALESCE(A.IsoCode, B.IsoCode) as '통화',
-                //                    A.소재명,
-                //                    A.UniqueKey,
-                //                    A.Price as '원재료 단가',
-                //                    A.[원재료 단위],
-                //                    B.Price as '스크랩 단가',
-                //                    B.[스크랩 단위],
-                //                    C.Value as '탄소발생량',
-                //                    C.[탄소발생량 단위]
-                //                    From A
-                //                    Full outer join B on
-                //                    A.region = B.region And A.IsoCode = B.IsoCode 
-                //                    And B.sName = A.UniqueKey+'_scrap'
-                //                    Full outer join C on
-                //                    COALESCE(A.region, B.region) = C.region
-                //                    And C.sName = B.sName
-                //                    Where
-	               //                     COALESCE(A.region, B.region, C.region) IS NOT NULL
-	               //                     And A.[원재료 단위] is not null";
+                searchQuery = @"With A as( select distinct BDRegions.UniqueKey as region, DateValidFrom, Currencies.IsoCode As IsoCode,
+		                                    MDMaterialHeaders.UniqueKey As UniqueKey, Price, Units.Name As '원재료 단위' ,MDMaterialHeaders.Name_LOC_Extracted As '소재명'
+	                                    from MDMaterialDetails
+		                                    left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
+		                                    left join Units on MDMaterialDetails.UnitId = Units.Id
+		                                    LEFT join BDRegions on RegionId = BDRegions.Id
+		                                    LEFT join Currencies on CurrencyId = Currencies.Id
+	                                    where MaterialHeaderId in
+		                                    (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+		                                    And MDMaterialHeaders.UniqueKey not like '%_scrap' ),
+                                    B as( select distinct BDRegions.UniqueKey as region, Currencies.IsoCode As IsoCode,
+		                                    MDMaterialHeaders.UniqueKey As sName, Price, Units.Name As '스크랩 단위'
+	                                    from MDMaterialDetails
+		                                    left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
+		                                    left join Units on MDMaterialDetails.UnitId = Units.Id
+		                                    LEFT join BDRegions on RegionId = BDRegions.Id
+		                                    LEFT join Currencies on CurrencyId = Currencies.Id
+	                                    where MaterialHeaderId in
+		                                    (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+		                                    And MDMaterialHeaders.UniqueKey like '%_scrap' ),
+                                    C as( select distinct BDRegions.UniqueKey as region, MDMaterialHeaders.UniqueKey As sName,
+		                                    MDMaterialCo2Details.value, Units.Name As '탄소발생량 단위'
+	                                    from MDMaterialCo2Details
+		                                    left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
+		                                    left join Units on MDMaterialCo2Details.UnitId = Units.Id
+		                                    LEFT join BDRegions on RegionId = BDRegions.Id
+	                                    where MaterialHeaderId in
+		                                    (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
+		                                    And MDMaterialHeaders.UniqueKey like '%_scrap' )
+                                select
+                                    A.DateValidFrom as 'Valid From',
+                                    COALESCE(A.region, B.region, C.region) as '지역',
+                                    COALESCE(A.IsoCode, B.IsoCode) as '통화',
+                                    A.소재명,
+                                    A.UniqueKey,
+                                    A.Price as '원재료 단가',
+                                    A.[원재료 단위],
+                                    B.Price as '스크랩 단가',
+                                    B.[스크랩 단위],
+                                    C.Value as '탄소발생량',
+                                    C.[탄소발생량 단위]
+                                From A
+                                    Full outer join B on A.region = B.region And A.IsoCode = B.IsoCode And B.sName = A.UniqueKey+'_scrap'
+                                    Full outer join C on COALESCE(A.region, B.region) = C.region And C.sName = B.sName
+                                Where
+	                                COALESCE(A.region, B.region, C.region) IS NOT NULL
+	                                And A.[원재료 단위] is not null";
+            }
+            else if (columnName == "마그넷 와이어")
+            {
+                searchQuery = "select * from [PCI].[dbo].[MD_MagnetWire]";
             }
             else
             {
@@ -567,11 +627,27 @@ namespace TcPCM_Connect
 
             if (!string.IsNullOrEmpty(inputString))
             {
-                searchQuery = searchQuery + $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                if (columnName == "원소재 단가")
+                    searchQuery += $" And A.소재명 like N'%{inputString}%'";
+                else if (columnName == "마그넷 와이어")
+                    searchQuery += $" where 가공비 like '%{inputString}%' or 두께 like '%{inputString}%' or type like '%{inputString}%'";
+                else
+                    searchQuery += $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
+            }
+            if (!string.IsNullOrEmpty(dateQuery))
+            {
+                if (columnName == "원소재 단가")
+                    searchQuery += $"{searchQuery} And {dateQuery}";
+                else if (columnName == "마그넷 와이어")
+                    searchQuery += $"{searchQuery} Where {dateQuery}";
             }
 
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
-            if (dataTable == null) return;
+            if (dataTable == null)
+            {
+                LoadingScreen.CloseSplashScreen();
+                return;
+            }
 
             foreach (DataRow row in dataTable.Rows)
             {
@@ -592,7 +668,7 @@ namespace TcPCM_Connect
                     }
                     else if (col.ColumnName == "소재명")
                     {
-                        result = result.Replace("[DYA]","");
+                        result = result.Replace("[DYA]", "");
                         string[] resultArray = result.Split(' ');
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].Value = resultArray[0];
                     }
@@ -658,6 +734,16 @@ namespace TcPCM_Connect
                     input = name;
             }
             return input;
+        }
+
+        private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
+        {
+            Select select = new Select();
+            select.className = "Material";
+            if(select.ShowDialog() == DialogResult.OK)
+            {
+                searchMethod(select.query);
+            }
         }
     }
 }
