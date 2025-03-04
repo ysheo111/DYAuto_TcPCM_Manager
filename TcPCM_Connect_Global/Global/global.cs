@@ -23,6 +23,18 @@ namespace TcPCM_Connect_Global
         public static string loginID = "";
         public static string loginPWD = "";
 
+        public static string NumberToLetter(int number)
+        {
+            string result = "";
+            while (number > 0)
+            {
+                number--;
+                result = (char)('A' + number % 26) + result;
+                number /= 26;
+            }
+            return result;
+        }
+
         public static double ConvertDouble(object obj)
         {
             obj = obj ?? "";

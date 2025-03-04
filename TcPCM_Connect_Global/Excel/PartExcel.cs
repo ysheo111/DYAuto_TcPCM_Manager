@@ -935,46 +935,54 @@ namespace TcPCM_Connect_Global
                     List<string> colName = excel.cbd.column.Values.ToList();
                     DataTable header = new DataTable();
                     header.Rows.Add();
-                    for (int i = 0; i < 13; i++)
+
+                    try
                     {
-                        int nameRow = i < 9 ? 1 : 2;  // Conditional assignment for nameRow
-
-                        if (i == 11)
+                        for (int i = 0; i < 13; i++)
                         {
-                            string date;
-                            try
+                            int nameRow = i < 9 ? 1 : 2;  // Conditional assignment for nameRow
+
+                            if (i == 11)
                             {
-                                date = worksheet.Cells[row, excelCol + 1].Value.ToString("yyyy-MM-dd");
+                                string date;
+                                try
+                                {
+                                    date = worksheet.Cells[row, excelCol + 1].Value.ToString("yyyy-MM-dd");
+                                }
+                                catch (Exception ex)
+                                {
+                                    date = DateTime.Now.ToString("yyyy-MM-dd");
+                                    Console.WriteLine($"Error retrieving date: {ex.Message}");  // Log error message
+                                }
+                                excel.CellVaildationDT(colName[i], nameRow, row++, excelCol, worksheet, date, ref header, row - 1);
                             }
-                            catch (Exception ex)
+                            else if (i == 10)
                             {
-                                date = DateTime.Now.ToString("yyyy-MM-dd");
-                                Console.WriteLine($"Error retrieving date: {ex.Message}");  // Log error message
+                                if (!header.Columns.Contains(Report.Header.exchangeRateCurrency)) header.Columns.Add(Report.Header.exchangeRateCurrency);
+                                header.Rows[header.Rows.Count - 1][Report.Header.exchangeRateCurrency] = worksheet.Cells[row++, excelCol + 1].Value;
                             }
-                            excel.CellVaildationDT(colName[i], nameRow, row++, excelCol, worksheet, date, ref header, row - 1);
-                        }
-                        else if (i == 10)
-                        {
-                            if (!header.Columns.Contains(Report.Header.exchangeRateCurrency)) header.Columns.Add(Report.Header.exchangeRateCurrency);
-                            header.Rows[header.Rows.Count - 1][Report.Header.exchangeRateCurrency] = worksheet.Cells[row++, excelCol + 1].Value;
-                        }
-                        else if (colName[i] == Report.Header.category) segment = $"{worksheet.Cells[row++, excelCol + 1].Value}";
-                        else
-                        {
-                            excel.CellVaildationDT(colName[i], nameRow, row, excelCol, row++, excelCol + 1, worksheet, ref header, row - 1);
-                        }
+                            else if (colName[i] == Report.Header.category) segment = $"{worksheet.Cells[row++, excelCol + 1].Value}";
+                            else
+                            {
+                                excel.CellVaildationDT(colName[i], nameRow, row, excelCol, row++, excelCol + 1, worksheet, ref header, row - 1);
+                            }
 
-                        if (i == 6)  // Adjusted condition to avoid unnecessary checks
-                        {
-                            excelCol = 5;
-                            row = 5;
-                        }
-                        if (i == 10)
-                        {
-                            excelCol = 18;
-                            row = 2;
-                        }
+                            if (i == 6)  // Adjusted condition to avoid unnecessary checks
+                            {
+                                excelCol = 5;
+                                row = 5;
+                            }
+                            if (i == 10)
+                            {
+                                excelCol = 18;
+                                row = 2;
+                            }
 
+                        }
+                    }
+                    catch(Exception ex22)
+                    {
+                        MessageBox.Show($"{file}\n{ex22.Message}");
                     }
 
                     if (!header.Columns.Contains(Report.Header.category)) header.Columns.Add(Report.Header.category);
