@@ -29,6 +29,7 @@ namespace TcPCM_Connect_Global
                             distinct c.id AS CalculationId,
 							ppe.ManualSalesPrice as SalesPrice,
 	                        p2.Name_LOC_Extracted,
+                            p2.PartNo,
                             p.StartOfProductionDate,
                             p.PeriodsAfterSOP,							
                             par.*
@@ -76,6 +77,7 @@ namespace TcPCM_Connect_Global
                 double after = global.ConvertDouble(requirements.Rows[0]["PeriodsAfterSOP"]);
 
                 List<string> partName = new List<string>();
+                List<string> partNo = new List<string>();
                 worksheet3.Cells[6, 6].Value = sop - 1;
                 for (int i = 0; i < after; i++)
                 {
@@ -84,11 +86,13 @@ namespace TcPCM_Connect_Global
                     worksheet2.Range[worksheet2.Cells[3, 5 + i], worksheet2.Cells[60, 5 + i]].Insert(XlInsertShiftDirection.xlShiftToRight); // 오른쪽으로 셀 이동
                     worksheet3.Range[worksheet3.Cells[5, 7 + i], worksheet3.Cells[23, 7 + i]].Insert(XlInsertShiftDirection.xlShiftToRight); // 오른쪽으로 셀 이동
                     worksheet4.Range[worksheet4.Cells[4, 5 + i], worksheet4.Cells[10, 5 + i]].Insert(XlInsertShiftDirection.xlShiftToRight); // 오른쪽으로 셀 이동
+                    worksheet5.Range[worksheet5.Cells[4, 6 + i], worksheet5.Cells[30, 6 + i]].Insert(XlInsertShiftDirection.xlShiftToRight); // 오른쪽으로 셀 이동
 
                     Range range = worksheet.Range[worksheet.Cells[rowIndex - 1, 5 + i], worksheet.Cells[rowIndex + 1, 5 + i]];
                     Range range2 = worksheet2.Range[worksheet2.Cells[3, 5 + i], worksheet2.Cells[60, 5 + i]];
                     Range range3 = worksheet3.Range[worksheet3.Cells[5, 7 + i], worksheet3.Cells[23, 7 + i]];
                     Range range4 = worksheet4.Range[worksheet4.Cells[4, 5 + i], worksheet4.Cells[10, 5 + i]];
+                    Range range5 = worksheet5.Range[worksheet5.Cells[4, 6 + i], worksheet5.Cells[30, 6 + i]];
 
                     range.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                     worksheet2.Range[worksheet2.Cells[15, 5 + i], worksheet2.Cells[59, 5 + i]].Borders(Excel.XlBordersIndex.xlEdgeRight).LineStyle = Excel.XlLineStyle.xlContinuous;
@@ -96,12 +100,32 @@ namespace TcPCM_Connect_Global
                     range2.ColumnWidth = 10;
                     range3.ColumnWidth = 10.38;
                     range4.ColumnWidth = 13.5;
-                    worksheet.Cells[rowIndex - 1, 5 + i].Value = worksheet2.Cells[15, 5 + i].Value = worksheet4.Cells[4, 5 + i].Value = worksheet3.Cells[6, 7 + i].Value = sop + i;
-                    worksheet3.Cells[7, 7 + i].Value = i;
-                    worksheet.Cells[51, 5 + i].Value = worksheet.Cells[60, 5 + i].Value = worksheet.Cells[68, 5 + i].Value = $"{sop + i}년";
+                    range5.ColumnWidth = 11.13;
+                    worksheet5.Cells[4, 6 + i].Value = worksheet.Cells[rowIndex - 1, 5 + i].Value = worksheet2.Cells[15, 5 + i].Value = worksheet4.Cells[4, 5 + i].Value = worksheet3.Cells[6, 7 + i].Value = sop + i;
+                    worksheet5.Cells[15, 6 + i].Formula = $"=SUM({global.NumberToLetter(6+i)}5:{global.NumberToLetter(6 + i)}14)";
+                    worksheet5.Cells[24, 6 + i].Formula = $"=SUM({global.NumberToLetter(6+i)}16:{global.NumberToLetter(6 + i)}23)";
+                    worksheet5.Cells[26, 6 + i].Formula = $"={global.NumberToLetter(6 + i)}5";
+                    worksheet5.Cells[27, 6 + i].Formula = $"={global.NumberToLetter(6 + i)}10+{global.NumberToLetter(6 + i)}11+{global.NumberToLetter(6 + i)}12+{global.NumberToLetter(6 + i)}13+{global.NumberToLetter(6 + i)}14";
+                    worksheet5.Cells[28, 6 + i].Formula = $"={global.NumberToLetter(6 + i)}6+{global.NumberToLetter(6 + i)}7+{global.NumberToLetter(6 + i)}8+{global.NumberToLetter(6 + i)}9";
+                    worksheet5.Cells[29, 6 + i].Formula = $"=SUM({global.NumberToLetter(6+i)}26:{global.NumberToLetter(6 + i)}28)";
+                    worksheet3.Cells[7, 7 + i].Value = i+1;
+                    worksheet.Cells[51, 5 + i].Value= $"{sop + i}년";
+                    worksheet.Cells[60, 5 + i].Value = worksheet.Cells[68, 5 + i].Value = $"{sop + i-1}년";
                 }
 
-                string errRequirement = WriteOptimizedToExcel(workBook, requirements, after, ref partName, ref addRowIndex, ref rowIndex, ref colIndex);
+                DataTable invest = new DataTable();
+                invest.Columns.Add(" ");
+                for (int rowIdx = 5; rowIdx<=29; rowIdx++)
+                {
+                    DataRow row = invest.Rows.Add();
+                    if (rowIdx == 25) row[" "] = "";
+                    else row[" "]= $"=SUM(F{rowIdx}:{global.NumberToLetter(6 + (int)after)}{rowIdx})";
+                    
+                    //worksheet5.Cells[rowIdx, 6 + after + 1].Formula = $"=SUM(F{rowIdx}:={global.NumberToLetter(6 + (int)after)}{rowIdx})";
+                }
+                WriteDataToExcel(invest, worksheet5, 5, 6 + (int)after);
+
+                string errRequirement = WriteOptimizedToExcel(workBook, requirements, after, ref partName, ref partNo, ref addRowIndex, ref rowIndex, ref colIndex);
                 if (errRequirement != null) err += ("\n" + errRequirement);
 
                 worksheet.Range[worksheet.Cells[28 + addRowIndex, 5], worksheet.Cells[28 + addRowIndex, 5 + (partName.Count - 1) * 2 + 1]].Merge();
@@ -111,13 +135,14 @@ namespace TcPCM_Connect_Global
                 if (apiResult == null) return "데이터 조회 시 오류가 발생하였습니다.";
                 err += SetMaterial(apiResult, workBook, calcList.Count);
 
-                string err2 = SetManufacturing(workBook, calcList, (int)after, addRowIndex, partName);
+                string err2 = SetManufacturing(workBook, calcList, (int)after, addRowIndex, partName, partNo);
                 if (err2 != null) err += ("\n" + err2);
 
                 worksheet2.Select();
 
                 SetAnnualProfitAndLoss(workBook, requirements, sop, (int)after, partName, addRowIndex);
-
+                worksheet.Range[worksheet.Cells[54 + addRowIndex, 5], worksheet.Cells[54 + addRowIndex, 5 + after]].NumberFormat = "0.00%";
+                worksheet.Range[worksheet.Cells[56 + addRowIndex, 5], worksheet.Cells[56 + addRowIndex, 5 + after]].NumberFormat = "0.00%";
 
             }
             catch (Exception e)
@@ -142,43 +167,6 @@ namespace TcPCM_Connect_Global
             return err;
         }
 
-        //public void GenerateFormula(Excel.Worksheet worksheet2, int i, List<string> partName)
-        //{
-        //    int target = 16 + 22 * partName.Count;
-        //    List<int> baseRows = new List<int>();
-        //    for(int j=0;j<partName.Count;j++)
-        //    {
-        //        baseRows.Add(16+j*22);
-        //    }
-
-        //    List<int> multiplierRows = new List<int>();
-        //    for (int j = 17; j <= 37; j++)
-        //    {
-        //        multiplierRows.Add(j);
-        //    }
-
-        //    int partCount = partName.Count; // part 개수
-
-        //    if (partCount < 1)
-        //    {
-        //        throw new ArgumentException("partName의 개수는 최소 1개 이상이어야 합니다.");
-        //    }
-
-        //    // 1. 첫 번째 수식 (더하기)
-        //    string sumFormula = string.Join("+", baseRows.Take(partCount).Select(row => $"E${row}"));
-        //    worksheet2.Cells[target++, i + 5].Formula = $"={sumFormula}";
-
-        //    // 2. 나머지 수식 (곱셈 및 덧셈)
-        //    foreach (int multiplierRow in multiplierRows)
-        //    {
-        //        string formulaParts = string.Join("+", Enumerable.Range(0, partCount)
-        //            .Select(j => $"E${baseRows[j]}*E${multiplierRow + (j * 22)}"));
-
-        //        if(multiplierRow==32) worksheet2.Cells[target++, i + 5].Formula = $"=E{baseRows.Last() + 37}/E{baseRows.Last() + 23}";
-        //        else if(multiplierRow == 37) worksheet2.Cells[target++, i + 5].Formula = $"=E{baseRows.Last()+42}/E{baseRows.Last() + 23}";
-        //        else worksheet2.Cells[target++, i + 5].Formula = $"={formulaParts}";
-        //    }
-        //}
         private string SetAnnualProfitAndLoss(Workbook workBook, System.Data.DataTable requirements, int sop, int after, List<string> partName, int addRowIndex)
         {
             try
@@ -294,75 +282,49 @@ namespace TcPCM_Connect_Global
 
                 // ** 🚀 한 번에 Excel에 쓰기 (DataTable → Excel) **
                 int startRow = 4;
-                int startCol = 4; // **🔥 5번째 열부터 데이터 시작**
+                int startCol = 5; // **🔥 5번째 열부터 데이터 시작**
+                Excel.Range writeRange = worksheet2.Range[worksheet2.Cells[startRow, startCol], worksheet2.Cells[startRow + increaseDataTable.Rows.Count - 1, startCol + increaseDataTable.Columns.Count - 1]];
 
-                int rowCount = increaseDataTable.Rows.Count;
-                int colCount = increaseDataTable.Columns.Count;
-
-                Excel.Range startCell = worksheet2.Cells[startRow, startCol];
-                Excel.Range endCell = worksheet2.Cells[startRow + rowCount - 1, startCol + colCount - 1];
-                Excel.Range writeRange = worksheet2.Range[startCell, endCell];
-
-                // ** 🔥 Excel 범위에 DataTable 데이터 한 번에 입력 **
-                object[,] dataArray = new object[rowCount, colCount];
-                for (int i = 0; i < rowCount; i++)
-                {
-                    for (int j = 0; j < colCount; j++)
-                    {
-                        dataArray[i, j] = increaseDataTable.Rows[i][j];
-                    }
-                }
-
-                writeRange.Value2 = dataArray;
-
-                Excel.Range sourceRow = worksheet2.Range[worksheet2.Cells[startRow, startCol + colCount], worksheet2.Cells[startRow + rowCount - 1, startCol + colCount]];
+                WriteDataToExcel(increaseDataTable, worksheet2, startRow, startCol);
+                Excel.Range sourceRow = worksheet2.Range[worksheet2.Cells[startRow, startCol + increaseDataTable.Columns.Count], worksheet2.Cells[startRow + increaseDataTable.Rows.Count - 1, startCol + increaseDataTable.Columns.Count]];
 
                 // ** 📌 테두리 적용 **
-                writeRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
-
-                // **🚀 서식만 복사하기**
-                sourceRow.Copy();
-                writeRange.PasteSpecial(Excel.XlPasteType.xlPasteFormats);
-                // 클립보드 해제 (엑셀 실행 속도 최적화)
-                worksheet.Application.CutCopyMode = 0;
+                //writeRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                for (int i = 0; i < partName.Count; i++)
+                {
+                    worksheet2.Range[worksheet2.Cells[32 + i * 22, 4], worksheet2.Cells[32 + i * 22, 5 + after]].NumberFormat = "0.00%";
+                    worksheet2.Range[worksheet2.Cells[37 + i * 22, 4], worksheet2.Cells[32 + i * 37, 5 + after]].NumberFormat = "0.00%";
+                }
+                writeRange.NumberFormat = "0.00 % ";
+                //// 클립보드 해제 (엑셀 실행 속도 최적화)
+                //worksheet.Application.CutCopyMode = 0;
 
                 // ** 🚀 한 번에 Excel에 쓰기 (DataTable → Excel) **
                 startRow = 16 + 22 * partName.Count;
                  startCol = 5; // **🔥 5번째 열부터 데이터 시작**
 
-                 rowCount = formulaDataTable.Rows.Count;
-                 colCount = formulaDataTable.Columns.Count;
+                writeRange = worksheet2.Range[worksheet2.Cells[startRow, startCol], worksheet2.Cells[startRow + formulaDataTable.Rows.Count - 1, startCol + formulaDataTable.Columns.Count - 1]];
 
-                startCell = worksheet2.Cells[startRow, startCol];
-                endCell = worksheet2.Cells[startRow + rowCount - 1, startCol + colCount - 1];
-                writeRange = worksheet2.Range[startCell, endCell];
+                WriteDataToExcel(formulaDataTable, worksheet2, startRow, startCol);
 
-                // ** 🔥 Excel 범위에 DataTable 데이터 한 번에 입력 **
-                object[,] dataArray2 = new object[rowCount, colCount];
-                for (int i = 0; i < rowCount; i++)
-                {
-                    for (int j = 0; j < colCount; j++)
-                    {
-                        dataArray2[i, j] = formulaDataTable.Rows[i][j];
-                    }
-                }
+                //sourceRow = worksheet2.Range[worksheet2.Cells[16, startCol], worksheet2.Cells[37, startCol + formulaDataTable.Columns.Count - 1]];
 
-                writeRange.Value2 = dataArray2;
+                //// **🚀 서식만 복사하기**
+                //sourceRow.Copy();
+                //writeRange.PasteSpecial(Excel.XlPasteType.xlPasteFormats);
 
-                sourceRow = worksheet2.Range[worksheet2.Cells[16, startCol], worksheet2.Cells[37, startCol + colCount - 1]];
+                //// 클립보드 해제 (엑셀 실행 속도 최적화)
+                //worksheet.Application.CutCopyMode = 0;
 
-                // **🚀 서식만 복사하기**
-                sourceRow.Copy();
-                writeRange.PasteSpecial(Excel.XlPasteType.xlPasteFormats);
-
-                // 클립보드 해제 (엑셀 실행 속도 최적화)
-                worksheet.Application.CutCopyMode = 0;
+                writeRange.NumberFormat = "#,##0,,";
+                worksheet2.Range[worksheet2.Cells[startRow + 16, startCol], worksheet2.Cells[startRow + 16, startCol + formulaDataTable.Columns.Count - 1]].NumberFormat = "0.00%";
+                worksheet2.Range[worksheet2.Cells[startRow + 21, startCol], worksheet2.Cells[startRow + 21, startCol + formulaDataTable.Columns.Count - 1]].NumberFormat = "0.00%";
 
                 // ** 5. 결과값 엑셀에 입력 (한 번에) **
                 //ApplyDataToExcel(dataToWrite, new List<(Excel.Range, object)>(), dataToFormat);
 
                 //**6.Most Frequent 값 계산 후 입력**
-                     var dataToMostFreq = new List<(Excel.Range, object)>
+                var dataToMostFreq = new List<(Excel.Range, object)>
              {
                     (worksheet.Cells[22 + addRowIndex, 3], FindMostFrequents(profitAndLoss, 425)),
                     (worksheet.Cells[22 + addRowIndex, 4], FindMostFrequents(profitAndLoss, 421)),
@@ -430,65 +392,93 @@ namespace TcPCM_Connect_Global
 
         }
 
-        private string SetManufacturing(Workbook workBook, List<string> calcList, int after, int addRowIndex, List<string> partName)
+        private string SetManufacturing(Workbook workBook, List<string> calcList, int after, int addRowIndex, List<string> partName, List<string> PartNo)
         {
             string err = null;
             try
             {
                 string query = $@"WITH LaborData AS (
-                                    SELECT 
-                                        a.id as Mid,
-                                        e.UniqueKey,
-                                        AVG(b.PersonCount) AS AvgPerson,        
-                                        AVG((CASE 
-                                            WHEN d.Id IS NULL THEN b.ManualWage 
-                                            ELSE d.Value 
-                                        END) * 3600) AS AvgCost
-                                    FROM ManufacturingSteps AS a  
-                                    JOIN RestManufacturingOverheadCosts AS c ON a.Id = c.ManufacturingStepId
-                                    JOIN [Labor] AS b ON a.Id = b.ManufacturingStepId OR b.RestManufacturingOverheadCostsId = c.Id
-                                    LEFT JOIN MDCostFactorDetails AS d ON b.WageCostFactorDetailId = d.Id
-                                    LEFT JOIN MDCostFactorHeaders AS e ON b.WageCostFactorHeaderId = e.Id
-                                    WHERE a.CalculationId IN ({string.Join(", ", calcList)})
-                                    GROUP BY a.id, e.UniqueKey
-                                )
+                                        SELECT 
+                                            a.id as Mid,
+                                            e.UniqueKey,
+                                            AVG(b.PersonCount) AS AvgPerson,        
+                                            AVG((CASE 
+                                                WHEN d.Id IS NULL THEN b.ManualWage 
+                                                ELSE d.Value 
+                                            END) * 3600) AS AvgCost
+                                        FROM ManufacturingSteps AS a  
+                                        JOIN RestManufacturingOverheadCosts AS c ON a.Id = c.ManufacturingStepId
+                                        JOIN [Labor] AS b ON a.Id = b.ManufacturingStepId OR b.RestManufacturingOverheadCostsId = c.Id
+                                        LEFT JOIN MDCostFactorDetails AS d ON b.WageCostFactorDetailId = d.Id
+                                        LEFT JOIN MDCostFactorHeaders AS e ON b.WageCostFactorHeaderId = e.Id
+                                        WHERE a.CalculationId IN ({string.Join(", ", calcList)})
+                                        GROUP BY a.id, e.UniqueKey
+                                    )
+                                    SELECT					
+ 	                                    t.LifeTimeToolCount,
+	                                    a.CalculationId,
+	                                    a.ManualPartsPerCycle,
+	                                    ManualCycleTime,
+	                                    a.Id as ManufacturingId,
+	                                    10 as toolYear,
+	                                    t.MasterToolId,
+	                                    t.ManualInvestPerTool,
+	                                    t.CachedInvestPerTool,
+	                                    t.ToolUsageFraction*100 as new,
+	                                    t.id,
+                                        p.PartNo,
+                                        p.Name_LOC_Extracted,
+	                                    case 
+		                                    when dbo.GetSingleTranslation(a.Name_LOC,'ko-KR','') is not null then dbo.GetSingleTranslation(a.Name_LOC,'ko-KR','')
+		                                    else dbo.GetSingleTranslation(a.Name_LOC,'en-US','') 
+	                                    END as name,
+	                                    L.*,	
+	                                    ManualCycleTime,
+	                                    ManualUtilizationRate,
+                                        RequiredNumberOfMachinesInManufacturingStep,
+	                                    CASE 
+		                                    When  ManualCycleTime = 0 or m.RequiredNumberOfMachinesInManufacturingStep = 0 then null
+		                                    WHEN UseManualMachineHourlyRate = 0 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime / m.RequiredNumberOfMachinesInManufacturingStep
+		                                    WHEN UseManualMachineHourlyRate = 1 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime * ManualUtilizationRate / m.RequiredNumberOfMachinesInManufacturingStep
+	                                    END  AS Machine,
 
-                                SELECT
-	                                a.CalculationId,
-	                                case 
-		                                when dbo.GetSingleTranslation(a.Name_LOC,'ko-KR','') is not null then dbo.GetSingleTranslation(a.Name_LOC,'ko-KR','')
-		                                else dbo.GetSingleTranslation(a.Name_LOC,'en-US','') 
-	                                END as name,
-	                                L.*,	
-	                                ManualCycleTime,
-	                                ManualUtilizationRate,
-                                    RequiredNumberOfMachinesInManufacturingStep,
-	                                CASE 
-		                                WHEN UseManualMachineHourlyRate = 0 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime / m.RequiredNumberOfMachinesInManufacturingStep
-		                                WHEN UseManualMachineHourlyRate = 1 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime * ManualUtilizationRate / m.RequiredNumberOfMachinesInManufacturingStep
-	                                END  AS Machine
-                                FROM 
-                                (SELECT 
-                                    ld.Mid,
-                                    MAX(CASE WHEN ld.UniqueKey = N'직접노무비' THEN ld.AvgPerson END) AS DirectPerson,
-                                    MAX(CASE WHEN ld.UniqueKey = N'직접노무비' THEN ld.AvgCost END) AS DirectCost,
-                                    MAX(CASE WHEN ld.UniqueKey = N'간접노무비' THEN ld.AvgPerson END) AS IndirectPerson,
-                                    MAX(CASE WHEN ld.UniqueKey = N'간접노무비' THEN ld.AvgCost END) AS IndirectCost
-                                FROM LaborData ld
-                                GROUP BY ld.Mid) as L
-                                JOIN [ManufacturingSteps] as a  on L.Mid = a.Id
-                                JOIN Machines AS m ON a.Id = m.ManufacturingStepId
-                                order by CalculationId, Mid;";
+	                                    case
+		                                    When  ManualCycleTime = 0 or a.ShiftsPerDay = 0 then null
+		                                    when a.ShiftModelMode=2 then a.ShiftModelProductionTimePerYearCostFactorValue/3600/a.ShiftsPerDay*(3600/ManualCycleTime*ManualUtilizationRate)
+		                                    else c.WeeksPerYear*c.TimePerShift/3600*(3600/ManualCycleTime*ManualUtilizationRate)
+	                                    END as '1Shift',
+	                                    case
+		                                    When  ManualCycleTime = 0 or a.ShiftsPerDay = 0 then null
+		                                    when a.ShiftModelMode=2 then (a.ShiftModelProductionTimePerYearCostFactorValue/3600/a.ShiftsPerDay)*(3600/ManualCycleTime*ManualUtilizationRate)*2
+		                                    else c.WeeksPerYear*c.TimePerShift/3600*(3600/ManualCycleTime*ManualUtilizationRate)*2
+	                                    END as '2Shift'
+
+                                    FROM  [ManufacturingSteps] as a  
+                                    left Join (SELECT 
+                                        ld.Mid,
+                                        MAX(CASE WHEN ld.UniqueKey = N'직접노무비' THEN ld.AvgPerson END) AS DirectPerson,
+                                        MAX(CASE WHEN ld.UniqueKey = N'직접노무비' THEN ld.AvgCost END) AS DirectCost,
+                                        MAX(CASE WHEN ld.UniqueKey = N'간접노무비' THEN ld.AvgPerson END) AS IndirectPerson,
+                                        MAX(CASE WHEN ld.UniqueKey = N'간접노무비' THEN ld.AvgCost END) AS IndirectCost
+                                    FROM LaborData ld
+                                    GROUP BY ld.Mid) as L on L.Mid = a.Id
+                                    left JOIN Machines AS m ON a.Id = m.ManufacturingStepId
+                                    left join Tools as t on t.ManufacturingStepId = a.Id
+                                    Join Calculations as c on c.Id = a.CalculationId
+                                    Join Parts as p on p.Id = c.PartId
+	                                    WHERE a.CalculationId IN ({string.Join(", ", calcList)})
+                                    order by CalculationId, Mid;";
 
                 System.Data.DataTable table = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
 
                 Excel.Worksheet worksheet4 = workBook.Sheets["가공비"];
                 Excel.Worksheet worksheet = workBook.Sheets["견적원가 레포트"];
                 Excel.Worksheet worksheet2 = workBook.Sheets["년간손익"];
+                Excel.Worksheet worksheet6 = workBook.Sheets["금형비"];
 
-                worksheet4.Rows[5].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 4].Value = table.AsEnumerable().Average(row => global.ConvertDouble(row.Field<double?>("DirectCost")));
-                worksheet4.Rows[6].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 5].Value = table.AsEnumerable().Average(row => global.ConvertDouble(row.Field<double?>("IndirectCost")));
-                worksheet4.Rows[7].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 6].Value = table.AsEnumerable().Average(row => global.ConvertDouble(row.Field<double?>("Machine")));
+                worksheet4.Rows[5].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 4].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("DirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("DirectCost")));
+                worksheet4.Rows[6].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 5].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("IndirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("IndirectCost")));
+                worksheet4.Rows[7].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 6].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("RequiredNumberOfMachinesInManufacturingStep")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("Machine")));
                 worksheet.Cells[22 + addRowIndex, 9].Value = table.AsEnumerable().Average(row => global.ConvertDouble(row.Field<double?>("ManualUtilizationRate")));
 
                 for (int i = 1; i < after; i++)
@@ -501,8 +491,30 @@ namespace TcPCM_Connect_Global
                 int rowCount = 0;
                 int part = 15, prevPart = 0;
                 double calc = 0;
-
+                DataTable dt = new DataTable();
+                DataTable machine = new DataTable();
+                DataTable tool = new DataTable();
                 worksheet4.Select();
+                for (int i = 0; i < 8; i++)
+                {
+                    dt.Columns.Add($"{i}");
+                }
+
+                for (int i = 0; i < 12; i++)
+                {
+                    machine.Columns.Add($"{i}");
+                }
+
+                for (int i = 0; i < 17; i++)
+                {
+                    tool.Columns.Add($"{i}");
+                }
+
+                for (int i = 0; i < 6; i++)
+                {
+                    dt.Rows.Add();
+                }
+
                 for (int i = 1; i < calcList.Count; i++)
                 {
                     Excel.Range sourceRange = worksheet4.Range[worksheet4.Rows[15 + rowCount], worksheet4.Rows[21 + rowCount]];
@@ -515,64 +527,224 @@ namespace TcPCM_Connect_Global
                     targetRange.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
                     worksheet4.Application.CutCopyMode = 0;
                 }
+
                 int partCnt = 0;
+                double manufacturingId = 0;
+                List<int> machineNumber = new List<int>();
+                List<int> toolNumber = new List<int>();
+                Dictionary<string, int> toolDict = new Dictionary<string, int>();
                 foreach (DataRow row in table.Rows)
                 {
-                    if (global.ConvertDouble(row["CalculationId"]) == calc)
-                    {
-                        ((Excel.Range)worksheet4.Rows[part + rowCount]).Insert(Missing.Value, worksheet4.Rows[part + rowCount]);
-                        ((Excel.Range)worksheet4.Rows[part + 2 + rowCount * 2]).Insert(Missing.Value, worksheet4.Rows[part + 2 + rowCount * 2]);
-                        ((Excel.Range)worksheet4.Rows[part + 4 + rowCount * 3]).Insert(Missing.Value, worksheet4.Rows[part + 4 + rowCount * 3]);
-                    }
-                    else
+                    if (global.ConvertDouble(row["CalculationId"]) != calc)
                     {
                         worksheet4.Rows[part].Cells[3].Value = partName[partCnt];
 
+                        //dt.Rows.InsertAt(dt.Rows[0], part + rowCount);
+                        //dt.Rows.InsertAt(dt.Rows[0], part + rowCount + 1);
+                        //dt.Rows.InsertAt(dt.Rows[0], part + 2 + rowCount * 3);
+
+                        WriteDataToExcel(dt, worksheet4, part, 5);
+                        dt.Rows.Clear();
+                        for (int i = 0; i < 6; i++)
+                        {
+                            dt.Rows.Add();
+                        }
                         if (prevPart != 0)
                         {
                             SetManufacturingSum(worksheet4, worksheet, part, addRowIndex, partCnt, rowCount);
 
+
                             part = prevPart + (rowCount + 1) * 3 + 1;
                         }
+                        machineNumber.Add(machine.Rows.Count);
+                        toolNumber.Add(tool.Rows.Count);
                         partCnt++;
                         prevPart = part;
                         rowCount = 0;
                     }
 
                     calc = global.ConvertDouble(row["CalculationId"]);
-                    worksheet4.Rows[part + rowCount].Cells[3].Select();
-                    worksheet4.Rows[part + rowCount].Cells[5].Value = row["name"];
-                    worksheet4.Rows[part + rowCount].Cells[6].Value = row["DirectPerson"];
-                    worksheet4.Rows[part + rowCount].Cells[7].Value = row["ManualCycleTime"];
-                    worksheet4.Rows[part + rowCount].Cells[8].Value = row["ManualUtilizationRate"];
-                    worksheet4.Rows[part + rowCount].Cells[9].Formula = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
-                    worksheet4.Rows[part + rowCount].Cells[10].Formula = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
-                    worksheet4.Rows[part + rowCount].Cells[11].Value = row["DirectCost"];
-                    worksheet4.Rows[part + rowCount].Cells[12].Formula = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
 
-                    worksheet4.Rows[part + 2 + rowCount * 2].Cells[5].Value = row["name"];
-                    worksheet4.Rows[part + 2 + rowCount * 2].Cells[6].Value = row["IndirectPerson"];
-                    worksheet4.Rows[part + 2 + rowCount * 2].Cells[7].Value = row["ManualCycleTime"];
-                    worksheet4.Rows[part + 2 + rowCount * 2].Cells[8].Value = row["ManualUtilizationRate"];
-                    worksheet4.Rows[part + 2 + rowCount * 2].Cells[9].Formula = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
-                    worksheet4.Rows[part + 2 + rowCount * 2].Cells[10].Formula = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
-                    worksheet4.Rows[part + 2 + rowCount * 2].Cells[11].Value = row["IndirectCost"];
-                    worksheet4.Rows[part + 2 + rowCount * 2].Cells[12].Formula = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
+                    if (manufacturingId != global.ConvertDouble(row["ManufacturingId"]) && (row["DirectPerson"] != DBNull.Value || row["IndirectPerson"] != DBNull.Value || row["RequiredNumberOfMachinesInManufacturingStep"] != DBNull.Value))
+                    {
+                        if (global.ConvertDouble(row["CalculationId"]) == calc && rowCount != 0)
+                        {
+                            ((Excel.Range)worksheet4.Rows[part + rowCount]).Insert(Missing.Value, worksheet4.Rows[part + rowCount]);
+                            ((Excel.Range)worksheet4.Rows[part + 2 + rowCount * 2]).Insert(Missing.Value, worksheet4.Rows[part + 2 + rowCount * 2]);
+                            ((Excel.Range)worksheet4.Rows[part + 4 + rowCount * 3]).Insert(Missing.Value, worksheet4.Rows[part + 4 + rowCount * 3]);
+                        }
 
-                    worksheet4.Rows[part + 4 + rowCount * 3].Cells[5].Value = row["name"];
-                    worksheet4.Rows[part + 4 + rowCount * 3].Cells[6].Value = row["RequiredNumberOfMachinesInManufacturingStep"];
-                    worksheet4.Rows[part + 4 + rowCount * 3].Cells[7].Value = row["ManualCycleTime"];
-                    worksheet4.Rows[part + 4 + rowCount * 3].Cells[8].Value = row["ManualUtilizationRate"];
-                    worksheet4.Rows[part + 4 + rowCount * 3].Cells[9].Formula = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
-                    worksheet4.Rows[part + 4 + rowCount * 3].Cells[10].Formula = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
-                    worksheet4.Rows[part + 4 + rowCount * 3].Cells[11].Value = row["Machine"];
-                    worksheet4.Rows[part + 4 + rowCount * 3].Cells[12].Formula = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
+                        DataRow row2 = dt.NewRow();
+                        row2[-5 + 5] = row["name"];
+                        row2[-5 + 6] = row["DirectPerson"];
+                        row2[-5 + 7] = row["ManualCycleTime"];
+                        row2[-5 + 8] = row["ManualUtilizationRate"];
+                        row2[-5 + 9] = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
+                        row2[-5 + 10] = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
+                        row2[-5 + 11] = row["DirectCost"];
+                        row2[-5 + 12] = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
+                        dt.Rows.InsertAt(row2, rowCount);
 
-                    rowCount++;
+                        DataRow row3 = dt.NewRow();
+                        row3[-5 + 5] = row["name"];
+                        row3[-5 + 6] = row["IndirectPerson"];
+                        row3[-5 + 7] = row["ManualCycleTime"];
+                        row3[-5 + 8] = row["ManualUtilizationRate"];
+                        row3[-5 + 9] = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
+                        row3[-5 + 10] = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
+                        row3[-5 + 11] = row["IndirectCost"];
+                        row3[-5 + 12] = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
+                        dt.Rows.InsertAt(row3, 2 + rowCount * 2);
+
+                        DataRow row4 = dt.NewRow();
+                        row4[-5 + 5] = row["name"];
+                        row4[-5 + 6] = row["RequiredNumberOfMachinesInManufacturingStep"];
+                        row4[-5 + 7] = row["ManualCycleTime"];
+                        row4[-5 + 8] = row["ManualUtilizationRate"];
+                        row4[-5 + 9] = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
+                        row4[-5 + 10] = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
+                        row4[-5 + 11] = row["Machine"];
+                        row4[-5 + 12] = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
+                        dt.Rows.InsertAt(row4, 4 + rowCount * 3);
+
+                        rowCount++;
+                    }
+
+                    if (global.ConvertDouble(row["MasterToolId"]) == 5)
+                    {
+                        int add = part + (rowCount - 1) * 3 + (calcList.Count - partCnt - 1) * 7 + machine.Rows.Count + 21;
+                        ((Excel.Range)worksheet4.Rows[add]).Insert(Missing.Value, worksheet4.Rows[add]);
+                        DataRow row5 = machine.Rows.Add();
+                        int cnt = 0;
+                        row5[cnt++] = $"{partName[partCnt - 1]}_{row["name"]}";
+                        row5[cnt++] = row["ManualInvestPerTool"];
+                        row5[cnt++] = row["new"];
+                        row5[cnt++] = $"=SUM(INDIRECT(\"D\"&ROW()):INDIRECT(\"E\"&ROW()))";
+                        row5[cnt++] = row["toolYear"];
+                        row5[cnt++] = row["1Shift"];
+                        row5[cnt++] = row["2Shift"];
+                        row5[cnt++] = $"=INDIRECT(\"I\"&ROW())";
+                        row5[cnt++] = $"='{worksheet.Name}'!{ worksheet.Cells[10 + partCnt, 5 + after].Address[false]}";
+                        row5[cnt++] = $"=IFERROR(INDIRECT(\"F\"&ROW())/INDIRECT(\"G\"&ROW())/INDIRECT(\"H\"&ROW()), 0)";
+                        row5[cnt++] = $"=IFERROR(INDIRECT(\"F\"&ROW())/INDIRECT(\"G\"&ROW())/INDIRECT(\"I\"&ROW()), 0)";
+                        row5[cnt++] = $"=IFERROR(INDIRECT(\"D\"&ROW())/INDIRECT(\"G\"&ROW())/INDIRECT(\"J\"&ROW()) + INDIRECT(\"E\"&ROW())/INDIRECT(\"K\"&ROW()), 0)";
+                    }
+                    else if (global.ConvertDouble(row["MasterToolId"]) == 9 || global.ConvertDouble(row["MasterToolId"]) == 10)
+                    {
+
+                        string name = $"{row["Name_LOC_Extracted"]}_{row["name"]}";
+
+                        if (toolDict.ContainsKey(name))
+                        {
+                            tool.Rows[toolDict[name]][8] = global.ConvertDouble(tool.Rows[toolDict[name]][8]) + 1;
+                        }
+                        else
+                        {
+                            ((Excel.Range)worksheet6.Rows[6 + tool.Rows.Count]).Insert(Missing.Value, worksheet6.Rows[6 + tool.Rows.Count]);
+                            int cnt = 1;
+                            DataRow row5 = tool.Rows.Add();
+                            if (toolDict.ContainsKey(name)) tool.Rows[toolDict[name]][10] = global.ConvertDouble(tool.Rows[toolDict[name]][20]) + 1;
+                            else
+                            {
+                                toolDict.Add(name, tool.Rows.Count - 1);
+                                row5[cnt++] = $"{name}";
+                                row5[cnt++] = global.ConvertDouble(row["MasterToolId"]) == 9 ? $"공용" : $"전용";
+                                row5[cnt++] = $"{row["PartNo"]}";
+                                row5[cnt++] = $"{row["ManualPartsPerCycle"]}";
+                                row5[cnt++] = $"{row["LifeTimeToolCount"]}";
+                                row5[cnt++] = $"=G{tool.Rows.Count + 5}*H{tool.Rows.Count + 5}";
+                                row5[cnt++] = $"{row["CachedInvestPerTool"]}";
+                                row5[cnt++] = $"{row["CachedInvestPerTool"]}";
+                                row5[cnt++] = 1;
+                                row5[cnt++] = $"='{worksheet.Name}'!{ worksheet.Cells[10 + partCnt, 5 + after].Address[false]}";
+                                row5[cnt++] = $"=L{tool.Rows.Count + 5}*M{tool.Rows.Count + 5}";
+                                row5[cnt++] = $"=IF(ISERROR(ROUNDUP(N{tool.Rows.Count + 5}/I{tool.Rows.Count + 5},0)),0,(ROUNDUP(N{tool.Rows.Count + 5}/I{tool.Rows.Count + 5},0)))";
+                                row5[cnt++] = $"=J{tool.Rows.Count + 5}+K{tool.Rows.Count + 5}*(O{tool.Rows.Count + 5}-1)";
+                                row5[cnt++] = global.ConvertDouble(row["MasterToolId"]) == 10 ? "" : $"=IF(ISERROR(J{tool.Rows.Count + 5}/H{tool.Rows.Count + 5}*L{tool.Rows.Count + 5}),0,(J{tool.Rows.Count + 5}/H{tool.Rows.Count + 5}*L{tool.Rows.Count + 5}))";
+                                row5[cnt++] = global.ConvertDouble(row["MasterToolId"]) == 9 ? "" : $"=P{tool.Rows.Count + 5}/N{tool.Rows.Count + 5}";
+                                row5[cnt++] = $"=Q{tool.Rows.Count + 5}+R{tool.Rows.Count + 5}";
+                            }
+                        }
+                    }
+
+                    //worksheet4.Rows[part + rowCount].Cells[5].Value = row["name"];
+                    //worksheet4.Rows[part + rowCount].Cells[6].Value = row["DirectPerson"];
+                    //worksheet4.Rows[part + rowCount].Cells[7].Value = row["ManualCycleTime"];
+                    //worksheet4.Rows[part + rowCount].Cells[8].Value = row["ManualUtilizationRate"];
+                    //worksheet4.Rows[part + rowCount].Cells[9].Formula = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
+                    //worksheet4.Rows[part + rowCount].Cells[10].Formula = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
+                    //worksheet4.Rows[part + rowCount].Cells[11].Value = row["DirectCost"];
+                    //worksheet4.Rows[part + rowCount].Cells[12].Formula = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
+
+                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[5].Value = row["name"];
+                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[6].Value = row["IndirectPerson"];
+                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[7].Value = row["ManualCycleTime"];
+                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[8].Value = row["ManualUtilizationRate"];
+                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[9].Formula = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
+                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[10].Formula = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
+                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[11].Value = row["IndirectCost"];
+                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[12].Formula = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
+
+                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[5].Value = row["name"];
+                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[6].Value = row["RequiredNumberOfMachinesInManufacturingStep"];
+                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[7].Value = row["ManualCycleTime"];
+                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[8].Value = row["ManualUtilizationRate"];
+                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[9].Formula = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
+                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[10].Formula = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
+                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[11].Value = row["Machine"];
+                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[12].Formula = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
                 }
 
+                WriteDataToExcel(dt, worksheet4, part, 5);
                 SetManufacturingSum(worksheet4, worksheet, part, addRowIndex, partCnt, rowCount);
 
+                WriteDataToExcel(tool, worksheet6, 6, 3);
+                machineNumber.Add(machine.Rows.Count);
+                toolNumber.Add(tool.Rows.Count);
+
+                for (int i =0;i< machineNumber.Count-1;i++)
+                {
+                    int targetRow = 37 + addRowIndex;
+                    int targetCol = (i) * 2 + 5;
+
+                    worksheet.Cells[targetRow, targetCol].Formula = $"=SUM('가공비'!N{ part + rowCount * 3 +10 + machineNumber[i]}:N{ part + rowCount * 3 + 9 + machineNumber[i+1]})";
+                    worksheet.Cells[targetRow++, targetCol].NumberFormat = "#,##0";
+                    worksheet.Cells[targetRow, targetCol].Formula = $"=SUM('금형비'!S{ 6+toolNumber[i]}:S{6+ toolNumber[i+1]})";    
+                    worksheet.Cells[targetRow++, targetCol].NumberFormat = "#,##0";
+
+                    targetCol++;
+                    for(int j=0; j<15;j++)
+                    {                        
+                        worksheet.Cells[32 + addRowIndex+j, targetCol].Formula = $"={global.NumberToLetter(targetCol-1)}{32+addRowIndex+j}/{global.NumberToLetter(targetCol - 1)}{32 + addRowIndex}";
+                    }
+                }
+
+                rowCount = tool.Rows.Count;
+                int colCount = tool.Columns.Count;
+                int startRow = 6;
+                int startCol = 3;
+
+                // Excel Range 지정하여 한 번에 데이터 입력
+                Excel.Range startCell = (Excel.Range)worksheet6.Cells[startRow, startCol];
+                startCell.Worksheet.Select();
+                startCell.Select();
+                Excel.Range endCell = (Excel.Range)worksheet6.Cells[startRow + rowCount - 1, startCol + colCount - 1];
+                Excel.Range writeRange = worksheet6.Range[startCell, endCell];
+                writeRange.Style = "표준"; // 한국어 엑셀
+
+                // 모든 셀에 테두리 추가
+                writeRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous; // 실선 테두리
+                //writeRange.Borders.Weight = Excel.XlBorderWeight.xlThin;       // 기본 두께 설정
+
+                // 숫자 포맷 적용
+                worksheet6.Range[startCell, endCell].NumberFormat = "#,##0";
+
+                WriteDataToExcel(machine, worksheet4, part+ dt.Rows.Count+4, 3);
+
+                worksheet4.Range[worksheet4.Cells[15, 6], worksheet4.Cells[part + dt.Rows.Count, 7]].NumberFormat = "#,##0";
+                worksheet4.Range[worksheet4.Cells[15, 8], worksheet4.Cells[part + dt.Rows.Count, 8]].NumberFormat = "0.00%";
+                worksheet4.Range[worksheet4.Cells[15, 10], worksheet4.Cells[part + dt.Rows.Count, 10]].NumberFormat = "#,##0.0000";
+                worksheet4.Range[worksheet4.Cells[15, 11], worksheet4.Cells[part + dt.Rows.Count, 12]].NumberFormat = "#,##0";
             }
             catch (Exception e)
             {
@@ -597,11 +769,16 @@ namespace TcPCM_Connect_Global
             worksheet4.Rows[part + 3 + rowCount * 3].Cells[12].Formula = $"=SUM(L{part + rowCount},L{part + 1 + rowCount * 2},L{part + 2 + rowCount * 3})";
 
             worksheet.Cells[targetRow, targetCol].NumberFormat = "#,##0";
-            worksheet.Cells[targetRow++, targetCol].Formula = $"='{worksheet4.Name}'!{worksheet4.Cells[part + rowCount, sourceCol].Address[false, false]}";
+            worksheet.Cells[targetRow++, targetCol].Formula = $"='{worksheet4.Name}'!{worksheet4.Cells[part + rowCount, sourceCol].Address[false]}";
             worksheet.Cells[targetRow, targetCol].NumberFormat = "#,##0";
-            worksheet.Cells[targetRow++, targetCol].Formula = $"='{worksheet4.Name}'!{worksheet4.Cells[part + 1 + rowCount * 2, sourceCol].Address[false, false]}";
+            worksheet.Cells[targetRow++, targetCol].Formula = $"='{worksheet4.Name}'!{worksheet4.Cells[part + 1 + rowCount * 2, sourceCol].Address[false]}";
             worksheet.Cells[targetRow, targetCol].NumberFormat = "#,##0";
-            worksheet.Cells[targetRow++, targetCol].Formula = $"='{worksheet4.Name}'!{worksheet4.Cells[part + 2 + rowCount * 3, sourceCol].Address[false, false]}";
+            worksheet.Cells[targetRow++, targetCol].Formula = $"='{worksheet4.Name}'!{worksheet4.Cells[part + 2 + rowCount * 3, sourceCol].Address[false]}";
+
+            //worksheet.Cells[targetRow, targetCol].NumberFormat = "#,##0";
+            //worksheet.Cells[targetRow++, targetCol].Formula = $"='{worksheet4.Name}'!{worksheet4.Cells[part + 1 + rowCount * 2, sourceCol].Address[false]}";
+            //worksheet.Cells[targetRow, targetCol].NumberFormat = "#,##0";
+            //worksheet.Cells[targetRow++, targetCol].Formula = $"='금형비'!{workBook.Sheets["금형비"].Cells[part + 1 + rowCount * 2, sourceCol].Address[false]}";
         }
 
         private string SetMaterial(JObject data, Workbook workBook, int cnt)
@@ -609,6 +786,8 @@ namespace TcPCM_Connect_Global
             try
             {
                 Excel.Worksheet worksheet = workBook.Sheets["재료비 상세내역"];
+                Excel.Worksheet worksheet3 = workBook.Sheets["견적원가 레포트"];
+                Worksheet worksheet7 = workBook.Sheets["재료비"];
                 worksheet.Select();
 
                 int num = -1;
@@ -623,7 +802,7 @@ namespace TcPCM_Connect_Global
                 DataTable dt = new DataTable();
 
                 // ** 📌 고정 헤더 추가 **
-                string[] baseHeaders = { "Level", "품번", "품명", "Q'TY", "단위", "소유량[kg]", "재료비갭", "탄소배출량갭" };
+                string[] baseHeaders = { "Level", "품번", "품명", "Q'TY", "단위", "소유량[kg]", "재료비갭", "탄소배출량갭", "Currency(Calculation)", "단위2", "Exchange rate (Blanks / assembly part)" };
                 foreach (var header in baseHeaders)
                 { 
                     if(header=="품번" || header == "품명") dt.Columns.Add(header, typeof(string));
@@ -631,7 +810,7 @@ namespace TcPCM_Connect_Global
                 }                
 
                 int dynamicStartCol = dt.Columns.Count; // 동적으로 추가될 컬럼 시작 위치
-
+              
                 // ** 📌 데이터 추가 (DataTable에 저장) **
                 foreach (var element in data["data"])
                 {
@@ -643,6 +822,8 @@ namespace TcPCM_Connect_Global
                             // ** Excel에 새 컬럼 추가 **
                             worksheet.Columns[7 + num].Insert(Excel.XlInsertShiftDirection.xlShiftToRight);
                             worksheet.Columns[10 + num].Insert(Excel.XlInsertShiftDirection.xlShiftToRight);
+                            worksheet7.Columns[9 + num].Insert(Excel.XlInsertShiftDirection.xlShiftToRight);
+                            worksheet7.Columns[13 + num].Insert(Excel.XlInsertShiftDirection.xlShiftToRight);
 
                             Excel.Range sourceRange = worksheet.Range[worksheet.Cells[1, 11 + 2 * num], worksheet.Cells[4, 23 + 2 * num]];
                             Excel.Range targetRange = worksheet.Range[worksheet.Cells[1, 11 + num * 13 + 2 * num], worksheet.Cells[4, 23 + num * 13 + 2 * num]];
@@ -680,9 +861,11 @@ namespace TcPCM_Connect_Global
                     }
                     else
                     {
-                        bool needInsert = false;
                         string name = element["품번"]?.ToString() ?? "";
                         string number = element["품명"]?.ToString() ?? "";
+
+                        bool needInsert = false;
+                      
                         if (num == 0)
                         {
                             excelNameIdx.Add(element["품번"]?.ToString() ?? "");
@@ -713,8 +896,12 @@ namespace TcPCM_Connect_Global
                         row["Level"] = global.ConvertDouble(element["Level"]);
                         row["품번"] = element["품번"]?.ToString() ?? "";
                         row["품명"] = element["품명"]?.ToString() ?? "";
+                        row["단위"] = element["단위"]?.ToString() ?? "";
+                        row["단위2"] = element["단위2"]?.ToString() ?? "";
+                        row["Currency(Calculation)"] = element["Currency (Calculation)"]?.ToString() ?? "";
                         row["Q'TY"] = global.ConvertDouble(element["Q'TY"]);
                         row["소유량[kg]"] = global.ConvertDouble(element["소유량[kg]"]);
+                        row["Exchange rate (Blanks / assembly part)"] = global.ConvertDouble(element["Exchange rate (Blanks / assembly part)"]);
 
                         int colOffset = dynamicStartCol + (num * 11); // 동적 컬럼 시작 위치
                         row[$"설계중량[g]_{num}"] = global.ConvertDouble(element["설계중량[g]"]);
@@ -734,32 +921,136 @@ namespace TcPCM_Connect_Global
 
                         idx++;
                     }
+                }               
+
+                DataTable dt2 = new DataTable();
+                
+                List<object> list = new List<object>();
+                for (int k = 0; k < 12+cnt*2; k++)
+                {
+                    dt2.Columns.Add($"{k}");
                 }
 
+                for (int j = 0; j < dt.Rows.Count; j++)
+                {
+                    DataRow row = dt.Rows[j];
+                    if (global.ConvertDouble(row["Level"]) == 1)
+                    {
+                        if(list.Count>0)
+                        {
+                            DataRow d = dt2.Rows.Add();
+                            worksheet7.Rows[dt2.Rows.Count+6].Insert(XlInsertShiftDirection.xlShiftDown);
+                            for (int k= 0; k < list.Count; k++)
+                            {
+                                d[k] = list[k];
+                            }
+
+                            list.Clear();
+                        }
+
+                        list.Add(dt2.Rows.Count+1);
+                        list.Add(row["품번"]);
+                        list.Add(row["품명"]);
+                        list.Add(row["Currency(Calculation)"]);
+                        list.Add(row["Exchange rate (Blanks / assembly part)"]);
+
+                        list.Add(row["단위2"]);
+                        for(int cnt2=0; cnt2 <= cnt; cnt2++)
+                        {
+                            list.Add($"= '{worksheet.Name}'!{ worksheet.Cells[j+5, 7 + cnt2].Address[false]}");
+                            //list.Add($"={global.NumberToLetter(7+cnt2)}{row}");
+                        }                       
+
+                        list.Add("kg Co2e");
+
+                        for (int cnt2 = 0; cnt2 <= cnt; cnt2++)
+                        {
+                            list.Add($"= '{worksheet.Name}'!{ worksheet.Cells[j + 5, 7 + cnt2 + cnt + 2].Address[false]}");
+                            //list.Add($"={global.NumberToLetter(7 + cnt2+cnt-1)}{row}");
+                        }
+
+                    }
+                    else if (global.ConvertDouble(row["Level"]) == 2)
+                    {
+                        list.Clear();
+                        DataRow d = dt2.Rows.Add ();
+                        worksheet7.Rows[dt2.Rows.Count + 6].Insert(XlInsertShiftDirection.xlShiftDown);
+
+                        list.Add(dt2.Rows.Count);
+                        list.Add(row["품번"]);
+                        list.Add(row["품명"]);
+                        list.Add(row["Currency(Calculation)"]);
+                        list.Add(row["Exchange rate (Blanks / assembly part)"]);
+
+                        list.Add(row["단위2"]);
+                        for (int cnt2 = 0; cnt2 <= cnt; cnt2++)
+                        {                            
+                            list.Add($"= '{worksheet.Name}'!{ worksheet.Cells[j+5, 7 + cnt2].Address[false]}");
+                            //list.Add($"={global.NumberToLetter(7 + cnt2)}{row}");
+                        }
+
+                        list.Add("kg Co2e");
+
+                        for (int cnt2 = 0; cnt2 <= cnt; cnt2++)
+                        {
+                            list.Add($"= '{worksheet.Name}'!{ worksheet.Cells[j+5, 7 + cnt2 + cnt +2].Address[false]}");
+                            //list.Add($"={global.NumberToLetter(7 + cnt2 + cnt - 1)}{row}");
+                        }
+
+                        for (int k = 0; k < list.Count; k++)
+                        {
+                            d[k] = list[k];
+                        }
+
+                        list.Clear();
+                    }
+                }
+
+                if (list.Count > 0)
+                {
+                    DataRow d = dt2.Rows.Add();
+                    worksheet7.Rows[dt2.Rows.Count + 6].Insert(XlInsertShiftDirection.xlShiftDown);
+                    for (int k = 0; k < list.Count; k++)
+                    {
+                        d[k] = list[k];
+                    }
+
+                    list.Clear();
+                }
+                DataRow d2 = dt2.Rows.Add();
+
+                worksheet7.Rows[dt2.Rows.Count + 5].Delete(XlDeleteShiftDirection.xlShiftUp);
+
+                dt.Columns.Remove("Currency(Calculation)");
+                dt.Columns.Remove("단위2");
+                dt.Columns.Remove("Exchange rate (Blanks / assembly part)");
                 // ** 🚀 한 번에 Excel에 쓰기 (DataTable → Excel) **
                 int startRow = 5;
                 int startCol = 1; // **🔥 5번째 열부터 데이터 시작**
 
-                int rowCount = dt.Rows.Count;
-                int colCount = dt.Columns.Count;
+                Excel.Range writeRange = worksheet.Range[worksheet.Cells[startRow, startCol], worksheet.Cells[startRow + dt.Rows.Count - 1, startCol + dt.Columns.Count - 1]];
+                Excel.Range sourceRow = worksheet.Range[worksheet.Cells[startRow, startCol], worksheet.Cells[startRow, startCol + dt.Columns.Count - 1]];
 
-                Excel.Range startCell = worksheet.Cells[startRow, startCol];
-                Excel.Range endCell = worksheet.Cells[startRow + rowCount - 1, startCol + colCount - 1];
-                Excel.Range writeRange = worksheet.Range[startCell, endCell];
-
-                // ** 🔥 Excel 범위에 DataTable 데이터 한 번에 입력 **
-                object[,] dataArray = new object[rowCount, colCount];
-                for (int i = 0; i < rowCount; i++)
+                WriteDataToExcel(dt, worksheet, startRow, startCol);
+                for (int cnt2 = 0; cnt2 <= cnt; cnt2++)
                 {
-                    for (int j = 0; j < colCount; j++)
-                    {
-                        dataArray[i, j] = dt.Rows[i][j];
-                    }
+                    d2[cnt2 + 6] = $"=SUM({global.NumberToLetter(cnt2 + 9)}6:{global.NumberToLetter(cnt2 + 9)}{dt2.Rows.Count + 4})";
+                    if (cnt2 == cnt) continue;
+                    worksheet3.Rows[33 + cnt-1].Cells[5 + cnt2 * 2].Formula = $"= '{worksheet7.Name}'!{ worksheet7.Cells[dt2.Rows.Count + 5, cnt2 + 9].Address[false]}";
+                    worksheet3.Rows[33 + cnt-1].Cells[5 + cnt2 * 2].NumberFormat = "#,##0";
+                    worksheet3.Rows[46 + cnt - 1].Cells[5 + cnt2 * 2].NumberFormat = "0.00%";                    
+                    //list.Add($"={global.NumberToLetter(7 + cnt2)}{row}");
                 }
 
-                writeRange.Value2 = dataArray;
-
-                Excel.Range sourceRow = worksheet.Range[worksheet.Cells[startRow, startCol], worksheet.Cells[startRow, startCol + colCount - 1]];
+                for (int cnt2 = 0; cnt2 <= cnt; cnt2++)
+                {
+                    d2[cnt2 + cnt+8] = $"=SUM({global.NumberToLetter(cnt2+ cnt + 11)}6:{global.NumberToLetter(cnt2 + cnt + 11)}{dt2.Rows.Count +4})";
+                    if (cnt2 == cnt) continue;
+                    worksheet3.Rows[47 + cnt - 1].Cells[5 + cnt2 * 2].Formula = $"= '{worksheet7.Name}'!{ worksheet7.Cells[dt2.Rows.Count + 5, cnt2 + cnt + 11].Address[false]}";
+                    worksheet3.Rows[47 + cnt - 1].Cells[5 + cnt2 * 2].NumberFormat = "#,##0";
+                    worksheet3.Rows[46 + cnt - 1].Cells[5 + cnt2 * 2].NumberFormat = "0.00%";
+                    //list.Add($"={global.NumberToLetter(7 + cnt2 + cnt - 1)}{row}");
+                }               
 
                 // ** 📌 테두리 적용 **
                 writeRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
@@ -770,6 +1061,10 @@ namespace TcPCM_Connect_Global
 
                 // 클립보드 해제 (엑셀 실행 속도 최적화)
                 worksheet.Application.CutCopyMode = 0;
+
+                WriteDataToExcel(dt2, worksheet7, 6, 3);
+
+                worksheet7.Range[worksheet7.Cells[6, 3], worksheet7.Cells[6 + dt2.Rows.Count - 1,dt2.Columns.Count - 2]].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
 
                 return null;
             }
@@ -812,7 +1107,7 @@ namespace TcPCM_Connect_Global
 
             return dict[idx].GroupBy(x => x).OrderByDescending(g => g.Count()).First().Key;
         }
-        private string WriteOptimizedToExcel(Excel.Workbook workBook, System.Data.DataTable requirements, double after, ref List<string> partName, ref int addRowIndex, ref int rowIndex, ref int colIndex)
+        private string WriteOptimizedToExcel(Excel.Workbook workBook, System.Data.DataTable requirements, double after, ref List<string> partName, ref List<string> partNo, ref int addRowIndex, ref int rowIndex, ref int colIndex)
         {
             try
             {
@@ -826,8 +1121,10 @@ namespace TcPCM_Connect_Global
                 var dataToFormat = new List<(Excel.Range, object)>();
 
                 int totalRow = requirements.Rows.Count - 1;
+                DataTable investment = new DataTable();
+               
                 foreach (DataRow row in requirements.Rows)
-                {
+                {                    
                     if (rowIndex != 11)
                     {
                         worksheet.Rows[rowIndex].Insert(XlInsertShiftDirection.xlShiftDown);
@@ -890,53 +1187,69 @@ namespace TcPCM_Connect_Global
 
                     for (int i = 0; i < 14; i++)
                     {
-                        dataToFormula.Add((worksheet2.Cells[targetRow + i, 5], $"='{worksheet.Name}'!{worksheet.Cells[sourceRow++, sourceCol].Address[false, false]}"));
+                        dataToFormula.Add((worksheet2.Cells[targetRow + i, 5], $"='{worksheet.Name}'!{worksheet.Cells[sourceRow++, sourceCol].Address[false]}"));
                     }
 
                     partName.Add(row["Name_LOC_Extracted"].ToString());
+                    partNo.Add(row["PartNo"].ToString());
 
                     worksheet.Range[worksheet.Cells[rowIndex, colIndex], worksheet.Cells[rowIndex, colIndex + 1]].Merge();
                     colIndex += 2;
+
+                    dataToFormula.Add((worksheet3.Cells[11, 6], $"=SUM(F8:F10)"));
+                    dataToFormula.Add((worksheet3.Cells[12, 6], $"='{worksheet5.Name}'!{worksheet5.Cells[15, 6].Address[false]}"));
+
+                    dataToFormula.Add((worksheet3.Cells[15, 6], $"=SUM(F12:F14)"));
+                    dataToFormula.Add((worksheet3.Cells[16, 6], $"=F11-F15"));
+                    dataToFormula.Add((worksheet3.Cells[16, 6], $"=F16"));
+                    dataToFormula.Add((worksheet3.Cells[16, 6], $"=F18"));
+
+                    dataToFormula.Add((worksheet3.Cells[20, 6], $"=IRR({global.NumberToLetter(6)}16:{global.NumberToLetter(6 + (int)after)}16)"));
+                    dataToFormula.Add((worksheet3.Cells[21, 6], $"=SUM({global.NumberToLetter(6)}16:{global.NumberToLetter(6 + (int)after)}16)"));
+                    dataToFormula.Add((worksheet3.Cells[22, 6], $"=IF(ISERROR(SUM({global.NumberToLetter(6)}22:{global.NumberToLetter(6 + (int)after)}22))>0,(SUM({global.NumberToLetter(6)}22:{global.NumberToLetter(6 + (int)after)}22)),\"회수불가\")"));
 
                     for (int i = 0; i < after; i++)
                     {
                         dataToWrite.Add((worksheet.Cells[rowIndex, colIndex], row[$"ManualValue{i}"]));
                         dataToFormat.Add((worksheet.Cells[rowIndex, colIndex++], "#,##0"));
-                        dataToFormula.Add((worksheet2.Cells[16 + (partName.Count - 1) * 22, 5 + i], $"='{worksheet.Name}'!{worksheet.Cells[11 + (partName.Count - 1), 5 + i].Address[false, false]}"));
+                        dataToFormula.Add((worksheet2.Cells[16 + (partName.Count - 1) * 22, 5 + i], $"='{worksheet.Name}'!{worksheet.Cells[11 + (partName.Count - 1), 5 + i].Address[false]}"));
 
                         int year = 52 + addRowIndex;
                         int sourceCol2 = 5 + i;
 
-                        dataToFormula.Add((worksheet.Cells[year++, sourceCol2], $"='{worksheet2.Name}'!{worksheet2.Cells[39+ (partName.Count - 1)*22, sourceCol2].Address[false, false]}"));
-                        dataToFormula.Add((worksheet.Cells[year++, sourceCol2], $"='{worksheet2.Name}'!{worksheet2.Cells[53 + (partName.Count - 1) * 22, sourceCol2].Address[false, false]}"));
+                        dataToFormula.Add((worksheet.Cells[year++, sourceCol2], $"='{worksheet2.Name}'!{worksheet2.Cells[39 + (partName.Count - 1) * 22, sourceCol2].Address[false]}"));
+                        dataToFormula.Add((worksheet.Cells[year++, sourceCol2], $"='{worksheet2.Name}'!{worksheet2.Cells[53 + (partName.Count - 1) * 22, sourceCol2].Address[false]}"));
                         dataToFormula.Add((worksheet.Cells[year++, sourceCol2], $"=E{year - 2}/E{year - 3}"));
-                        dataToFormula.Add((worksheet.Cells[year++, sourceCol2], $"='{worksheet2.Name}'!{worksheet2.Cells[57 + (partName.Count - 1) * 22, sourceCol2].Address[false, false]}"));
+                        dataToFormula.Add((worksheet.Cells[year++, sourceCol2], $"='{worksheet2.Name}'!{worksheet2.Cells[57 + (partName.Count - 1) * 22, sourceCol2].Address[false]}"));
                         dataToFormula.Add((worksheet.Cells[year, sourceCol2], $"=E{year - 1}/E{year - 4}"));
 
                         int cnt = 8;
-                        if(i!=0) dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"='{worksheet2.Name}'!{worksheet2.Cells[53 + (partName.Count - 1) * 22, sourceCol2-1].Address[false, false]}"));
-                        dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"='{worksheet5.Name}'!{worksheet5.Cells[53 + (partName.Count - 1) * 22, sourceCol2].Address[false, false]}"));
+                        int colCnt = 7 + i;
+                        //dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet5.Name}'!{worksheet5.Cells[53 + (partName.Count - 1) * 22, sourceCol2].Address[false]}"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet2.Name}'!{worksheet2.Cells[53 + (partName.Count - 1) * 22, sourceCol2].Address[false]}"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet5.Name}'!{worksheet5.Cells[24, sourceCol2+1].Address[false]}"));
 
                         cnt = 11;
-                        dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"=SUM({global.NumberToLetter(6 + i)}8:{global.NumberToLetter(6 + i)}10)"));
-                        cnt++;
-                        if (i != 0) dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"='{worksheet2.Name}'!{worksheet2.Cells[57 + (partName.Count - 1) * 22, sourceCol2-1].Address[false, false]}"));
-                        if (i != 0) dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"='{worksheet2.Name}'!{worksheet2.Cells[39 + (partName.Count - 1) * 22, sourceCol2-1].Address[false, false]}*$H4"));
-                        dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"=SUM({global.NumberToLetter(6 + i)}12:{global.NumberToLetter(6 + i)}14)"));
-                        dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"={global.NumberToLetter(6 + i)}11-{global.NumberToLetter(6 + i)}15"));
-                        dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"={global.NumberToLetter(6 + i - 1)}17-{global.NumberToLetter(6 + i)}16"));
-                        dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"={global.NumberToLetter(6 + i)}16/(1+$D4)^{global.NumberToLetter(6 + i)}7"));
-                        dataToFormula.Add((worksheet3.Cells[cnt++, 6 + i], $"={global.NumberToLetter(6 + i - 1)}19+{global.NumberToLetter(6 + i)}18"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"=SUM({global.NumberToLetter(6 + i)}8:{global.NumberToLetter(6 + i)}10)"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet5.Name}'!{worksheet5.Cells[15, sourceCol2 + 1].Address[false]}"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet2.Name}'!{worksheet2.Cells[57 + (partName.Count - 1) * 22, sourceCol2].Address[false]}"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet2.Name}'!{worksheet2.Cells[39 + (partName.Count - 1) * 22, sourceCol2].Address[false]}*$H4"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"=SUM({global.NumberToLetter(colCnt)}12:{global.NumberToLetter(colCnt)}14)"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"={global.NumberToLetter(colCnt)}11-{global.NumberToLetter(colCnt)}15"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"={global.NumberToLetter(colCnt - 1)}17-{global.NumberToLetter(colCnt)}16"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"={global.NumberToLetter(colCnt)}16/(1+$D4)^{global.NumberToLetter(colCnt)}7"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"={global.NumberToLetter(colCnt - 1)}19+{global.NumberToLetter(colCnt)}18"));
 
                         cnt = 69;
                         int cnt2 = 11;
-                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2, 6 + i].Address[false, false]}"));
+
+                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2, 6 + i].Address[false]}"));
                         cnt2 = 15;
-                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false, false]}"));
-                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false, false]}"));
-                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false, false]}"));
-                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false, false]}"));
-                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false, false]}"));
+                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false]}"));
+                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false]}"));
+                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false]}"));
+                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false]}"));
+                        dataToFormula.Add((worksheet.Cells[addRowIndex + cnt++, 5 + i], $"='{worksheet3.Name}'!{worksheet3.Cells[cnt2++, 6 + i].Address[false]}"));
 
                         int profitTargetRow = 17 + (partName.Count - 1) * 22;
                         int profitTargetCol = 5 + i;
@@ -961,28 +1274,34 @@ namespace TcPCM_Connect_Global
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow++}"));
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow++}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
 
-                            dataToFormula.Add((worksheet3.Cells[19, 6 + i], $"=IF(AND({global.NumberToLetter(6 + i)}17<0,{global.NumberToLetter(6 + i + 1)}17>=0),{global.NumberToLetter(6 + i)}7+ABS({global.NumberToLetter(6 + i)}17/{global.NumberToLetter(6 + i + 1)}16),\"\")"));
+                            dataToFormula.Add((worksheet3.Cells[22, 6 + i], $"=IF(AND({global.NumberToLetter(6 + i)}17<0,{global.NumberToLetter(6 + i + 1)}17>=0),{global.NumberToLetter(6 + i)}7+ABS({global.NumberToLetter(6 + i)}17/{global.NumberToLetter(6 + i + 1)}16),\"\")"));
 
+                        }
+                        if(partName.Count==1)
+                        {
+                            investment.Columns.Add($"{i}");
+                            for (int rowOffset = 0; rowOffset < 3; rowOffset++)
+                            {
+                                DataRow investmentRow = investment.NewRow();
+                                if (investment.Rows.Count<3) investmentRow = investment.Rows.Add();
+                                else  investmentRow = investment.Rows[rowOffset];
+                                investmentRow[$"{i}"] = $"='{worksheet5.Name}'!{worksheet5.Cells[26 + rowOffset, 6 + i].Address[false]}";
+                            }
                         }
 
 
                         profitTargetRow = 31 + (partName.Count - 1) * 22;
-
+                        profitSourceRow = 11;
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 15}-{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 14}"));
-                        dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 16}/{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}"));
+                        dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}/{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 16}"));
 
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol],
-                            $"='{worksheet5.Name}'!{worksheet5.Cells[15, profitTargetCol + 1].Address[false, false]} * {global.NumberToLetter(profitTargetCol)}{profitSourceRow++}/'{worksheet.Name}'!{worksheet.Cells[12 + addRowIndex, profitTargetCol + 1].Address[false, false]}"));
+                            $"='{worksheet5.Name}'!{worksheet5.Cells[15, profitTargetCol + 1].Address[false]} * {global.NumberToLetter(profitTargetCol)}{profitSourceRow++}/'{worksheet.Name}'!{worksheet.Cells[12 + requirements.Rows.Count-1, profitTargetCol ].Address[false]}"));
 
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 4}-{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}"));
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 3}-{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}"));
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}/{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 21}"));
-
-                        dataToFormat.Add((worksheet2.Range[worksheet2.Cells[17 + (partName.Count - 1) * 22, profitTargetCol], worksheet2.Cells[profitTargetRow, profitTargetCol]], "#,##0"));
-
-                        dataToFormat.Add((worksheet2.Cells[32 + (partName.Count - 1) * 22, profitTargetCol], "0.00%"));
-                        dataToFormat.Add((worksheet2.Cells[37 + (partName.Count - 1) * 22, profitTargetCol], "0.00%"));
 
                         if (totalRow == addRowIndex)
                         {
@@ -997,18 +1316,32 @@ namespace TcPCM_Connect_Global
                         dataToFormat.Add((worksheet.Cells[12 + addRowIndex, 5 + after], "#,##0"));
                     }
 
-                    dataToFormula.Add((worksheet3.Cells[20, 6], $"=IRR({global.NumberToLetter(6)}16:{global.NumberToLetter(6 + (int)after)}16)"));
-                    dataToFormula.Add((worksheet3.Cells[21, 6], $"=SUM({global.NumberToLetter(6)}16:{global.NumberToLetter(6 + (int)after)}16)"));
-                    dataToFormula.Add((worksheet3.Cells[22, 6], $"=IF(ISERROR(SUM({global.NumberToLetter(6)}22:{global.NumberToLetter(6 + (int)after)}22))>0,(SUM({global.NumberToLetter(6)}22:{global.NumberToLetter(6 + (int)after)}22)),\"회수불가\")"));
-
-                    dataToFormula.Add((worksheet.Cells[74, 5], $"='{worksheet3.Name}'!{worksheet3.Cells[20, 6].Address[false, false]}"));
-                    dataToFormula.Add((worksheet.Cells[75, 5], $"='{worksheet3.Name}'!{worksheet3.Cells[21, 6].Address[false, false]}"));
-                    dataToFormula.Add((worksheet.Cells[76, 5], $"='{worksheet3.Name}'!{worksheet3.Cells[22, 6].Address[false, false]}"));
+                    dataToFormula.Add((worksheet.Cells[75+addRowIndex, 5], $"='{worksheet3.Name}'!{worksheet3.Cells[20, 6].Address[false]}"));
+                    dataToFormula.Add((worksheet.Cells[76 + addRowIndex, 5], $"='{worksheet3.Name}'!{worksheet3.Cells[21, 6].Address[false]}"));
+                    dataToFormula.Add((worksheet.Cells[77 + addRowIndex, 5], $"='{worksheet3.Name}'!{worksheet3.Cells[22, 6].Address[false]}"));
 
                     dataToFormula.Add((worksheet.Cells[rowIndex, colIndex], $"=SUM(E{rowIndex}:{global.NumberToLetter(colIndex - 1)}{rowIndex})"));
 
                     rowIndex++;
                 }
+
+                WriteDataToExcel(investment, worksheet,61+addRowIndex,5);
+                worksheet.Range[worksheet.Cells[addRowIndex + 69, 5], worksheet.Cells[addRowIndex + 74, ((int)5 + after+1)]].NumberFormat = "#,##0,,;\"▲\"#,##0,,;\"-\"";
+                worksheet.Range[worksheet.Cells[addRowIndex + 69, 5], worksheet.Cells[addRowIndex + 74, ((int)5 + after + 1)]].HorizontalAlignment = Excel.XlHAlign.xlHAlignRight;
+                worksheet.Range[worksheet.Cells[addRowIndex + 69, 5], worksheet.Cells[addRowIndex + 74, ((int)5 + after + 1)]].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+
+                worksheet.Range[worksheet.Cells[addRowIndex + 75, 3], worksheet.Cells[addRowIndex + 77, 3]].Copy();
+                worksheet.Range[worksheet.Cells[addRowIndex + 75, 5], worksheet.Cells[addRowIndex + 77, 5]].PasteSpecial(Excel.XlPasteType.xlPasteFormats);
+
+                // 클립보드 해제 (엑셀 실행 속도 최적화)
+                worksheet.Application.CutCopyMode = 0;
+
+                worksheet.Cells[addRowIndex + 75,5].NumberFormat = "#,##0.0%;\"▲\" #,##0.0%;\" - \"";
+                worksheet.Cells[addRowIndex + 76,5].NumberFormat = "#,##0,,;\"▲\"#,##0,,;\" - \"";
+                worksheet.Cells[addRowIndex + 77,5].NumberFormat = "##,##0.0\"년\"";
+                worksheet.Range[worksheet.Cells[addRowIndex + 51, 5], worksheet.Cells[addRowIndex + 56, ((int)5 + after+1)]].NumberFormat = "#,##0,,";
+                worksheet.Range[worksheet.Cells[addRowIndex + 54, 5], worksheet.Cells[addRowIndex + 54, ((int)5 + after+1)]].NumberFormat = "0.00%";
+                worksheet.Range[worksheet.Cells[addRowIndex + 56, 5], worksheet.Cells[addRowIndex + 56, ((int)5 + after+1)]].NumberFormat = "0.00%";
 
                 Excel.Application excelApp = workBook.Application;
                 //excelApp.ScreenUpdating = false;  // 화면 업데이트 중지 (속도 향상)
@@ -1041,6 +1374,8 @@ namespace TcPCM_Connect_Global
             {
                 var ranges = group.Select(d => d.Item1).ToArray();
                 var values = group.Select(d => d.Item2).ToArray();
+                ranges.First().Worksheet.Select();
+                ranges.First().Select();
                 SetValues(ranges, values);
             }
 
@@ -1189,5 +1524,39 @@ namespace TcPCM_Connect_Global
                 Console.WriteLine($"{e.Message}");
             }
         }
+
+        public void WriteDataToExcel(DataTable table, Excel.Worksheet worksheet4, int startRow, int startCol)
+        {
+            int rowCount = table.Rows.Count;
+            int colCount = table.Columns.Count;
+
+            object[,] dataArray = new object[rowCount, colCount];
+
+            // DataTable의 데이터를 배열로 변환 (Excel에 한 번에 입력하기 위함)
+            for (int r = 0; r < rowCount; r++)
+            {
+                for (int c = 0; c < colCount; c++)
+                {
+                    dataArray[r, c] = table.Rows[r][c];
+                }
+            }
+
+            // Excel Range 지정하여 한 번에 데이터 입력
+            Excel.Range startCell = (Excel.Range)worksheet4.Cells[startRow, startCol];
+            Excel.Range endCell = (Excel.Range)worksheet4.Cells[startRow + rowCount - 1, startCol+ colCount-1];
+            Excel.Range writeRange = worksheet4.Range[startCell, endCell];
+
+            startCell.Worksheet.Select();
+            startCell.Select();
+            writeRange.Value2 = dataArray;
+
+            // 숫자 포맷 적용
+            worksheet4.Range[startCell, endCell].NumberFormat = "#,##0";
+
+            //// 자동 합계 적용
+            //int totalRow = startRow + rowCount;
+            //worksheet4.Cells[totalRow, colCount].Formula = $"=SUM({endCell.Address[false]})";
+        }
+
     }
 }
