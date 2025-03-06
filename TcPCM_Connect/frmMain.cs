@@ -125,6 +125,14 @@ namespace TcPCM_Connect
             frmApply(frmuserManagment, ref panelContenedorForm);
         }
 
+        private void sideButton3_Click(object sender, EventArgs e)
+        {
+            ChangeButtonColor("btn_Master", p_Manu);
+            ChangeButtonColor(((Button)sender).Name, p_Master);
+
+            frmVendorPart frm = new frmVendorPart();
+            frmApply(frm, ref panelContenedorForm);
+        }
         private void btn_Master_Click(object sender, EventArgs e)
         {
             p_Master.Visible = !p_Master.Visible;
@@ -289,6 +297,7 @@ namespace TcPCM_Connect
             frmPartManufacturing frm = new frmPartManufacturing();
             frmApply(frm, ref panelContenedorForm);
         }
+
 
         private void btnNormal_Click(object sender, EventArgs e)
         {

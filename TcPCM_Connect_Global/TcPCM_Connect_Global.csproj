@@ -69,6 +69,7 @@
     <Compile Include="Dashboard\DGVColumns.cs" />
     <Compile Include="Dashboard\PartExport.cs" />
     <Compile Include="Excel\BOMExcel.cs" />
+    <Compile Include="Excel\ExcelStandard.cs" />
     <Compile Include="Excel\frmMachineSelect.cs">
       <SubType>Form</SubType>
     </Compile>

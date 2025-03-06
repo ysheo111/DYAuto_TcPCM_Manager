@@ -40,8 +40,7 @@ namespace TcPCM_Connect
             myimageList.Images.Add(Properties.Resources.icon5); //열린 프로젝트 아이콘
             myimageList.Images.Add(Properties.Resources.tool); //툴아이콘
             tv_Bom.ImageList = myimageList;
-            eXCEL올리기ToolStripMenuItem.Visible = false;
-            eXCELBulk업로드ToolStripMenuItem.Visible = false;
+           
             pb_Refresh_Click(this.pb_Refresh, null);
             BasicInfoColumn();
         }
@@ -128,6 +127,19 @@ namespace TcPCM_Connect
                     if (clickedNode.BackColor == Color.LightSkyBlue) selectedNode.Add(clickedNode);
                     else selectedNode.Remove(clickedNode);
                 }
+                else if (e.Button == MouseButtons.Left)
+                {
+                    // 모든 노드 선택 해제
+                    foreach (TreeNode node in selectedNode)
+                    {
+                        node.BackColor = Color.White;
+                    }
+                    selectedNode.Clear();
+
+                    clickedNode.BackColor = clickedNode.BackColor == Color.LightSkyBlue ? Color.White : Color.LightSkyBlue;
+                    if (clickedNode.BackColor == Color.LightSkyBlue) selectedNode.Add(clickedNode);
+                    else selectedNode.Remove(clickedNode);
+                }
                 else if (e.Button == MouseButtons.Right)
                 {
                     // 마우스 오른쪽 버튼 클릭한 경우: 선택된 노드 정보 표시
@@ -168,7 +180,6 @@ namespace TcPCM_Connect
                 SelectItems(item);
             }
         }
-
         private void SelectItems(List<string> item)
         {
             selectItem = item;
@@ -184,41 +195,6 @@ namespace TcPCM_Connect
             folderQuery = search.ReturnValue1;
             projectQuery = search.ReturnValue2;
             partQuery = search.ReturnValue3;
-        }
-
-        private void eXCEL내려받기ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (selectItem.Count == 0)
-            {
-                CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-            }
-
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
-            {
-                CustomMessageBox.RJMessageBox.Show($"폴더 오픈을 실패하였습니다", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            PartExport bom = new PartExport();
-            string err = bom.ExportPartBom(selectItem, dialog.FileName, mode);
-            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            //dialog.FileName
-
-        }
-
-        private void eXCEL올리기ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PartExcel import = new PartExcel();
-            Dictionary<string, string> id = GetTargetTypeID();
-            string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]),"");
-
-            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void 공정라이브러리ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -271,31 +247,48 @@ namespace TcPCM_Connect
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void eXCELBulk업로드ToolStripMenuItem_Click(object sender, EventArgs e)
-        {            
-            PartExcel import = new PartExcel();
-            Dictionary<string, string> id = GetTargetTypeID();
-            string err = import.Import(id["TargetType"], global.ConvertDouble(id["ID"]), "자동");
-
-            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
-        }
-
         private void 테스트ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (selectItem.Count == 0)
+            {
+                CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
+            }
+
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+            {
+                CustomMessageBox.RJMessageBox.Show($"폴더 오픈을 실패하였습니다", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            PartExport bom = new PartExport();
+            string err = bom.ExportPartBom(selectItem, dialog.FileName, mode);
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            //dialog.FileName
         }
 
-        private void eXCEL업로드ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void 견적및표준원가다운로드ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            btn_Create.PerformClick();
-        }
+            if (selectItem.Count == 0)
+            {
+                CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "견적 및 표준원가 내보내기", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
 
-        private void btn_Create_Click(object sender, EventArgs e)
-        {
-            PartExcel import = new PartExcel();
-            string err = import.BulkImport("자동");
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+            {
+                CustomMessageBox.RJMessageBox.Show($"폴더 오픈을 실패하였습니다", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            List<string> calcList = export.AllRootCalcId(selectItem);
+            ExcelStandard excel = new ExcelStandard();
+            excel.Export(calcList, dialog.FileName);           
         }
 
         private void eXCEL다운로드ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -303,7 +296,6 @@ namespace TcPCM_Connect
             if (selectItem.Count == 0)
             {
                 CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
             }
 
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
