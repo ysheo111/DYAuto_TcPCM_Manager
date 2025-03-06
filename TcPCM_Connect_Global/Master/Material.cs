@@ -131,9 +131,18 @@ namespace TcPCM_Connect_Global
                     else if (category.Contains("품번"))
                     {
                         string idValue = row.Cells["품번"].Value?.ToString();
-                        item.Add(category, idValue.Substring(0, 7));
-                        item.Add("revision", $"{idValue.Substring(0, 7)}||{idValue.Substring(7)}");
-                        item.Add("revision number", idValue.Substring(7));
+                        if (char.IsDigit(idValue[idValue.Length - 1]))
+                        {
+                            item.Add(category, idValue.Substring(0, idValue.Length - 2));
+                            item.Add("revision", $"{idValue.Substring(0, idValue.Length-2)}||{idValue.Substring(idValue.Length - 2)}");
+                            item.Add("revision number", idValue.Substring(idValue.Length - 2));
+                        }
+                        else
+                        {
+                            item.Add(category, idValue.Substring(0, idValue.Length - 3));
+                            item.Add("revision", $"{idValue.Substring(0, idValue.Length - 3)}||{idValue.Substring(idValue.Length - 3)}");
+                            item.Add("revision number", idValue.Substring(idValue.Length - 3));
+                        }
                     }
                     else
                     {
@@ -211,9 +220,7 @@ namespace TcPCM_Connect_Global
             else
                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
 
-
-            return err;
-          
+            return err;          
         }
     }
 }

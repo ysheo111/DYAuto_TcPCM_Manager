@@ -203,12 +203,6 @@ namespace TcPCM_Connect
             else
                 ImportMethod();
         }
-        private DataTable NoDupleTable()
-        {
-            DataTable cloneTable = new DataTable();
-
-            return cloneTable;
-        }
         private void ImportMagnetWire()
         {
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
@@ -236,28 +230,13 @@ namespace TcPCM_Connect
                         searchQuery = $@"Insert into MD_MagnetWire (ValidFrom, 가공비, 두께, type)
                             Values('{row.Cells["Valid From"].Value}', {global.ConvertDouble(row.Cells["가공비"].Value)}, {global.ConvertDouble(row.Cells["두께"].Value)}, '{row.Cells["type"].Value}')";
                         err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.selfDB);
-                        //thickTypeList.Add(thickType);
                     }
-                    //else if (thickTypeList.Contains(thickType))
-                    //{
-                    //    searchQuery = $@"select 가공비 from MD_MagnetWire where Id = {partId}";
-                    //    string result = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.selfDB);
-
-                    //    if(int.Parse(result) < int.Parse(row.Cells["가공비"].Value?.ToString()))
-                    //    {
-                    //        searchQuery = $@"Update MD_MagnetWire
-                    //            Set ValidFrom='{row.Cells["Valid From"].Value}', 가공비='{global.ConvertDouble(row.Cells["가공비"].Value)}',두께='{global.ConvertDouble(row.Cells["두께"].Value)}', type = '{row.Cells["type"].Value}'
-                    //            where Id = {partId}";
-                    //        err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.selfDB);
-                    //    }
-                    //}
                     else
                     {
                         searchQuery = $@"Update MD_MagnetWire
                             Set ValidFrom='{row.Cells["Valid From"].Value}', 가공비='{global.ConvertDouble(row.Cells["가공비"].Value)}',두께='{global.ConvertDouble(row.Cells["두께"].Value)}', type = '{row.Cells["type"].Value}'
                             where Id = {partId}";
                         err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.selfDB);
-                        //thickTypeList.Add(thickType);
                     }
                 }
                 if (!string.IsNullOrEmpty(err)) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "마그넷 와이어", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -298,7 +277,6 @@ namespace TcPCM_Connect
             {
                 CustomMessageBox.RJMessageBox.Show($"Error : 작업중 오류가 발생하였습니다. 다시 시도해주세요.", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-
             dgv_Material.AllowUserToAddRows = true;
             LoadingScreen.CloseSplashScreen();
         }
@@ -573,6 +551,16 @@ namespace TcPCM_Connect
             {
                 searchQuery = "select * from [PCI].[dbo].[MD_MagnetWire]";
             }
+            else if(columnName == "단가 관리")
+            {
+                searchQuery = @"select DateValidFrom,BDRegions.UniqueKey as 지역,Currencies.IsoCode as 통화, h.UniqueKey + Number as 품번,h.Name_LOC as 참고품명,Price as 단가 from MDMaterialHeaders as h
+                                left join MDMaterialDetails as d on h.id = d.MaterialheaderId
+                                left join MDMaterialHeaderRevisions as r on h.id = r.MaterialHeaderId
+                                join BDRegions on d.RegionId = BDRegions.Id
+                                join Currencies on d.CurrencyId = Currencies.Id
+                                where h.UniqueKey Not Like '%SAP%'
+                                and LEN(Number) IN (2,3) ";
+            }
             else
             {
                 if (columnName == "다이캐스팅")
@@ -631,15 +619,19 @@ namespace TcPCM_Connect
                     searchQuery += $" And A.소재명 like N'%{inputString}%'";
                 else if (columnName == "마그넷 와이어")
                     searchQuery += $" where 가공비 like '%{inputString}%' or 두께 like '%{inputString}%' or type like '%{inputString}%'";
+                else if (columnName == "단가 관리")
+                    searchQuery += $" and ( (h.UniqueKey + Number like '%{inputString}%') or (CAST(h.Name_LOC AS NVARCHAR(MAX)) like '%{inputString}%') )";
                 else
                     searchQuery += $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
             }
             if (!string.IsNullOrEmpty(dateQuery))
             {
                 if (columnName == "원소재 단가")
-                    searchQuery += $"{searchQuery} And {dateQuery}";
+                    searchQuery += $" And {dateQuery}";
                 else if (columnName == "마그넷 와이어")
-                    searchQuery += $"{searchQuery} Where {dateQuery}";
+                    searchQuery += $" Where {dateQuery}";
+                else if (columnName == "단가 관리")
+                    searchQuery += $" And {dateQuery}";
             }
 
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
