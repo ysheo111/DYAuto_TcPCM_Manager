@@ -28,26 +28,41 @@ namespace TcPCM_Connect
 
         private void btn_Create_Click(object sender, EventArgs e)
         {
-            //if (className == "Material")
-            //    query = " AND";
-            //else
-            //    query = "Where";
-            query += $" DateValidFrom BETWEEN '{rjDatePicker1.Value.ToString("yyyy-MM-dd")}' AND '{rjDatePicker2.Value.ToString("yyyy-MM-dd")}'";
+            if (className == "표준 공정 라이브러리")
+            {
+                if (!string.IsNullOrEmpty(txtInfo.Text))
+                {
+                    if (!string.IsNullOrEmpty(query)) query += " AND ";
+                    query += $" Info = '{txtInfo.Text}' ";
+                }
+                if (!string.IsNullOrEmpty(txtPartName.Text))
+                {
+                    if (!string.IsNullOrEmpty(query)) query += " AND ";
+                    query += $" PartName = '{txtPartName.Text}' ";
+                }
+                if (!string.IsNullOrEmpty(txtName.Text))
+                {
+                    if (!string.IsNullOrEmpty(query)) query += " AND ";
+                    query += $" Name = N'{txtName.Text}' ";
+                }
+                if (!string.IsNullOrEmpty(txtCategory.Text))
+                {
+                    if (!string.IsNullOrEmpty(query)) query += " AND ";
+                    query += $" Category = N'{txtCategory.Text}' ";
+                }
+                if (!string.IsNullOrEmpty(txtMachine.Text))
+                {
+                    if (!string.IsNullOrEmpty(query)) query += " AND ";
+                    query += $" Machine = N'{txtMachine.Text}' ";
+                }
+            }
+            else if(className == "전력단가" || className == "임률")
+                query += $" COALESCE(A.DateValidFrom, B.DateValidFrom) BETWEEN '{rjDatePicker1.Value.ToString("yyyy-MM-dd")}' AND '{rjDatePicker2.Value.ToString("yyyy-MM-dd")}'";
+            else //if (className == "material" || className == "공간 생산 비용")
+                query += $" DateValidFrom BETWEEN '{rjDatePicker1.Value.ToString("yyyy-MM-dd")}' AND '{rjDatePicker2.Value.ToString("yyyy-MM-dd")}'";
+
             this.DialogResult = DialogResult.OK;
             this.Close();
-
-            //foreach (DataGridViewRow row in dgv_Config.Rows)
-            //{
-            //    if (row.Cells["Name"].Value == null || row.Cells["GUID"].Value==null) continue;
-            //    query += $@"Update Configuration 
-            //        Set Name=N'{row.Cells["Name"].Value.ToString().Replace(row.Cells["Name"].Value.ToString().Split('_')[0]+"_","")}',GUID='{row.Cells["GUID"].Value}'
-            //        Where ID={row.Cells["Id"].Value};
-            //        ";
-            //}
-            //global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
-            //LoadConfiguration();
-            //CustomMessageBox.RJMessageBox.Show("수정이 완료 되었습니다.", "Configuration"
-            //    , MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         //-> Events Methods
@@ -58,6 +73,34 @@ namespace TcPCM_Connect
 
         private void LoadConfiguration()
         {
+            if(className == "표준 공정 라이브러리")
+            {
+                rjDatePicker1.Visible = false;
+                rjDatePicker2.Visible = false;
+                combo_date.Visible = false;
+
+                label1.Text = "품번";
+                txtInfo.Visible = true;
+                label2.Text = "대표품명";
+                label2.Visible = true;
+                txtPartName.Visible = true;
+                label3.Text = "세부 공정명";
+                label3.Visible = true;
+                txtName.Visible = true;
+                label4.Text = "업종";
+                label4.Visible = true;
+                txtCategory.Visible = true;
+                label5.Text = "장비명";
+                label5.Visible = true;
+                txtMachine.Visible = true;
+            }
+            else
+            {
+                rjDatePicker1.Visible = true;
+                rjDatePicker2.Visible = true;
+                combo_date.Visible = true;
+            }
+
             //string query = $@"Select Id, Concat(Class, '_', Name) as Name, GUID From Configuration Where Class = '{className}'";
 
             //DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);

@@ -305,18 +305,11 @@ namespace TcPCM_Connect
             CustomMessageBox.RJMessageBox.Show(global.dgv_Category_DataError((DataGridView)sender, e), "DataError", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
-        private void searchButton1_SearchButtonClick(object sender, EventArgs e)
-        {
-            CustomMessageBox.RJMessageBox.Show("검색 버튼이 클릭되었습니다.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void searchButton1_DetailSearchButtonClick_1(object sender, EventArgs e)
-        {
-            Select select = new Select();
-            select.ShowDialog();
-        }
-
         private void searchButton1_SearchButtonClick_1(object sender, EventArgs e)
+        {
+            SearchMethod(null);
+        }
+        private void SearchMethod(string detailQuery)
         {
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
@@ -364,7 +357,7 @@ namespace TcPCM_Connect
                                     Full Outer Join B ON A.DateValidFrom = B.DateValidFrom And A.region = B.region";
                 searchQuery = Aselect + Bselect + FullJoin;
             }
-            else if(columnName == "임률")
+            else if (columnName == "임률")
             {
                 searchQuery = $@"With A as(
 	                        select DateValidFrom,RegionId,CurrencyId,Value*3600 as value,PlantId,SegmentId
@@ -378,7 +371,7 @@ namespace TcPCM_Connect
 	                        select DateValidFrom,RegionId,PlantId,CurrencyId,MachineHourlyRate from MDAssetDetails
 		                        where AssetHeaderId in (select Id from MDAssetHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%경비%') )
                             select
-                            COALESCE(A.DateValidFrom, B.DateValidFrom) As ValidDate,
+                            COALESCE(A.DateValidFrom, B.DateValidFrom) As DateValidFrom,
                             BDRegions.UniqueKey As Region,
                             BDPlants.UniqueKey As Plant,
                             BDSegments.UniqueKey As Segment,
@@ -394,7 +387,7 @@ namespace TcPCM_Connect
                             join Currencies ON COALESCE(A.CurrencyId, B.CurrencyId) = Currencies.Id
                             join BDSegments ON COALESCE(A.SegmentId, B.SegmentId) = BDSegments.Id";
             }
-            else if(columnName == "공간 생산 비용")
+            else if (columnName == "공간 생산 비용")
             {
                 searchQuery = $@"select DateValidFrom,BDRegions.UniqueKey As region,BDSegments.UniqueKey,Currencies.IsoCode,Text_LOC AS comment from MDCostFactorDetails
                                 JOIN BDRegions ON RegionId = BDRegions.Id
@@ -408,7 +401,11 @@ namespace TcPCM_Connect
                                 )";
             }
 
-            //입력값 검색
+            if (!string.IsNullOrEmpty(inputString) || !string.IsNullOrEmpty(detailQuery))
+            {
+            }
+
+                //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
                 if (columnName == "지역")
@@ -419,28 +416,45 @@ namespace TcPCM_Connect
                     searchQuery = searchQuery + $" And UniqueKey LIKE N'%{inputString}%'";
                 else if (columnName == "단위")
                 {
-                    searchQuery = searchQuery + $" where CAST(DisplayName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" +
-                                                $" or Cast(FullName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                    searchQuery = searchQuery + $@" where CAST(DisplayName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                                 or Cast(FullName_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
                 }
                 else if (columnName == "전력단가")
                 {
-                    searchQuery = Aselect + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'"
-                                + Bselect + $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'" + FullJoin;
+                    Aselect += $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                    Bselect += $" And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                    searchQuery = $"{Aselect} {Bselect} {FullJoin}";
+                    if (!string.IsNullOrEmpty(detailQuery))
+                        searchQuery += $" Where {detailQuery}";
                 }
                 else if (columnName == "임률")
                 {
-                    searchQuery = searchQuery + $@" where CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                                                or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                                                or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                    string searchString = $@"CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                            or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                            or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                    if (string.IsNullOrEmpty(detailQuery))
+                        searchQuery += $@" where {searchString}";
+                    else
+                        searchQuery += $" where ({searchString}) AND {detailQuery}";
                 }
-                else if(columnName == "공간 생산 비용")
+                else if (columnName == "공간 생산 비용")
                 {
                     searchQuery = searchQuery + $@"And (CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
                                                 or CAST(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'
                                                 or CAST(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
                                                 or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
+                    if (!string.IsNullOrEmpty(detailQuery))
+                        searchQuery += $" AND {detailQuery}";
                 }
             }
+            else if (!string.IsNullOrEmpty(detailQuery))
+            {
+                if(columnName == "공간 생산 비용")
+                    searchQuery += $" AND {detailQuery}";
+                else
+                    searchQuery += $" WHERE {detailQuery}";
+            }
+
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
             if (dataTable == null) return;
 
@@ -462,13 +476,27 @@ namespace TcPCM_Connect
                     }
                     else
                     {
-                        dgv_Category.Rows[dgv_Category.Rows.Count-2].Cells[count].Value = result;
+                        dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].Value = result;
                     }
                 }
             }
 
             LoadingScreen.CloseSplashScreen();
         }
+        private void searchButton1_DetailSearchButtonClick_1(object sender, EventArgs e)
+        {
+            string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+            if (columnName == "전력단가" || columnName == "임률" || columnName == "공간 생산 비용" | columnName == "작업 일수")
+            {
+                Select select = new Select();
+                select.className = columnName;
+                if (select.ShowDialog() == DialogResult.OK)
+                {
+                    SearchMethod(select.query);
+                }
+            }
+        }
+
         public string NameSplit(string input)
         {
             List<string> desiredLanguages = new List<string>() { "en-US", "ko-KR" , "ru-RU", "ja-JP", "pt-BR", "de-DE" };

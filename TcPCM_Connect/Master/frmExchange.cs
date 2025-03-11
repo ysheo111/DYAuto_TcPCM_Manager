@@ -103,13 +103,15 @@ namespace TcPCM_Connect
         private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
         {
             Select select = new Select();
-            select.ShowDialog();
+            select.className = "환율";
+            if (select.ShowDialog() == DialogResult.OK)
+            {
+                SearchMethod(select.query);
+            }
         }
-
-        private void searchButton1_SearchButtonClick(object sender, EventArgs e)
+        private void SearchMethod(string detailQuery)
         {
             dgv_ExchangeRate.Rows.Clear();
-
             string inputString = "", searchQuery = "";
             inputString = searchButton1.text;
 
@@ -119,11 +121,20 @@ namespace TcPCM_Connect
                              JOIN MDExchangeRateDetails ON MDExchangeRateHeaders.Id = MDExchangeRateDetails.ExchangeRateHeaderId
                              JOIN Currencies ON MDExchangeRateHeaders.CurrencyId = Currencies.Id";
 
-            //입력값 검색
-            if (!string.IsNullOrEmpty(inputString))
+            if (!string.IsNullOrEmpty(inputString) && !string.IsNullOrEmpty(detailQuery))//검색 값 있고 상세 검색O
             {
-                searchQuery = searchQuery + $@" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                searchQuery += $@" where {detailQuery}
+                            And ( CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                            or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%' )";
+            }
+            else if (!string.IsNullOrEmpty(inputString) && string.IsNullOrEmpty(detailQuery))//검색 값 있고 상세 검색X
+            {
+                searchQuery += $@" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
                              or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'";
+            }
+            else if (string.IsNullOrEmpty(inputString) && !string.IsNullOrEmpty(detailQuery))//검색 값 없고 상세 검색O
+            {
+                searchQuery += $" Where {detailQuery}";
             }
 
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
@@ -141,6 +152,12 @@ namespace TcPCM_Connect
                     dgv_ExchangeRate.Rows[dgv_ExchangeRate.Rows.Count - 2].Cells[count].Value = result;
                 }
             }
+            dgv_ExchangeRate.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+
+        private void searchButton1_SearchButtonClick(object sender, EventArgs e)
+        {
+            
         }
         public string NameSplit(string input)
         {

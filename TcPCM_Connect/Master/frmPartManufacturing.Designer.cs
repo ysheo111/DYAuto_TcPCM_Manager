@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -39,8 +40,12 @@
             this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.btn_Save = new CustomControls.RJControls.RJButton();
             this.btn_Create = new CustomControls.RJControls.RJButton();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.전체품명삭제하기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.선택품목삭제하기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.roundBorderPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_PartManufacturing)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // roundBorderPanel2
@@ -129,6 +134,7 @@
             this.dgv_PartManufacturing.TabIndex = 69;
             this.dgv_PartManufacturing.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_PartManufacturing_CellValueChanged);
             this.dgv_PartManufacturing.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_PartManufacturing_DataError);
+            this.dgv_PartManufacturing.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dgv_PartManufacturing_MouseDown);
             // 
             // btn_ExcelCreate
             // 
@@ -214,6 +220,29 @@
             this.btn_Create.UseVisualStyleBackColor = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.전체품명삭제하기ToolStripMenuItem,
+            this.선택품목삭제하기ToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(214, 52);
+            // 
+            // 전체품명삭제하기ToolStripMenuItem
+            // 
+            this.전체품명삭제하기ToolStripMenuItem.Name = "전체품명삭제하기ToolStripMenuItem";
+            this.전체품명삭제하기ToolStripMenuItem.Size = new System.Drawing.Size(213, 24);
+            this.전체품명삭제하기ToolStripMenuItem.Text = "선택 품번 전체 삭제";
+            this.전체품명삭제하기ToolStripMenuItem.Click += new System.EventHandler(this.전체품번삭제하기ToolStripMenuItem_Click);
+            // 
+            // 선택품목삭제하기ToolStripMenuItem
+            // 
+            this.선택품목삭제하기ToolStripMenuItem.Name = "선택품목삭제하기ToolStripMenuItem";
+            this.선택품목삭제하기ToolStripMenuItem.Size = new System.Drawing.Size(213, 24);
+            this.선택품목삭제하기ToolStripMenuItem.Text = "선택 행 항목 삭제";
+            this.선택품목삭제하기ToolStripMenuItem.Click += new System.EventHandler(this.선택품목삭제하기ToolStripMenuItem_Click);
+            // 
             // frmPartManufacturing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -227,6 +256,7 @@
             this.Load += new System.EventHandler(this.frmExchange_Load);
             this.roundBorderPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_PartManufacturing)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -238,5 +268,8 @@
         private CustomControls.RJControls.RJButton btn_ExcelCreate;
         private Controller.SearchButton searchButton1;
         private System.Windows.Forms.DataGridView dgv_PartManufacturing;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem 전체품명삭제하기ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 선택품목삭제하기ToolStripMenuItem;
     }
 }
