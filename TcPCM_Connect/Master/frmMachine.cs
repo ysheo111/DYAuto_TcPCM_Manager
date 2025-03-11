@@ -61,7 +61,20 @@ namespace TcPCM_Connect
             Thread.Sleep(100);
             LoadingScreen.CloseSplashScreen();
         }
+        private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
+        {
+            Select select = new Select();
+            select.className = "설비";
+            if (select.ShowDialog() == DialogResult.OK)
+            {
+                SearchMethod(select.query);
+            }
+        }
         private void searchButton1_SearchButtonClick(object sender, EventArgs e)
+        {
+            SearchMethod(null);
+        }
+        private void SearchMethod(string detailQuery)
         {
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
@@ -92,6 +105,9 @@ namespace TcPCM_Connect
             {
                 searchQuery = searchQuery + $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
             }
+            if (!string.IsNullOrEmpty(detailQuery))
+                searchQuery += $" And {detailQuery}";
+
             searchQuery += havingQuery;
 
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
@@ -115,9 +131,9 @@ namespace TcPCM_Connect
                             dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["설비명"].Value = aa[0];
                             dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].Value = aa[1];
                         }
-                        else if(aa.Length > 3)
+                        else if (aa.Length > 3)
                         {
-                            if(int.TryParse(aa[1], out int num))
+                            if (int.TryParse(aa[1], out int num))
                             {
                                 dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["최대 톤수"].Value = aa[1];
                                 for (int a = 2; a < aa.Length; a++)
@@ -127,7 +143,7 @@ namespace TcPCM_Connect
                             }
                             else
                             {
-                                for(int a=1; a<aa.Length; a++)
+                                for (int a = 1; a < aa.Length; a++)
                                 {
                                     dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].Value = dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].Value + aa[a];
                                 }
@@ -143,7 +159,6 @@ namespace TcPCM_Connect
             }
             LoadingScreen.CloseSplashScreen();
         }
-
         private void btn_Configuration_Click(object sender, EventArgs e)
         {
             ConfigSetting config = new ConfigSetting();

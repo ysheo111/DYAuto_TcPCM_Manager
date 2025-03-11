@@ -43,7 +43,11 @@ namespace TcPCM_Connect
 
         private void btn_ExcelCreate_Click(object sender, EventArgs e)
         {
+            ExcelImport excel = new ExcelImport();
+            string err = excel.LoadMasterData("협력사", dgv_Vendor);
 
+            if (err != null)
+                CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void ColumnAdd()
@@ -121,6 +125,6 @@ namespace TcPCM_Connect
             dgv_Vendor.Rows.Clear();
 
             LoadingScreen.CloseSplashScreen();
-        }        
+        }
     }
 }

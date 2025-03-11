@@ -19,11 +19,11 @@ namespace TcPCM_Connect
     public partial class frmPartManufacturing : Form
     {
         public string className = "";
+        List<DataGridViewRow> selectItem = new List<DataGridViewRow>();
         public frmPartManufacturing()
         {
             InitializeComponent();
         }
-
         private void frmExchange_Load(object sender, EventArgs e)
         {
             dgv_PartManufacturing.AllowUserToAddRows = true;
@@ -149,10 +149,18 @@ namespace TcPCM_Connect
         private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
         {
             Select select = new Select();
-            select.ShowDialog();
+            select.className = "표준 공정 라이브러리";
+            if (select.ShowDialog() == DialogResult.OK)
+            {
+                SearchMethod(select.query);
+            }
         }
 
         private void searchButton1_SearchButtonClick(object sender, EventArgs e)
+        {
+            SearchMethod(null);
+        }
+        private void SearchMethod(string detailQuery)
         {
             dgv_PartManufacturing.Rows.Clear();
 
@@ -164,11 +172,17 @@ namespace TcPCM_Connect
                                 join[PCI].[dbo].[PartInfo] on[PCI].[dbo].[PartInfo].Id = [PCI].[dbo].[Manufacturing].PartId";
 
             //입력값 검색
-            if (!string.IsNullOrEmpty(inputString))
+            if (!string.IsNullOrEmpty(inputString) && string.IsNullOrEmpty(detailQuery))
             {
-                searchQuery = searchQuery + $@" where Machine like N'%{inputString}%'
+                searchQuery = searchQuery + $@" where Info like N'%{inputString}%'
+                                          OR PartName like N'%{inputString}%'
                                           OR Name like N'%{inputString}%'
-                                          OR Info like N'%{inputString}%'";
+                                          OR Category like N'%{inputString}%'
+                                          OR Machine like N'%{inputString}%'";
+            }
+            else if(!string.IsNullOrEmpty(detailQuery))
+            {
+                searchQuery += $" where {detailQuery}";
             }
 
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
@@ -185,13 +199,13 @@ namespace TcPCM_Connect
                     if (col.ColumnName == "Machine")
                     {
                         string[] splitResult = result.Split('_');
-                        if(splitResult.Length == 2)
+                        if (splitResult.Length == 2)
                         {
                             dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells["기계명"].Value = splitResult[0].Trim();
                             dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells["메이커"].Value = splitResult[1].Trim();
                             i += 2;
                         }
-                        else if(splitResult.Length == 3)
+                        else if (splitResult.Length == 3)
                         {
                             dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells["기계명"].Value = splitResult[0].Trim();
                             dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells["톤수"].Value = splitResult[1].Trim();
@@ -204,6 +218,71 @@ namespace TcPCM_Connect
                 }
             }
             dgv_PartManufacturing.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+
+        private void dgv_PartManufacturing_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                ContextMenuStrip menu = contextMenuStrip1;
+
+                menu.Show(e.Location);
+            }
+            List<DataGridViewRow> item = new List<DataGridViewRow>();
+            if (e.Button == MouseButtons.Right)
+            {
+                foreach (DataGridViewCell cell in dgv_PartManufacturing.SelectedCells)
+                {
+                    DataGridViewRow selectRow = dgv_PartManufacturing.Rows[cell.RowIndex];
+                    item.Add(selectRow);
+                }
+                SelectItems(item);
+            }
+        }
+        private void SelectItems(List<DataGridViewRow> item)
+        {
+            selectItem = item;
+            contextMenuStrip1.Show(MousePosition.X, MousePosition.Y);
+        }
+        private void 전체품번삭제하기ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow item in selectItem)
+            {
+                string query = $@"delete from Manufacturing
+                                where Info = '{item.Cells["품번"]}' and PartName = N'{item.Cells["대표품명"]}' ";
+                string err = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
+                if(err == null)
+                {
+                    query = $@"delete from [PCI].[dbo].[PartInfo]
+                            where Info = '{item.Cells["품번"]}' and PartName = N'{item.Cells["대표품명"]}' ";
+                    err = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
+                    if (err == null)
+                        CustomMessageBox.RJMessageBox.Show("삭제 완료 되었습니다.", "표준 공정", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    else
+                        CustomMessageBox.RJMessageBox.Show($"삭제 실패하였습니다\n{err}", "표준 공정", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                    CustomMessageBox.RJMessageBox.Show($"삭제 실패하였습니다\n{err}", "표준 공정", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void 선택품목삭제하기ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow item in selectItem)
+            {
+                string itemName = string.Join("_", new[] { item.Cells["기계명"].Value, item.Cells["톤수"].Value, item.Cells["메이커"].Value }.Select(obj => obj?.ToString()).Where(n => !string.IsNullOrEmpty(n))).Trim();
+                string query = $@"delete from Manufacturing
+                            where Info = '{item.Cells["품번"]}' and PartName = N'{item.Cells["대표품명"]}'
+                            and Name = N'{item.Cells["세부 공정명"]}' and Category = N'{item.Cells["업종"]}'
+                            and Machine = N'{itemName}' 
+                            and Cycletime = '{item.Cells["Cycle time"]}' and Cavity = '{item.Cells["Cavity"]}'
+                            and Quantity = '{item.Cells["Q'ty"]}' and Utilization = '{item.Cells["Utilization ratio"]}'
+                            and NumberOfWorkers = '{item.Cells["Number of workers"]} and comment = '{item.Cells["comment"]}";
+                string result = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
+                //query = $@"delete from [PCI].[dbo].[PartInfo]
+                //        where Info = '{item.Cells["품번"]}' and PartName = '{item.Cells["대표품명"]}' ";
+                //result = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
+            }
         }
     }
 }
