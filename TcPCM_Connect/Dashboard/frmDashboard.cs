@@ -289,7 +289,7 @@ namespace TcPCM_Connect
             List<string> calcList = export.AllRootCalcId(selectItem);
             ExcelStandard excel = new ExcelStandard();
             string err= excel.Export(calcList, dialog.FileName);
-            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "견적 및 표준원가 양식", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if (err != null && err.Length>0) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다", "견적 및 표준원가 양식", err, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "견적 및 표준원가 양식", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
