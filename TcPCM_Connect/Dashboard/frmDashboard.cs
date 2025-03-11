@@ -288,7 +288,10 @@ namespace TcPCM_Connect
 
             List<string> calcList = export.AllRootCalcId(selectItem);
             ExcelStandard excel = new ExcelStandard();
-            excel.Export(calcList, dialog.FileName);           
+            string err= excel.Export(calcList, dialog.FileName);
+            if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "견적 및 표준원가 양식", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "견적 및 표준원가 양식", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
         }
 
         private void eXCEL다운로드ToolStripMenuItem_Click(object sender, EventArgs e)
