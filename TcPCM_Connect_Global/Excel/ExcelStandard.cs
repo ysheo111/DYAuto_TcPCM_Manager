@@ -151,16 +151,16 @@ namespace TcPCM_Connect_Global
             }
             finally
             {
-                //if (workBook != null)
-                //{
-                //    //변경점 저장하면서 닫기
-                //    workBook.Close(true);
-                //    //Excel 프로그램 종료
-                //    application.Quit();
-                //    //오브젝트 해제1
-                //    ExcelCommon.ReleaseExcelObject(workBook);
-                //    ExcelCommon.ReleaseExcelObject(application);
-                //}
+                if (workBook != null)
+                {
+                    //변경점 저장하면서 닫기
+                    workBook.Close(true);
+                    //Excel 프로그램 종료
+                    //application.Quit();
+                    ////오브젝트 해제1
+                    //ExcelCommon.ReleaseExcelObject(workBook);
+                    //ExcelCommon.ReleaseExcelObject(application);
+                }
             }
 
 
@@ -283,45 +283,31 @@ namespace TcPCM_Connect_Global
                 // ** 🚀 한 번에 Excel에 쓰기 (DataTable → Excel) **
                 int startRow = 4;
                 int startCol = 5; // **🔥 5번째 열부터 데이터 시작**
-                Excel.Range writeRange = worksheet2.Range[worksheet2.Cells[startRow, startCol], worksheet2.Cells[startRow + increaseDataTable.Rows.Count - 1, startCol + increaseDataTable.Columns.Count - 1]];
-
+             
                 WriteDataToExcel(increaseDataTable, worksheet2, startRow, startCol);
-                Excel.Range sourceRow = worksheet2.Range[worksheet2.Cells[startRow, startCol + increaseDataTable.Columns.Count], worksheet2.Cells[startRow + increaseDataTable.Rows.Count - 1, startCol + increaseDataTable.Columns.Count]];
-
-                // ** 📌 테두리 적용 **
-                //writeRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
-                for (int i = 0; i < partName.Count; i++)
-                {
-                    worksheet2.Range[worksheet2.Cells[32 + i * 22, 4], worksheet2.Cells[32 + i * 22, 5 + after]].NumberFormat = "0.00%";
-                    worksheet2.Range[worksheet2.Cells[37 + i * 22, 4], worksheet2.Cells[32 + i * 37, 5 + after]].NumberFormat = "0.00%";
-                }
-                writeRange.NumberFormat = "0.00 % ";
-                //// 클립보드 해제 (엑셀 실행 속도 최적화)
-                //worksheet.Application.CutCopyMode = 0;
 
                 // ** 🚀 한 번에 Excel에 쓰기 (DataTable → Excel) **
                 startRow = 16 + 22 * partName.Count;
                  startCol = 5; // **🔥 5번째 열부터 데이터 시작**
 
-                writeRange = worksheet2.Range[worksheet2.Cells[startRow, startCol], worksheet2.Cells[startRow + formulaDataTable.Rows.Count - 1, startCol + formulaDataTable.Columns.Count - 1]];
-
                 WriteDataToExcel(formulaDataTable, worksheet2, startRow, startCol);
 
-                //sourceRow = worksheet2.Range[worksheet2.Cells[16, startCol], worksheet2.Cells[37, startCol + formulaDataTable.Columns.Count - 1]];
+                worksheet2.Range[worksheet2.Cells[4, 5 + after], worksheet2.Cells[37 + (partName.Count) * 22, 5 + after]].Copy();
+                worksheet2.Range[worksheet2.Cells[4, 5], worksheet2.Cells[37 + (partName.Count) * 22, 5 + after - 1]].PasteSpecial(Excel.XlPasteType.xlPasteFormats);
+                // 클립보드 해제 (엑셀 실행 속도 최적화)
+                worksheet2.Application.CutCopyMode = 0;
+                object[,] dataArray = new object[1, (partName.Count + 1) * 22];
 
-                //// **🚀 서식만 복사하기**
-                //sourceRow.Copy();
-                //writeRange.PasteSpecial(Excel.XlPasteType.xlPasteFormats);
+                // DataTable의 데이터를 배열로 변환 (Excel에 한 번에 입력하기 위함)
+                for (int r = 0; r < 1; r++)
+                {
+                    for (int c = 0; c < (partName.Count+1) * 22; c++)
+                    {
+                        dataArray[r, c] = $"=AVERAGE(E{c+16}:{global.NumberToLetter(4+after)}{c+16})";
+                    }
+                }
 
-                //// 클립보드 해제 (엑셀 실행 속도 최적화)
-                //worksheet.Application.CutCopyMode = 0;
-
-                writeRange.NumberFormat = "#,##0,,";
-                worksheet2.Range[worksheet2.Cells[startRow + 16, startCol], worksheet2.Cells[startRow + 16, startCol + formulaDataTable.Columns.Count - 1]].NumberFormat = "0.00%";
-                worksheet2.Range[worksheet2.Cells[startRow + 21, startCol], worksheet2.Cells[startRow + 21, startCol + formulaDataTable.Columns.Count - 1]].NumberFormat = "0.00%";
-
-                // ** 5. 결과값 엑셀에 입력 (한 번에) **
-                //ApplyDataToExcel(dataToWrite, new List<(Excel.Range, object)>(), dataToFormat);
+                worksheet2.Range[worksheet2.Cells[16, 5 + after], worksheet2.Cells[37 + (partName.Count) * 22, 5 + after]].Value2 = dataArray;
 
                 //**6.Most Frequent 값 계산 후 입력**
                 var dataToMostFreq = new List<(Excel.Range, object)>
@@ -745,6 +731,20 @@ namespace TcPCM_Connect_Global
                 worksheet4.Range[worksheet4.Cells[15, 8], worksheet4.Cells[part + dt.Rows.Count, 8]].NumberFormat = "0.00%";
                 worksheet4.Range[worksheet4.Cells[15, 10], worksheet4.Cells[part + dt.Rows.Count, 10]].NumberFormat = "#,##0.0000";
                 worksheet4.Range[worksheet4.Cells[15, 11], worksheet4.Cells[part + dt.Rows.Count, 12]].NumberFormat = "#,##0";
+
+                worksheet6.Cells[startRow + rowCount, 10].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},J6:J{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount, 11].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},K6:K{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount, 16].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},P6:P{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount, 17].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},Q6:Q{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount, 18].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},R6:R{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount, 19].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},S6:S{5 + tool.Rows.Count})";
+
+                worksheet6.Cells[startRow + rowCount+1, 10].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},J6:J{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount+1, 11].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},K6:K{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount+1, 16].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},P6:P{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount+1, 17].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},Q6:Q{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount+1, 18].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},R6:R{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount+1, 19].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},S6:S{5 + tool.Rows.Count})";
             }
             catch (Exception e)
             {
@@ -1054,16 +1054,18 @@ namespace TcPCM_Connect_Global
 
                 // ** 📌 테두리 적용 **
                 writeRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
-
+                writeRange.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignRight;
                 // **🚀 서식만 복사하기**
                 sourceRow.Copy();
                 writeRange.PasteSpecial(Excel.XlPasteType.xlPasteFormats);
-
+                sourceRow.Application.CutCopyMode = 0;
                 // 클립보드 해제 (엑셀 실행 속도 최적화)
-                worksheet.Application.CutCopyMode = 0;
-
+  
                 WriteDataToExcel(dt2, worksheet7, 6, 3);
 
+                worksheet.Range[worksheet.Cells[5, 7], worksheet.Cells[6 + dt.Rows.Count - 1, 7+dt.Columns.Count]].HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignRight;
+
+                worksheet7.Range[worksheet7.Cells[6, 4], worksheet7.Cells[6 + dt2.Rows.Count - 1, 4]].NumberFormat = "@";
                 worksheet7.Range[worksheet7.Cells[6, 3], worksheet7.Cells[6 + dt2.Rows.Count - 1,dt2.Columns.Count - 2]].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
 
                 return null;
@@ -1143,11 +1145,11 @@ namespace TcPCM_Connect_Global
                         // 원본 범위를 복사
                         targetRange.Copy();
                         targetRange.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                        targetRange.Application.CutCopyMode = 0;
 
                         sourceRange2.Copy();
                         targetRange2.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
-
-                        worksheet2.Application.CutCopyMode = 0;
+                        sourceRange2.Application.CutCopyMode = 0;
                     }
                     //worksheet2.Cells[16 + partName.Count * 22, 3].Value = worksheet.Cells[rowIndex, colIndex].Value = worksheet.Cells[29 + addRowIndex, 5 + partName.Count * 2].Value = row["Name_LOC_Extracted"];
                     string partNameValue = row["Name_LOC_Extracted"].ToString();
