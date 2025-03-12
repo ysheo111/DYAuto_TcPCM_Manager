@@ -119,7 +119,7 @@ namespace TcPCM_Connect_Global
                 {
                     DataRow row = invest.Rows.Add();
                     if (rowIdx == 25) row[" "] = "";
-                    else row[" "]= $"=SUM(F{rowIdx}:{global.NumberToLetter(6 + (int)after)}{rowIdx})";
+                    else row[" "]= $"=SUM(F{rowIdx}:{global.NumberToLetter(5 + (int)after)}{rowIdx})";
                     
                     //worksheet5.Cells[rowIdx, 6 + after + 1].Formula = $"=SUM(F{rowIdx}:={global.NumberToLetter(6 + (int)after)}{rowIdx})";
                 }
@@ -154,7 +154,8 @@ namespace TcPCM_Connect_Global
                 if (workBook != null)
                 {
                     //변경점 저장하면서 닫기
-                    workBook.Close(true);
+                    workBook.Save();
+                    //workBook.Close(true);
                     //Excel 프로그램 종료
                     //application.Quit();
                     ////오브젝트 해제1
@@ -291,6 +292,11 @@ namespace TcPCM_Connect_Global
                  startCol = 5; // **🔥 5번째 열부터 데이터 시작**
 
                 WriteDataToExcel(formulaDataTable, worksheet2, startRow, startCol);
+
+                worksheet2.Range[worksheet2.Cells[16, 5 + after], worksheet2.Cells[37, 5 + after]].Copy();
+                worksheet2.Range[worksheet2.Cells[38, 5 + after], worksheet2.Cells[37 + (partName.Count-1) * 22, 5 + after]].PasteSpecial(Excel.XlPasteType.xlPasteFormats);
+                // 클립보드 해제 (엑셀 실행 속도 최적화)
+                worksheet2.Application.CutCopyMode = 0;
 
                 worksheet2.Range[worksheet2.Cells[4, 5 + after], worksheet2.Cells[37 + (partName.Count) * 22, 5 + after]].Copy();
                 worksheet2.Range[worksheet2.Cells[4, 5], worksheet2.Cells[37 + (partName.Count) * 22, 5 + after - 1]].PasteSpecial(Excel.XlPasteType.xlPasteFormats);
@@ -1064,8 +1070,10 @@ namespace TcPCM_Connect_Global
                 WriteDataToExcel(dt2, worksheet7, 6, 3);
 
                 worksheet.Range[worksheet.Cells[5, 7], worksheet.Cells[6 + dt.Rows.Count - 1, 7+dt.Columns.Count]].HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignRight;
+                worksheet.Range[worksheet.Cells[5, 1], worksheet.Cells[6 + dt.Rows.Count - 1, 6]].HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
 
                 worksheet7.Range[worksheet7.Cells[6, 4], worksheet7.Cells[6 + dt2.Rows.Count - 1, 4]].NumberFormat = "@";
+                worksheet.Range[worksheet.Cells[5, 2], worksheet.Cells[6 + dt.Rows.Count - 1, 2]].NumberFormat = "@";
                 worksheet7.Range[worksheet7.Cells[6, 3], worksheet7.Cells[6 + dt2.Rows.Count - 1,dt2.Columns.Count - 2]].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
 
                 return null;
@@ -1208,7 +1216,7 @@ namespace TcPCM_Connect_Global
 
                     dataToFormula.Add((worksheet3.Cells[20, 6], $"=IRR({global.NumberToLetter(6)}16:{global.NumberToLetter(6 + (int)after)}16)"));
                     dataToFormula.Add((worksheet3.Cells[21, 6], $"=SUM({global.NumberToLetter(6)}16:{global.NumberToLetter(6 + (int)after)}16)"));
-                    dataToFormula.Add((worksheet3.Cells[22, 6], $"=IF(ISERROR(SUM({global.NumberToLetter(6)}22:{global.NumberToLetter(6 + (int)after)}22))>0,(SUM({global.NumberToLetter(6)}22:{global.NumberToLetter(6 + (int)after)}22)),\"회수불가\")"));
+                    dataToFormula.Add((worksheet3.Cells[22, 6], $"=IF(ISERROR(SUM({global.NumberToLetter(7)}22:{global.NumberToLetter(6 + (int)after)}22))>0,(SUM({global.NumberToLetter(7)}22:{global.NumberToLetter(6 + (int)after)}22)),\"회수불가\")"));
 
                     for (int i = 0; i < after; i++)
                     {
@@ -1271,8 +1279,8 @@ namespace TcPCM_Connect_Global
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow++}"));
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"=SUM({global.NumberToLetter(profitTargetCol)}{profitTargetRow - 8}:{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2 })"));
 
-                            dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow++}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
-                            dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow++}"));
+                            dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow-2}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
+                            dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow - 2}"));
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow++}"));
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow++}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
 
