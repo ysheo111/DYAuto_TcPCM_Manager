@@ -737,6 +737,7 @@ namespace TcPCM_Connect_Global
                 worksheet4.Range[worksheet4.Cells[15, 8], worksheet4.Cells[part + dt.Rows.Count, 8]].NumberFormat = "0.00%";
                 worksheet4.Range[worksheet4.Cells[15, 10], worksheet4.Cells[part + dt.Rows.Count, 10]].NumberFormat = "#,##0.0000";
                 worksheet4.Range[worksheet4.Cells[15, 11], worksheet4.Cells[part + dt.Rows.Count, 12]].NumberFormat = "#,##0";
+                worksheet4.Range[worksheet4.Cells[5, 5], worksheet4.Cells[7, 4+after]].NumberFormat = "#,##0";
 
                 worksheet6.Cells[startRow + rowCount, 10].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},J6:J{5 + tool.Rows.Count})";
                 worksheet6.Cells[startRow + rowCount, 11].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},K6:K{5 + tool.Rows.Count})";
@@ -1042,7 +1043,7 @@ namespace TcPCM_Connect_Global
                 {
                     d2[cnt2 + 6] = $"=SUM({global.NumberToLetter(cnt2 + 9)}6:{global.NumberToLetter(cnt2 + 9)}{dt2.Rows.Count + 4})";
                     if (cnt2 == cnt) continue;
-                    worksheet3.Rows[33 + cnt-1].Cells[5 + cnt2 * 2].Formula = $"= '{worksheet7.Name}'!{ worksheet7.Cells[dt2.Rows.Count + 5, cnt2 + 9].Address[false]}";
+                    worksheet3.Rows[33 + cnt-1].Cells[5 + cnt2 * 2].Formula = $"= '{worksheet7.Name}'!{ worksheet7.Cells[dt2.Rows.Count + 5, cnt2 + 9].Address[false]}*(1+E{23+addiction})";
                     worksheet3.Rows[33 + cnt-1].Cells[5 + cnt2 * 2].NumberFormat = "#,##0";
                     worksheet3.Rows[46 + cnt - 1].Cells[5 + cnt2 * 2].NumberFormat = "0.00%";                    
                     //list.Add($"={global.NumberToLetter(7 + cnt2)}{row}");
@@ -1211,11 +1212,12 @@ namespace TcPCM_Connect_Global
 
                     dataToFormula.Add((worksheet3.Cells[15, 6], $"=SUM(F12:F14)"));
                     dataToFormula.Add((worksheet3.Cells[16, 6], $"=F11-F15"));
-                    dataToFormula.Add((worksheet3.Cells[16, 6], $"=F16"));
-                    dataToFormula.Add((worksheet3.Cells[16, 6], $"=F18"));
+                    dataToFormula.Add((worksheet3.Cells[17, 6], $"=F16"));
+                    dataToFormula.Add((worksheet3.Cells[18, 6], $"=F16"));
+                    dataToFormula.Add((worksheet3.Cells[18, 6], $"=F18"));
 
                     dataToFormula.Add((worksheet3.Cells[20, 6], $"=IRR({global.NumberToLetter(6)}16:{global.NumberToLetter(6 + (int)after)}16)"));
-                    dataToFormula.Add((worksheet3.Cells[21, 6], $"=SUM({global.NumberToLetter(6)}16:{global.NumberToLetter(6 + (int)after)}16)"));
+                    dataToFormula.Add((worksheet3.Cells[21, 6], $"=SUM({global.NumberToLetter(6)}18:{global.NumberToLetter(6 + (int)after)}18)"));
                     dataToFormula.Add((worksheet3.Cells[22, 6], $"=IF(ISERROR(SUM({global.NumberToLetter(7)}22:{global.NumberToLetter(6 + (int)after)}22))>0,(SUM({global.NumberToLetter(7)}22:{global.NumberToLetter(6 + (int)after)}22)),\"회수불가\")"));
 
                     for (int i = 0; i < after; i++)
@@ -1240,13 +1242,14 @@ namespace TcPCM_Connect_Global
                         dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet5.Name}'!{worksheet5.Cells[24, sourceCol2+1].Address[false]}"));
 
                         cnt = 11;
-                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"=SUM({global.NumberToLetter(6 + i)}8:{global.NumberToLetter(6 + i)}10)"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"=SUM({global.NumberToLetter(7 + i)}8:{global.NumberToLetter(7 + i)}10)"));
                         dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet5.Name}'!{worksheet5.Cells[15, sourceCol2 + 1].Address[false]}"));
                         dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet2.Name}'!{worksheet2.Cells[57 + (partName.Count - 1) * 22, sourceCol2].Address[false]}"));
-                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet2.Name}'!{worksheet2.Cells[39 + (partName.Count - 1) * 22, sourceCol2].Address[false]}*$H4"));
+                        if(i==0)dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"='{worksheet2.Name}'!{worksheet2.Cells[39 + (partName.Count - 1) * 22, sourceCol2].Address[false]}*$H4"));
+                        else dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"=('{worksheet2.Name}'!{worksheet2.Cells[39 + (partName.Count - 1) * 22, sourceCol2].Address[false]}-'{worksheet2.Name}'!{worksheet2.Cells[39 + (partName.Count - 1) * 22, sourceCol2-1].Address[false]})*$H4"));
                         dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"=SUM({global.NumberToLetter(colCnt)}12:{global.NumberToLetter(colCnt)}14)"));
                         dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"={global.NumberToLetter(colCnt)}11-{global.NumberToLetter(colCnt)}15"));
-                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"={global.NumberToLetter(colCnt - 1)}17-{global.NumberToLetter(colCnt)}16"));
+                        dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"={global.NumberToLetter(colCnt - 1)}17+{global.NumberToLetter(colCnt)}16"));
                         dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"={global.NumberToLetter(colCnt)}16/(1+$D4)^{global.NumberToLetter(colCnt)}7"));
                         dataToFormula.Add((worksheet3.Cells[cnt++, colCnt], $"={global.NumberToLetter(colCnt - 1)}19+{global.NumberToLetter(colCnt)}18"));
 
@@ -1279,9 +1282,9 @@ namespace TcPCM_Connect_Global
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow++}"));
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"=SUM({global.NumberToLetter(profitTargetCol)}{profitTargetRow - 8}:{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2 })"));
 
-                            dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow-2}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
-                            dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow - 2}"));
-                            dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow++}"));
+                            dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow-11}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
+                            dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow - 1}"));
+                            dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 13)}{profitTargetRow++}"));
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow++}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
 
                             dataToFormula.Add((worksheet3.Cells[22, 6 + i], $"=IF(AND({global.NumberToLetter(6 + i)}17<0,{global.NumberToLetter(6 + i + 1)}17>=0),{global.NumberToLetter(6 + i)}7+ABS({global.NumberToLetter(6 + i)}17/{global.NumberToLetter(6 + i + 1)}16),\"\")"));
@@ -1298,7 +1301,10 @@ namespace TcPCM_Connect_Global
                                 investmentRow[$"{i}"] = $"='{worksheet5.Name}'!{worksheet5.Cells[26 + rowOffset, 6 + i].Address[false]}";
                             }
                         }
-
+                        for(int rowCnt = 8; rowCnt < 20;i++)
+                        {
+                            dataToFormula.Add((worksheet3.Cells[rowCnt, 8 + after], $"=SUM(F{rowCnt}:{global.NumberToLetter(8 + (int)after - 1)}{rowCnt})"));
+                        }
 
                         profitTargetRow = 31 + (partName.Count - 1) * 22;
                         profitSourceRow = 11;
@@ -1349,6 +1355,7 @@ namespace TcPCM_Connect_Global
                 worksheet.Cells[addRowIndex + 75,5].NumberFormat = "#,##0.0%;\"▲\" #,##0.0%;\" - \"";
                 worksheet.Cells[addRowIndex + 76,5].NumberFormat = "#,##0,,;\"▲\"#,##0,,;\" - \"";
                 worksheet.Cells[addRowIndex + 77,5].NumberFormat = "##,##0.0\"년\"";
+                worksheet5.Range[worksheet5.Cells[5, 6], worksheet5.Cells[29, ((int)7 + after)]].NumberFormat = "#,##0,,";
                 worksheet.Range[worksheet.Cells[addRowIndex + 51, 5], worksheet.Cells[addRowIndex + 56, ((int)5 + after+1)]].NumberFormat = "#,##0,,";
                 worksheet.Range[worksheet.Cells[addRowIndex + 54, 5], worksheet.Cells[addRowIndex + 54, ((int)5 + after+1)]].NumberFormat = "0.00%";
                 worksheet.Range[worksheet.Cells[addRowIndex + 56, 5], worksheet.Cells[addRowIndex + 56, ((int)5 + after+1)]].NumberFormat = "0.00%";
