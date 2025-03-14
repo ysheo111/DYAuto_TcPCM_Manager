@@ -1287,8 +1287,8 @@ namespace TcPCM_Connect_Global
 
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow-11}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
                             dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow - 1}"));
-                            dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 13)}{profitTargetRow++}"));
-                            dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow++}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
+                            dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol - 1)}{profitTargetRow - 1}"));
+                            dataToFormula.Add((worksheet2.Cells[profitTargetRow, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 13}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
 
                             dataToFormula.Add((worksheet3.Cells[22, 6 + i], $"=IF(AND({global.NumberToLetter(6 + i)}17<0,{global.NumberToLetter(6 + i + 1)}17>=0),{global.NumberToLetter(6 + i)}7+ABS({global.NumberToLetter(6 + i)}17/{global.NumberToLetter(6 + i + 1)}16),\"\")"));
 
