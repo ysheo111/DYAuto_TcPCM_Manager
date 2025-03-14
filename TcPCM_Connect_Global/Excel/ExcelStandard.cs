@@ -867,7 +867,8 @@ namespace TcPCM_Connect_Global
                     {
                         string col = $"Material_{num}";
                         if (element["품명"]?.ToString().ToUpper().Contains("SCRAP") == true) col = $"Scrap_{num}";
-                        worksheet.Rows[idx - 2].Cells[col].Value = global.ConvertDouble(element["총액"]);
+
+                        dt.Rows[idx - 1][col] = global.ConvertDouble(element["총액"]);
                     }
                     else
                     {
