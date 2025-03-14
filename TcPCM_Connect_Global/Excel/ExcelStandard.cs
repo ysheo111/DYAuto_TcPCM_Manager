@@ -731,10 +731,10 @@ namespace TcPCM_Connect_Global
                 // 숫자 포맷 적용
                 worksheet6.Range[startCell, endCell].NumberFormat = "#,##0";
 
-                worksheet4.Range[worksheet4.Cells[ part + dt.Rows.Count + 4,4], worksheet4.Cells[part + dt.Rows.Count + 4+ machine.Rows.Count, 6]].NumberFormat = "#,##0,,";
-                worksheet4.Range[worksheet4.Cells[ part + dt.Rows.Count + 4,8], worksheet4.Cells[part + dt.Rows.Count + 4+ machine.Rows.Count, 11]].NumberFormat = "#,##0,,";
+                             WriteDataToExcel(machine, worksheet4, part+ dt.Rows.Count+4, 3);
+                worksheet4.Range[worksheet4.Cells[part + dt.Rows.Count + 4, 4], worksheet4.Cells[part + dt.Rows.Count + 4 + machine.Rows.Count, 6]].NumberFormat = "#,##0,,";
+                worksheet4.Range[worksheet4.Cells[part + dt.Rows.Count + 4, 8], worksheet4.Cells[part + dt.Rows.Count + 4 + machine.Rows.Count, 11]].NumberFormat = "#,##0,,";
 
-                WriteDataToExcel(machine, worksheet4, part+ dt.Rows.Count+4, 3);
 
                 worksheet4.Range[worksheet4.Cells[15, 6], worksheet4.Cells[part + dt.Rows.Count, 7]].NumberFormat = "#,##0";
                 worksheet4.Range[worksheet4.Cells[15, 8], worksheet4.Cells[part + dt.Rows.Count, 8]].NumberFormat = "0.00%";
