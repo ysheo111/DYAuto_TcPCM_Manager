@@ -319,15 +319,15 @@ namespace TcPCM_Connect_Global
             public static string redirectExpenseRatio = "간접경비율";
             public static string ratioOfMachineRepair = "수선비율";
 
-            public static string externalQuntity = "Quantity, direct input value (Manufacturing Step)";
-            public static string externalPrice = "Price (Manufacturing Step)";
+            public static string externalQuntity = "외주개수";
+            public static string externalPrice = "외주가공비";
 
             public static string sequence = "Sequence Number";
 
             public static string id = "Database internal identifier (Manufacturing step)";
             public static string machineId = "Database internal identifier (Machine)";
             public static string laborId = "Database internal identifier (Labor)";            
-            public static string manufacturingName= "Designation (Manufacturing step)";
+            public static string manufacturingName= "외주가공명";
             public static string workingTime="working time";
             
             public static string laborCosts= "Costs (Labor)";
