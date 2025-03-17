@@ -144,6 +144,8 @@ namespace TcPCM_Connect_Global
                 worksheet.Range[worksheet.Cells[54 + addRowIndex, 5], worksheet.Cells[54 + addRowIndex, 5 + after]].NumberFormat = "0.00%";
                 worksheet.Range[worksheet.Cells[56 + addRowIndex, 5], worksheet.Cells[56 + addRowIndex, 5 + after]].NumberFormat = "0.00%";
 
+                
+
             }
             catch (Exception e)
             {
@@ -166,6 +168,25 @@ namespace TcPCM_Connect_Global
 
 
             return err;
+        }
+
+        private string TransportPackage(int calculationId)
+        {
+            try
+            {
+                string query = $@"SELECT *
+              FROM[PCI].[dbo].[TransportPackage] as t
+              left join[ExternalTransportPackage] as e on t.Id = e.TransportPackageId
+              left join[DomesticTransportPackage] as d on t.Id = d.TransportPackageId
+              where CalculationId = {calculationId}";
+
+                System.Data.DataTable TransportPackage = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
+            }
+            catch(Exception e)
+            {
+                return e.Message;
+            }
+            return null;
         }
 
         private string SetAnnualProfitAndLoss(Workbook workBook, System.Data.DataTable requirements, int sop, int after, List<string> partName, int addRowIndex)
@@ -191,7 +212,7 @@ namespace TcPCM_Connect_Global
             WHERE p.Id = {requirements.Rows[0]["ProjectId"]} AND c.Deleted IS NULL";
 
                 System.Data.DataTable increase = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
-
+                if (increase.Rows.Count == 0)  return "수익성 데이터가 존재하지 않습니다."; 
                 // ** 2. EconomicOverheadRates 조회 **
                 query = $@"
             SELECT * FROM [TcPCM2312_Patch3].[dbo].[EconomicOverheadRates] AS i
@@ -201,7 +222,7 @@ namespace TcPCM_Connect_Global
             ORDER BY CostElementDefinitionId, DateValidFrom";
 
                 System.Data.DataTable overheads = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
-
+                if (overheads.Rows.Count == 0) return "수익성 데이터가 존재하지 않습니다.";
                 System.Data.DataTable increaseDataTable = new System.Data.DataTable();
                 System.Data.DataTable formulaDataTable = new System.Data.DataTable();
 
@@ -468,6 +489,11 @@ namespace TcPCM_Connect_Global
                 Excel.Worksheet worksheet2 = workBook.Sheets["년간손익"];
                 Excel.Worksheet worksheet6 = workBook.Sheets["금형비"];
 
+                if(table.Rows.Count<=0)
+                {                   
+                    return "가공비가 존재하지 않습니다.";
+                }
+
                 worksheet4.Rows[5].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 4].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("DirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("DirectCost")));
                 worksheet4.Rows[6].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 5].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("IndirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("IndirectCost")));
                 worksheet4.Rows[7].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 6].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("RequiredNumberOfMachinesInManufacturingStep")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("Machine")));
@@ -731,7 +757,13 @@ namespace TcPCM_Connect_Global
                 // 숫자 포맷 적용
                 worksheet6.Range[startCell, endCell].NumberFormat = "#,##0";
 
-                             WriteDataToExcel(machine, worksheet4, part+ dt.Rows.Count+4, 3);
+                WriteDataToExcel(machine, worksheet4, part+ dt.Rows.Count+4, 3);
+                worksheet4.Cells[part + dt.Rows.Count + 5 + machine.Rows.Count, 4].Formula =  $"=SUM(D{part + dt.Rows.Count + 4}:D{part + dt.Rows.Count + 4 + machine.Rows.Count})";
+                worksheet4.Cells[part + dt.Rows.Count + 5 + machine.Rows.Count, 5].Formula  = $"=SUM(E{part + dt.Rows.Count + 4}:E{part + dt.Rows.Count + 4 + machine.Rows.Count})";
+                worksheet4.Cells[part + dt.Rows.Count + 5 + machine.Rows.Count, 6].Formula  = $"=SUM(F{part + dt.Rows.Count + 4}:F{part + dt.Rows.Count + 4 + machine.Rows.Count})";
+                worksheet4.Cells[part + dt.Rows.Count + 5 + machine.Rows.Count, 12].Formula = $"=SUM(L{part + dt.Rows.Count + 4}:L{part + dt.Rows.Count + 4 + machine.Rows.Count})";
+                worksheet4.Cells[part + dt.Rows.Count + 5 + machine.Rows.Count, 13].Formula = $"=SUM(M{part + dt.Rows.Count + 4}:M{part + dt.Rows.Count + 4 + machine.Rows.Count})";
+                worksheet4.Cells[part + dt.Rows.Count + 5 + machine.Rows.Count, 14].Formula = $"=SUM(N{part + dt.Rows.Count + 4}:N{part + dt.Rows.Count + 4 + machine.Rows.Count})";
                 worksheet4.Range[worksheet4.Cells[part + dt.Rows.Count + 4, 4], worksheet4.Cells[part + dt.Rows.Count + 4 + machine.Rows.Count, 6]].NumberFormat = "#,##0,,";
                 worksheet4.Range[worksheet4.Cells[part + dt.Rows.Count + 4, 8], worksheet4.Cells[part + dt.Rows.Count + 4 + machine.Rows.Count, 11]].NumberFormat = "#,##0,,";
 
@@ -925,11 +957,10 @@ namespace TcPCM_Connect_Global
                         row[$"Other costs_{num}"] = global.ConvertDouble(element["Others, Total"]);
                         row[$"Profit_{num}"] = global.ConvertDouble(element["Profit, Total"]);
                         row[$"Total_{num}"] = global.ConvertDouble(element["총액"]);
-                        row[$"Carbon footprint_{num}"] = global.ConvertDouble(element["Carbon footprint (Calculation)[kg CO2e]"]);
+                        row[$"Carbon footprint_{num}"] = global.ConvertDouble(element["Carbon ㅣfootprint (Calculation)[kg CO2e]"]);
 
-                        row[$"재료비_{num}"] = $"={global.NumberToLetter((cnt-1)*2+22+num*13 )}{idx+5}";
-                        row[$"탄소배출량_{num}"] = $"={global.NumberToLetter((cnt - 1) * 2 + 23 + num * 13)}{idx+5}";
-
+                        row[$"재료비_{num}"] = $"=INDIRECT(\"{global.NumberToLetter((cnt - 1) * 2 + 22 + num * 13)}\"&ROW())";
+                        row[$"탄소배출량_{num}"] = $"=INDIRECT(\"{global.NumberToLetter((cnt - 1) * 2 + 23 + num * 13)}\" &ROW())";
                         idx++;
                     }
                 }               
