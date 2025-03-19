@@ -139,6 +139,12 @@
     </Compile>
     <Compile Include="Component\NodeSorter.cs" />
     <Compile Include="Component\RJMessageBox.cs" />
+    <Compile Include="Component\frmVendorDetail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Component\frmVendorDetail.Designer.cs">
+      <DependentUpon>frmVendorDetail.cs</DependentUpon>
+    </Compile>
     <Compile Include="Component\ShiftSetting.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -288,6 +294,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Component\FormMessageBox.resx">
       <DependentUpon>FormMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Component\frmVendorDetail.resx">
+      <DependentUpon>frmVendorDetail.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Component\ShiftSetting.resx">
       <DependentUpon>ShiftSetting.cs</DependentUpon>

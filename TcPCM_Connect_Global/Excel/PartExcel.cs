@@ -94,14 +94,14 @@ namespace TcPCM_Connect_Global
                 worksheet.Cells[row++, excelCol].Value = part.header.partName?.Replace("[DYA]", "");
 
                 worksheet.Cells[row++, excelCol].Value = part.header.company?.Replace("[DYA]", "");
-                worksheet.Cells[row++, excelCol].Value = part.header.customer?.Replace("[DYA]", "");
+                worksheet.Cells[row++, excelCol].Value = part.header.suppier?.Replace("[DYA]", ""); //customer?.Replace("[DYA]", "");
                 worksheet.Cells[row++, excelCol].Value = part.header.currency?.Replace("[DYA]", "");
                 worksheet.Cells[row++, excelCol].Value = part.header.transport?.Replace("[DYA]", "");
 
                 row = 5; excelCol = 6;
                 string category = part.header.category != null ? part.header.category?.Split('-')[0].Replace(" ", "").Replace("[DYA]", "") : "";
                 worksheet.Cells[row++, excelCol].Value = category;
-                worksheet.Cells[row++, excelCol].Value = part.header.suppier?.Replace("[DYA]", "");
+                worksheet.Cells[row++, excelCol].Value = part.header.customer?.Replace("[DYA]", ""); //suppier?.Replace("[DYA]", "");
                 worksheet.Cells[row++, excelCol].Value = part.header.exchangeRate;
                 worksheet.Cells[row++, excelCol].Value = part.header.exchangeRateCurrency?.Replace("[DYA]", "");
 
@@ -1282,7 +1282,9 @@ namespace TcPCM_Connect_Global
                 string vendorInfoPkColumn = "Id";
                 query.AppendLine($@"
     DECLARE @ExistingId INT;
-    SELECT @ExistingId = {vendorInfoPkColumn} FROM VendorInfo WHERE Left([품번], 7) = '{vendorInfo["품번"].ToString().Substring(0,7)}';
+    SELECT @ExistingId = {vendorInfoPkColumn} FROM VendorInfo 
+    WHERE [품번] = '{vendorInfo["품번"]}'
+    AND [작성일] = '{vendorInfo["작성일"]}';
     
     IF @ExistingId IS NULL
     BEGIN

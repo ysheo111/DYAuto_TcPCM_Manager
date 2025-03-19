@@ -400,11 +400,6 @@ namespace TcPCM_Connect
 	                                select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ProductionSpaceCosts'
                                 )";
             }
-
-            if (!string.IsNullOrEmpty(inputString) || !string.IsNullOrEmpty(detailQuery))
-            {
-            }
-
                 //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {

@@ -101,9 +101,10 @@ namespace TcPCM_Connect
                             where AssetHeaderId in (select id from MDAssetHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%')";
             havingQuery = @" Group BY Manufacturers.Name,MDAssetHeaders.UniqueKey,DateValidFrom, Currencies.IsoCode,
 	                        PowerOnTimeRate,RequiredSpaceGross,ConnectedLoad,BDSegments.UniqueKey,OtherFixCostsRate,DepreciationTime";
+            
             if (!string.IsNullOrEmpty(inputString))
             {
-                searchQuery = searchQuery + $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                searchQuery = searchQuery + $" And CAST(MDAssetHeaders.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
             }
             if (!string.IsNullOrEmpty(detailQuery))
                 searchQuery += $" And {detailQuery}";

@@ -243,7 +243,7 @@ namespace TcPCM_Connect_Global
                                 key = "지역";
                             else if (key == "재료명")
                                 key = "재질명";
-                            else if (key == "segmant")
+                            else if (key.ToLower() == "segmant" || key.ToLower() == "segment")
                                 key = "업종";
 
                             if (worksheetName == "Machine")

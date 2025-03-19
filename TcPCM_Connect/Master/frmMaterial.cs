@@ -484,9 +484,9 @@ namespace TcPCM_Connect
         }
         private void searchButton1_SearchButtonClick(object sender, EventArgs e)
         {
-            searchMethod(null);
+            SearchMethod(null);
         }
-        public void searchMethod(string dateQuery)
+        public void SearchMethod(string dateQuery)
         {
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
@@ -558,8 +558,8 @@ namespace TcPCM_Connect
                                 left join MDMaterialHeaderRevisions as r on h.id = r.MaterialHeaderId
                                 join BDRegions on d.RegionId = BDRegions.Id
                                 join Currencies on d.CurrencyId = Currencies.Id
-                                where h.UniqueKey Not Like '%SAP%'
-                                and LEN(Number) IN (2,3) ";
+                                where LEN(Number) IN (2,3) ";
+                                //where h.UniqueKey Not Like '%SAP%'
             }
             else
             {
@@ -620,7 +620,7 @@ namespace TcPCM_Connect
                 else if (columnName == "마그넷 와이어")
                     searchQuery += $" where 가공비 like '%{inputString}%' or 두께 like '%{inputString}%' or type like '%{inputString}%'";
                 else if (columnName == "단가 관리")
-                    searchQuery += $" and ( (h.UniqueKey + Number like '%{inputString}%') or (CAST(h.Name_LOC AS NVARCHAR(MAX)) like '%{inputString}%') )";
+                    searchQuery += $" And ( (h.UniqueKey + Number like '%{inputString}%') or (CAST(h.Name_LOC AS NVARCHAR(MAX)) like '%{inputString}%') )";
                 else
                     searchQuery += $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
             }
@@ -727,14 +727,16 @@ namespace TcPCM_Connect
             }
             return input;
         }
-
+        
         private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
         {
+            string columnName = cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString();
+            if (columnName == "사출" || columnName == "다이캐스팅" || columnName == "프레스" || columnName == "기타") return;
             Select select = new Select();
             select.className = "Material";
             if(select.ShowDialog() == DialogResult.OK)
             {
-                searchMethod(select.query);
+                SearchMethod(select.query);
             }
         }
     }

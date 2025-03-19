@@ -33,19 +33,19 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.panelBody = new System.Windows.Forms.Panel();
             this.panel_Select = new System.Windows.Forms.Panel();
+            this.rjDatePicker2 = new CustomControls.RJControls.RJDatePicker();
+            this.combo_date = new CustomControls.RJControls.RJComboBox();
+            this.rjDatePicker1 = new CustomControls.RJControls.RJDatePicker();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtInfo = new System.Windows.Forms.TextBox();
-            this.txtPartName = new System.Windows.Forms.TextBox();
-            this.txtName = new System.Windows.Forms.TextBox();
-            this.txtCategory = new System.Windows.Forms.TextBox();
-            this.txtMachine = new System.Windows.Forms.TextBox();
-            this.rjDatePicker2 = new CustomControls.RJControls.RJDatePicker();
-            this.combo_date = new CustomControls.RJControls.RJComboBox();
-            this.rjDatePicker1 = new CustomControls.RJControls.RJDatePicker();
+            this.textbox5 = new System.Windows.Forms.TextBox();
+            this.textbox4 = new System.Windows.Forms.TextBox();
+            this.textbox3 = new System.Windows.Forms.TextBox();
+            this.textbox2 = new System.Windows.Forms.TextBox();
+            this.textbox1 = new System.Windows.Forms.TextBox();
             this.btn_Cancel = new CustomControls.RJControls.RJButton();
             this.btn_Create = new CustomControls.RJControls.RJButton();
             this.panelTitleBar.SuspendLayout();
@@ -121,117 +121,23 @@
             this.panel_Select.Controls.Add(this.label3);
             this.panel_Select.Controls.Add(this.label2);
             this.panel_Select.Controls.Add(this.label1);
-            this.panel_Select.Controls.Add(this.txtMachine);
-            this.panel_Select.Controls.Add(this.txtCategory);
-            this.panel_Select.Controls.Add(this.txtName);
-            this.panel_Select.Controls.Add(this.txtPartName);
-            this.panel_Select.Controls.Add(this.txtInfo);
+            this.panel_Select.Controls.Add(this.textbox5);
+            this.panel_Select.Controls.Add(this.textbox4);
+            this.panel_Select.Controls.Add(this.textbox3);
+            this.panel_Select.Controls.Add(this.textbox2);
+            this.panel_Select.Controls.Add(this.textbox1);
             this.panel_Select.Location = new System.Drawing.Point(11, 59);
             this.panel_Select.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel_Select.Name = "panel_Select";
             this.panel_Select.Size = new System.Drawing.Size(763, 265);
             this.panel_Select.TabIndex = 65;
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(23, 204);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(67, 15);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "검색기간";
-            this.label5.Visible = false;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(23, 159);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(67, 15);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "검색기간";
-            this.label4.Visible = false;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(23, 114);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(67, 15);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "검색기간";
-            this.label3.Visible = false;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(23, 69);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(67, 15);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "검색기간";
-            this.label2.Visible = false;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(23, 24);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 15);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "검색기간";
-            // 
-            // txtInfo
-            // 
-            this.txtInfo.ForeColor = System.Drawing.Color.Black;
-            this.txtInfo.Location = new System.Drawing.Point(112, 21);
-            this.txtInfo.Name = "txtInfo";
-            this.txtInfo.Size = new System.Drawing.Size(368, 25);
-            this.txtInfo.TabIndex = 6;
-            this.txtInfo.Visible = false;
-            // 
-            // txtPartName
-            // 
-            this.txtPartName.ForeColor = System.Drawing.Color.Black;
-            this.txtPartName.Location = new System.Drawing.Point(112, 66);
-            this.txtPartName.Name = "txtPartName";
-            this.txtPartName.Size = new System.Drawing.Size(368, 25);
-            this.txtPartName.TabIndex = 6;
-            this.txtPartName.Visible = false;
-            // 
-            // txtName
-            // 
-            this.txtName.ForeColor = System.Drawing.Color.Black;
-            this.txtName.Location = new System.Drawing.Point(112, 111);
-            this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(368, 25);
-            this.txtName.TabIndex = 6;
-            this.txtName.Visible = false;
-            // 
-            // txtCategory
-            // 
-            this.txtCategory.ForeColor = System.Drawing.Color.Black;
-            this.txtCategory.Location = new System.Drawing.Point(112, 156);
-            this.txtCategory.Name = "txtCategory";
-            this.txtCategory.Size = new System.Drawing.Size(368, 25);
-            this.txtCategory.TabIndex = 6;
-            this.txtCategory.Visible = false;
-            // 
-            // txtMachine
-            // 
-            this.txtMachine.ForeColor = System.Drawing.Color.Black;
-            this.txtMachine.Location = new System.Drawing.Point(112, 201);
-            this.txtMachine.Name = "txtMachine";
-            this.txtMachine.Size = new System.Drawing.Size(368, 25);
-            this.txtMachine.TabIndex = 6;
-            this.txtMachine.Visible = false;
-            // 
             // rjDatePicker2
             // 
             this.rjDatePicker2.BorderColor = System.Drawing.Color.Black;
             this.rjDatePicker2.BorderSize = 1;
             this.rjDatePicker2.Font = new System.Drawing.Font("굴림", 9.5F);
-            this.rjDatePicker2.Location = new System.Drawing.Point(486, 12);
+            this.rjDatePicker2.Location = new System.Drawing.Point(502, 11);
             this.rjDatePicker2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rjDatePicker2.MinimumSize = new System.Drawing.Size(4, 35);
             this.rjDatePicker2.Name = "rjDatePicker2";
@@ -258,7 +164,7 @@
             "1년"});
             this.combo_date.ListBackColor = System.Drawing.Color.White;
             this.combo_date.ListTextColor = System.Drawing.Color.DimGray;
-            this.combo_date.Location = new System.Drawing.Point(96, 12);
+            this.combo_date.Location = new System.Drawing.Point(112, 11);
             this.combo_date.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.combo_date.Name = "combo_date";
             this.combo_date.Padding = new System.Windows.Forms.Padding(1);
@@ -272,7 +178,7 @@
             this.rjDatePicker1.BorderColor = System.Drawing.Color.Black;
             this.rjDatePicker1.BorderSize = 1;
             this.rjDatePicker1.Font = new System.Drawing.Font("굴림", 9.5F);
-            this.rjDatePicker1.Location = new System.Drawing.Point(245, 12);
+            this.rjDatePicker1.Location = new System.Drawing.Point(261, 11);
             this.rjDatePicker1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rjDatePicker1.MinimumSize = new System.Drawing.Size(4, 35);
             this.rjDatePicker1.Name = "rjDatePicker1";
@@ -280,6 +186,100 @@
             this.rjDatePicker1.SkinColor = System.Drawing.Color.White;
             this.rjDatePicker1.TabIndex = 1;
             this.rjDatePicker1.TextColor = System.Drawing.Color.Black;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(16, 204);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(67, 15);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "검색기간";
+            this.label5.Visible = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(16, 159);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(67, 15);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "검색기간";
+            this.label4.Visible = false;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(16, 114);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(67, 15);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "검색기간";
+            this.label3.Visible = false;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(16, 69);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(67, 15);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "검색기간";
+            this.label2.Visible = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(16, 24);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(67, 15);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "검색기간";
+            // 
+            // textbox5
+            // 
+            this.textbox5.ForeColor = System.Drawing.Color.Black;
+            this.textbox5.Location = new System.Drawing.Point(112, 201);
+            this.textbox5.Name = "textbox5";
+            this.textbox5.Size = new System.Drawing.Size(368, 25);
+            this.textbox5.TabIndex = 6;
+            this.textbox5.Visible = false;
+            // 
+            // textbox4
+            // 
+            this.textbox4.ForeColor = System.Drawing.Color.Black;
+            this.textbox4.Location = new System.Drawing.Point(112, 156);
+            this.textbox4.Name = "textbox4";
+            this.textbox4.Size = new System.Drawing.Size(368, 25);
+            this.textbox4.TabIndex = 6;
+            this.textbox4.Visible = false;
+            // 
+            // textbox3
+            // 
+            this.textbox3.ForeColor = System.Drawing.Color.Black;
+            this.textbox3.Location = new System.Drawing.Point(112, 111);
+            this.textbox3.Name = "textbox3";
+            this.textbox3.Size = new System.Drawing.Size(368, 25);
+            this.textbox3.TabIndex = 6;
+            this.textbox3.Visible = false;
+            // 
+            // textbox2
+            // 
+            this.textbox2.ForeColor = System.Drawing.Color.Black;
+            this.textbox2.Location = new System.Drawing.Point(112, 66);
+            this.textbox2.Name = "textbox2";
+            this.textbox2.Size = new System.Drawing.Size(368, 25);
+            this.textbox2.TabIndex = 6;
+            this.textbox2.Visible = false;
+            // 
+            // textbox1
+            // 
+            this.textbox1.ForeColor = System.Drawing.Color.Black;
+            this.textbox1.Location = new System.Drawing.Point(112, 21);
+            this.textbox1.Name = "textbox1";
+            this.textbox1.Size = new System.Drawing.Size(368, 25);
+            this.textbox1.TabIndex = 6;
+            this.textbox1.Visible = false;
             // 
             // btn_Cancel
             // 
@@ -365,10 +365,10 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtInfo;
-        private System.Windows.Forms.TextBox txtMachine;
-        private System.Windows.Forms.TextBox txtCategory;
-        private System.Windows.Forms.TextBox txtName;
-        private System.Windows.Forms.TextBox txtPartName;
+        private System.Windows.Forms.TextBox textbox1;
+        private System.Windows.Forms.TextBox textbox5;
+        private System.Windows.Forms.TextBox textbox4;
+        private System.Windows.Forms.TextBox textbox3;
+        private System.Windows.Forms.TextBox textbox2;
     }
 }

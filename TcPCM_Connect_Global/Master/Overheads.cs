@@ -22,12 +22,12 @@ namespace TcPCM_Connect_Global
                 foreach (DataGridViewColumn col in dgv.Columns)
                 {
                     string cellValue = row.Cells[col.Name].Value?.ToString();
-                    if(name == "재료관리비")
+                    if(name == "재료관리비" || name == "판매관리비율")
                     {
                         if (col.Name.Contains("율") && row.Cells[col.Name].Value != null)
                         {
                             cellValue = cellValue.Replace("%","");
-                            detailInfo.Add(col.Name, cellValue);
+                            detailInfo.Add("관리비율", cellValue);
                             detailInfo.Add("Overhead rate unique identifier (Overhead rate detail)", $"{col.Tag}||Siemens.TCPCM.Classification.Overhead.Rate");
                             category.Add(detailInfo);
                         }
@@ -40,10 +40,17 @@ namespace TcPCM_Connect_Global
                         }
                         else if (col.Name.Contains("업종"))
                         {
-                            if(cellValue != null)
-                                detailInfo.Add(col.Name, $"{row.Cells["지역"].Value?.ToString()}||{cellValue}");
+                            if(name == "판매관리비율")
+                            {
+                                detailInfo.Add(col.Name, cellValue);
+                            }
                             else
-                                detailInfo.Add(col.Name, "||");
+                            {
+                                if (cellValue != null)
+                                    detailInfo.Add(col.Name, $"{row.Cells["Plant"].Value?.ToString()}||{cellValue}");
+                                else
+                                    detailInfo.Add(col.Name, "||");
+                            }
                         }
                         else
                             detailInfo.Add(col.Name, cellValue);

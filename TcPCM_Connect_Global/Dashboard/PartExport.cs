@@ -13,7 +13,7 @@ namespace TcPCM_Connect_Global
         public string ExportPartBom(List<string> nodes, string fileLocation, Bom.ExportLang lang)
         {
             Interface export = new Interface();
-            List<string> calcList = export.AllRootCalcId(nodes);
+            List<string> calcList = export.AllRootCalcId(nodes);    //Id 가져오기
             JObject apiResult = export.LoadCalc(calcList,"Export");
             if (apiResult == null) return "데이터 조회 시 오류가 발생하였습니다.";
 
@@ -26,7 +26,6 @@ namespace TcPCM_Connect_Global
 
             return err;
         }
-
 
         // 타입 변환을 위한 헬퍼 메서드
         private object ConvertToType(object value, Type targetType)

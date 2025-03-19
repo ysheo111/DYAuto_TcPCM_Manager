@@ -30,34 +30,52 @@ namespace TcPCM_Connect
         {
             if (className == "표준 공정 라이브러리")
             {
-                if (!string.IsNullOrEmpty(txtInfo.Text))
+                if (!string.IsNullOrEmpty(textbox1.Text))
                 {
                     if (!string.IsNullOrEmpty(query)) query += " AND ";
-                    query += $" Info = '{txtInfo.Text}' ";
+                    query += $" Info = '{textbox1.Text}' ";
                 }
-                if (!string.IsNullOrEmpty(txtPartName.Text))
+                if (!string.IsNullOrEmpty(textbox2.Text))
                 {
                     if (!string.IsNullOrEmpty(query)) query += " AND ";
-                    query += $" PartName = '{txtPartName.Text}' ";
+                    query += $" PartName = '{textbox2.Text}' ";
                 }
-                if (!string.IsNullOrEmpty(txtName.Text))
+                if (!string.IsNullOrEmpty(textbox3.Text))
                 {
                     if (!string.IsNullOrEmpty(query)) query += " AND ";
-                    query += $" Name = N'{txtName.Text}' ";
+                    query += $" Name = N'{textbox3.Text}' ";
                 }
-                if (!string.IsNullOrEmpty(txtCategory.Text))
+                if (!string.IsNullOrEmpty(textbox4.Text))
                 {
                     if (!string.IsNullOrEmpty(query)) query += " AND ";
-                    query += $" Category = N'{txtCategory.Text}' ";
+                    query += $" Category = N'{textbox4.Text}' ";
                 }
-                if (!string.IsNullOrEmpty(txtMachine.Text))
+                if (!string.IsNullOrEmpty(textbox5.Text))
                 {
                     if (!string.IsNullOrEmpty(query)) query += " AND ";
-                    query += $" Machine = N'{txtMachine.Text}' ";
+                    query += $" Machine = N'{textbox5.Text}' ";
                 }
             }
             else if(className == "전력단가" || className == "임률")
                 query += $" COALESCE(A.DateValidFrom, B.DateValidFrom) BETWEEN '{rjDatePicker1.Value.ToString("yyyy-MM-dd")}' AND '{rjDatePicker2.Value.ToString("yyyy-MM-dd")}'";
+            else if (className == "VendorPart")
+            {
+                if (!string.IsNullOrEmpty(textbox1.Text))
+                {
+                    if (!string.IsNullOrEmpty(query)) query += " AND ";
+                    query += $" VendorMaterial.품번 = '{textbox1.Text}' ";
+                }
+                if (!string.IsNullOrEmpty(textbox2.Text))
+                {
+                    if (!string.IsNullOrEmpty(query)) query += " AND ";
+                    query += $" VendorMaterial.품명 = N'{textbox2.Text}' ";
+                }
+                if (!string.IsNullOrEmpty(textbox3.Text))
+                {
+                    if (!string.IsNullOrEmpty(query)) query += " AND ";
+                    query += $" VendorManufacturing.공정명 = N'{textbox3.Text}' ";
+                }
+            }
             else //if (className == "material" || className == "공간 생산 비용")
                 query += $" DateValidFrom BETWEEN '{rjDatePicker1.Value.ToString("yyyy-MM-dd")}' AND '{rjDatePicker2.Value.ToString("yyyy-MM-dd")}'";
 
@@ -80,19 +98,34 @@ namespace TcPCM_Connect
                 combo_date.Visible = false;
 
                 label1.Text = "품번";
-                txtInfo.Visible = true;
+                textbox1.Visible = true;
                 label2.Text = "대표품명";
                 label2.Visible = true;
-                txtPartName.Visible = true;
+                textbox2.Visible = true;
                 label3.Text = "세부 공정명";
                 label3.Visible = true;
-                txtName.Visible = true;
+                textbox3.Visible = true;
                 label4.Text = "업종";
                 label4.Visible = true;
-                txtCategory.Visible = true;
+                textbox4.Visible = true;
                 label5.Text = "장비명";
                 label5.Visible = true;
-                txtMachine.Visible = true;
+                textbox5.Visible = true;
+            }
+            else if(className == "VendorPart")
+            {
+                rjDatePicker1.Visible = false;
+                rjDatePicker2.Visible = false;
+                combo_date.Visible = false;
+
+                label1.Text = "Material 품번";
+                textbox1.Visible = true;
+                label2.Text = "Material 품명";
+                label2.Visible = true;
+                textbox2.Visible = true;
+                label3.Text = "공정명";
+                label3.Visible = true;
+                textbox3.Visible = true;
             }
             else
             {

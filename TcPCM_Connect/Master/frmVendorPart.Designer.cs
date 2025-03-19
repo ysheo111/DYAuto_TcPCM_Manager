@@ -28,19 +28,38 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.삭제하기ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.roundBorderPanel2 = new TcPCM_Connect.RoundBorderPanel();
             this.btn_ExcelCreate = new CustomControls.RJControls.RJButton();
             this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.dgv_Vendor = new System.Windows.Forms.DataGridView();
             this.btn_Create = new CustomControls.RJControls.RJButton();
+            this.contextMenuStrip1.SuspendLayout();
             this.roundBorderPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Vendor)).BeginInit();
             this.SuspendLayout();
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.삭제하기ToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(139, 28);
+            // 
+            // 삭제하기ToolStripMenuItem
+            // 
+            this.삭제하기ToolStripMenuItem.Name = "삭제하기ToolStripMenuItem";
+            this.삭제하기ToolStripMenuItem.Size = new System.Drawing.Size(138, 24);
+            this.삭제하기ToolStripMenuItem.Text = "삭제하기";
+            this.삭제하기ToolStripMenuItem.Click += new System.EventHandler(this.삭제하기ToolStripMenuItem_Click);
             // 
             // roundBorderPanel2
             // 
@@ -56,9 +75,10 @@
             this.roundBorderPanel2.Controls.Add(this.dgv_Vendor);
             this.roundBorderPanel2.Controls.Add(this.btn_Create);
             this.roundBorderPanel2.IsFill = true;
-            this.roundBorderPanel2.Location = new System.Drawing.Point(4, 3);
+            this.roundBorderPanel2.Location = new System.Drawing.Point(5, 4);
+            this.roundBorderPanel2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.roundBorderPanel2.Name = "roundBorderPanel2";
-            this.roundBorderPanel2.Size = new System.Drawing.Size(928, 492);
+            this.roundBorderPanel2.Size = new System.Drawing.Size(1061, 615);
             this.roundBorderPanel2.TabIndex = 62;
             // 
             // btn_ExcelCreate
@@ -73,9 +93,10 @@
             this.btn_ExcelCreate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_ExcelCreate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_ExcelCreate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_ExcelCreate.Location = new System.Drawing.Point(726, 17);
+            this.btn_ExcelCreate.Location = new System.Drawing.Point(830, 21);
+            this.btn_ExcelCreate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_ExcelCreate.Name = "btn_ExcelCreate";
-            this.btn_ExcelCreate.Size = new System.Drawing.Size(177, 31);
+            this.btn_ExcelCreate.Size = new System.Drawing.Size(202, 39);
             this.btn_ExcelCreate.TabIndex = 66;
             this.btn_ExcelCreate.Text = "부품원가계산서 List 다운로드";
             this.btn_ExcelCreate.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
@@ -86,10 +107,11 @@
             // 
             this.searchButton1.BackColor = System.Drawing.Color.Transparent;
             this.searchButton1.DetailSearchButtonBackColor = System.Drawing.Color.White;
-            this.searchButton1.Location = new System.Drawing.Point(23, 18);
+            this.searchButton1.Location = new System.Drawing.Point(26, 22);
+            this.searchButton1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.searchButton1.Name = "searchButton1";
             this.searchButton1.PanelBackColor = System.Drawing.Color.Transparent;
-            this.searchButton1.Size = new System.Drawing.Size(401, 30);
+            this.searchButton1.Size = new System.Drawing.Size(458, 38);
             this.searchButton1.TabIndex = 65;
             this.searchButton1.text = "";
             this.searchButton1.TextBoxBackColor = System.Drawing.Color.WhiteSmoke;
@@ -130,7 +152,8 @@
             this.dgv_Vendor.DefaultCellStyle = dataGridViewCellStyle3;
             this.dgv_Vendor.EnableHeadersVisualStyles = false;
             this.dgv_Vendor.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            this.dgv_Vendor.Location = new System.Drawing.Point(23, 62);
+            this.dgv_Vendor.Location = new System.Drawing.Point(26, 78);
+            this.dgv_Vendor.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dgv_Vendor.Name = "dgv_Vendor";
             this.dgv_Vendor.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -156,11 +179,13 @@
             this.dgv_Vendor.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.dgv_Vendor.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
             this.dgv_Vendor.RowTemplate.Height = 32;
-            this.dgv_Vendor.Size = new System.Drawing.Size(880, 400);
+            this.dgv_Vendor.Size = new System.Drawing.Size(1006, 500);
             this.dgv_Vendor.TabIndex = 61;
+            this.dgv_Vendor.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Vendor_CellDoubleClick);
             this.dgv_Vendor.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_Category_CellFormatting);
             this.dgv_Vendor.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Category_CellValueChanged);
             this.dgv_Vendor.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Category_DataError);
+            this.dgv_Vendor.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dgv_Vendor_MouseDown);
             // 
             // btn_Create
             // 
@@ -174,26 +199,28 @@
             this.btn_Create.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btn_Create.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.btn_Create.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
-            this.btn_Create.Location = new System.Drawing.Point(572, 17);
+            this.btn_Create.Location = new System.Drawing.Point(654, 21);
+            this.btn_Create.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Create.Name = "btn_Create";
-            this.btn_Create.Size = new System.Drawing.Size(148, 31);
+            this.btn_Create.Size = new System.Drawing.Size(169, 39);
             this.btn_Create.TabIndex = 58;
             this.btn_Create.Text = "부품원가계산서 업로드";
             this.btn_Create.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
             this.btn_Create.UseVisualStyleBackColor = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
             // 
-            // VendorPar
+            // frmVendorPart
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(936, 498);
+            this.ClientSize = new System.Drawing.Size(1070, 622);
             this.Controls.Add(this.roundBorderPanel2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.Name = "VendorPar";
+            this.Name = "frmVendorPart";
             this.Text = "frmExchange";
             this.Load += new System.EventHandler(this.frmExchange_Load);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.roundBorderPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Vendor)).EndInit();
             this.ResumeLayout(false);
@@ -206,5 +233,7 @@
         private CustomControls.RJControls.RJButton btn_Create;
         private Controller.SearchButton searchButton1;
         private CustomControls.RJControls.RJButton btn_ExcelCreate;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem 삭제하기ToolStripMenuItem;
     }
 }
