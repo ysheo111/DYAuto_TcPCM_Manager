@@ -186,7 +186,6 @@ namespace TcPCM_Connect
             contextMenuStrip1.Show(MousePosition.X, MousePosition.Y);
         }
 
-
         private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)
         {
             frmDetailSearch search = new frmDetailSearch();
@@ -252,7 +251,6 @@ namespace TcPCM_Connect
             if (selectItem.Count == 0)
             {
                 CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
             }
 
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();

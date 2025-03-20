@@ -106,9 +106,16 @@ namespace TcPCM_Connect
                 dgv_Overheads.Columns.Add("업종", "업종");
                 dgv_Overheads.Columns.Add("재료 관리비율", "재료 관리비율");
                 dgv_Overheads.Columns["재료 관리비율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC";
-                //"Siemens.TCPCM.CostType.Materialoverheadcosts";
-                //dgv_Overheads.Columns.Add("외주 재료 관리비율", "외주 재료 관리비율");
-                //dgv_Overheads.Columns["외주 재료 관리비율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC";
+            }
+            else if (columnName == "판매관리비율")
+            {
+                ValidFromAdd("Valid From");
+                dgv_Overheads.Columns.Add("지역", "지역");
+                dgv_Overheads.Columns.Add("Plant", "Plant");
+                dgv_Overheads.Columns.Add("업종", "업종");
+                dgv_Overheads.Columns.Add("판매관리비율", "판매관리비율");
+                dgv_Overheads.Columns["판매관리비율"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts03";
+                //dgv_Overheads.Columns["판매관리비율"].DefaultCellStyle.Format = "N2";
             }
             else
             {
@@ -144,15 +151,18 @@ namespace TcPCM_Connect
 
             if(row.Cells[e.ColumnIndex].Value==null) return;
 
-            //if (dgv_Overheads.Columns[e.ColumnIndex].Name.Contains("율") || dgv_Overheads.Columns[e.ColumnIndex].Name.Contains("scrap"))
-            //{
-            //    row.Cells[e.ColumnIndex].Value = Double.TryParse(row.Cells[e.ColumnIndex].Value?.ToString(), out double result) ? row.Cells[e.ColumnIndex].Value : result;
-            //    if (0 < result && result < 1) row.Cells[e.ColumnIndex].Value = result * 100;
-            //}
             if (dgv_Overheads.Columns[e.ColumnIndex].Name.Contains("Valid"))
             {
                 row.Cells[e.ColumnIndex].Value = !DateTime.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out DateTime dt) ?
                     row.Cells[e.ColumnIndex].Value : dt.ToString("yyyy-MM-dd");
+            }
+            if (dgv_Overheads.Columns[e.ColumnIndex].Name.Contains("관리비율"))
+            {
+                if (decimal.TryParse(e.Value.ToString(), out decimal value))
+                {
+                    e.Value = value.ToString("N2");
+                    e.FormattingApplied = true;
+                }
             }
         }
 

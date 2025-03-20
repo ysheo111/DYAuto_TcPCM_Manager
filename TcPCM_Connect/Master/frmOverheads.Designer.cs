@@ -130,7 +130,8 @@
             this.cb_Classification.ForeColor = System.Drawing.Color.DimGray;
             this.cb_Classification.IconColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Items.AddRange(new object[] {
-            "재료관리비",
+            "재료관리비율",
+            "판매관리비율",
             "Overheads"});
             this.cb_Classification.ListBackColor = System.Drawing.Color.White;
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;

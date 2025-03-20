@@ -34,6 +34,7 @@ namespace TcPCM_Connect
         {
             dgv_PartManufacturing.Columns.Clear();
 
+            dgv_PartManufacturing.Columns.Add("Valid From", "Valid From");
             dgv_PartManufacturing.Columns.Add("품번", "품번");
             dgv_PartManufacturing.Columns.Add("대표품명", "대표품명");
             dgv_PartManufacturing.Columns.Add("세부 공정명", "세부 공정명");
@@ -83,14 +84,17 @@ namespace TcPCM_Connect
                         err = "세부 공정명에는 빈 값이 있으면 안됩니다.";
                         break;
                     }
-                    string searchQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where Info = '{row.Cells["품번"].Value}' And PartName = N'{row.Cells["대표품명"].Value}'";
+                    string searchQuery = $@"SELECT id FROM [PCI].[dbo].[PartInfo]
+                        where Info = '{row.Cells["품번"].Value}'
+                        And PartName = N'{row.Cells["대표품명"].Value}'
+                        And ValidFrom = N'{row.Cells["Valid From"].Value}'";
                     string partId = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
                     //
                     if (string.IsNullOrEmpty(partId))
                     {
-                        searchQuery = $"Insert into [PCI].[dbo].[PartInfo] (Info, PartName) Values (N'{row.Cells["품번"].Value}', N'{row.Cells["대표품명"].Value}' )";
+                        searchQuery = $"Insert into [PCI].[dbo].[PartInfo] (Info, PartName, ValidFrom) Values (N'{row.Cells["품번"].Value}', N'{row.Cells["대표품명"].Value}', N'{row.Cells["Valid From"].Value}' )";
                         err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
-                        searchQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where Info = '{row.Cells["품번"].Value}' And PartName = N'{row.Cells["대표품명"].Value}'";
+                        searchQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where Info = '{row.Cells["품번"].Value}' And PartName = N'{row.Cells["대표품명"].Value}', And ValidFrom = N'{row.Cells["Valid From"].Value}'";
                         partId = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
                         partIds.Add(partId);
                     }
