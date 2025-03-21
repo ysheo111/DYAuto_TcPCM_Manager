@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace TcPCM_Connect_Global
 {
+    public interface ISAPDataSearch
+    {
+        string partNo { get; set; }
+        string revision { get; set; }
+        List<string> ReturnValue1 { get; set; }
+        System.Windows.Forms.DialogResult ShowDialog();
+    }
 
     public class Bom
     {

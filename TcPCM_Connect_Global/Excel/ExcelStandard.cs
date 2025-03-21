@@ -31,7 +31,8 @@ namespace TcPCM_Connect_Global
 	                        p2.Name_LOC_Extracted,
                             p2.PartNo,
                             p.StartOfProductionDate,
-                            p.PeriodsAfterSOP,							
+                            p.PeriodsAfterSOP,
+                            p.Id as ProjectId,
                             par.*
                         FROM
                             ProjectAnnualRequirements par
@@ -48,17 +49,27 @@ namespace TcPCM_Connect_Global
 	                        and c.Id in ({string.Join(", ", calcList)})";
 
                 System.Data.DataTable requirements = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
+                // requirements 테이블에서 ProjectId 컬럼의 고유 값 리스트 가져오기
+                var projectIds = requirements.AsEnumerable()
+                                             .Select(row => row["ProjectId"]?.ToString())
+                                             .Distinct()
+                                             .ToList();
 
+                // ProjectId가 여러 개 존재하면 에러 메시지 반환
+                if (projectIds.Count > 1)
+                {
+                    return "조회는 같은 프로젝트 하위 파트만 가능합니다";
+                }
                 int rowIndex = 11, addRowIndex = 0;
                 int colIndex = 3;
 
-                File.Copy($@"{Application.StartupPath}\DY AUTO 사전원가 양식.xlsx", $@"{fileLocation}\견적 및 표준원가.xlsx", true);
+                File.Copy($@"{Application.StartupPath}\DY AUTO 사전원가 양식.xlsx", $@"{fileLocation}", true);
                 //Excel 프로그램 실행
                 application = new Excel.Application();
                 //Excel 화면 띄우기 옵션
                 application.Visible = true;
                 //파일로부터 불러오기                
-                workBook = application.Workbooks.Open($@"{fileLocation}\견적 및 표준원가.xlsx");
+                workBook = application.Workbooks.Open($@"{fileLocation}");
                 Excel.Worksheet worksheet = workBook.Sheets["견적원가 레포트"];
                 Excel.Worksheet worksheet2 = workBook.Sheets["년간손익"];
                 Excel.Worksheet worksheet3 = workBook.Sheets["경제성 분석"];
@@ -143,9 +154,7 @@ namespace TcPCM_Connect_Global
                 SetAnnualProfitAndLoss(workBook, requirements, sop, (int)after, partName, addRowIndex);
                 worksheet.Range[worksheet.Cells[54 + addRowIndex, 5], worksheet.Cells[54 + addRowIndex, 5 + after]].NumberFormat = "0.00%";
                 worksheet.Range[worksheet.Cells[56 + addRowIndex, 5], worksheet.Cells[56 + addRowIndex, 5 + after]].NumberFormat = "0.00%";
-
-                
-
+                TransportPackage(calcList[0], workBook, addRowIndex, (int)after);
             }
             catch (Exception e)
             {
@@ -165,22 +174,59 @@ namespace TcPCM_Connect_Global
                     //ExcelCommon.ReleaseExcelObject(application);
                 }
             }
-
-
             return err;
         }
 
-        private string TransportPackage(int calculationId)
+        private string TransportPackage(string calculationId, Workbook workBook, int add, int year)
         {
             try
             {
                 string query = $@"SELECT *
-              FROM[PCI].[dbo].[TransportPackage] as t
-              left join[ExternalTransportPackage] as e on t.Id = e.TransportPackageId
-              left join[DomesticTransportPackage] as d on t.Id = d.TransportPackageId
+              FROM[PCI].[dbo].[Transport] 
               where CalculationId = {calculationId}";
 
                 System.Data.DataTable TransportPackage = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
+
+                if (TransportPackage.Rows.Count < 1) return null;
+
+                DataRow row = TransportPackage.Rows[0];
+                Worksheet worksheet= workBook.Sheets["포장 및 물류비 "];
+                // ✅ 정확한 행과 열에 데이터 삽입 (기존 수식 유지)
+                worksheet.Cells[11, 5].Value2 = $"='견적원가 레포트'!{global.NumberToLetter(5+ year)}{12+add}";
+                worksheet.Cells[11, 6].Value2 = $"=E11/{row["WorkWeeks"]}"; 
+                worksheet.Cells[11, 7].Value2 = $"=G11/{row["WorkDays"]}"; 
+                worksheet.Cells[11, 8].Value2 = row["Stack"]; // E17
+                worksheet.Cells[11, 9].Value2 = row["Rotation"]; // G17
+                worksheet.Cells[11, 10].Value2 = "=G11/H11*I11"; // H17 (합계)
+                worksheet.Cells[11, 11].Value2 = $"{row["PackagingCostPerUnit"]}";  // J17 (개당 포장비)
+                worksheet.Cells[11, 12].Value2 = "=J11*K11"; // J17 (개당 포장비)                
+                worksheet.Cells[11, 13].Value2 = $"{row["UsageYears"]}"; // J17 (개당 포장비)
+                worksheet.Cells[11, 14].Value2 = "=L11/M11/E11"; // J17 (개당 포장비)
+
+                worksheet.Cells[17, 5].Value2 = row["InitialStack"]; // E18
+                worksheet.Cells[17, 6].Value2 = row["InitialMaterialCost"]; // F18
+                worksheet.Cells[17, 7].Value2 = row["InitialHandlingCost"]; // G18
+                worksheet.Cells[17, 8].Value2 = "=F17+G17"; // H18
+                worksheet.Cells[17, 9].Value2 = "=F17+G17"; // H18
+
+                worksheet.Cells[23, 4].Value2 = row["Stack"]; // D23 (적입 수량)
+                worksheet.Cells[23, 5].Value2 = row["BoxCount"]; // E23 (적입 박스)
+                worksheet.Cells[23, 6].Value2 = "=D23*E23"; // F23 (소계)
+                worksheet.Cells[23, 7].Value2 = row["LoadQuantity"]; // J23 (운송 단가)
+                worksheet.Cells[23, 8].Value2 = "=$F$23*G23"; // K23 (개당 물류비)
+                worksheet.Cells[23, 9].Value2 = row["TransportCostPerUnit"]; // J23 (운송 단가)
+                worksheet.Cells[23, 10].Value2 = "=I23/H23"; // K23 (개당 물류비)
+
+
+                worksheet.Cells[29, 4].Value2 = row["Stack"]; // D23 (적입 수량)
+                worksheet.Cells[29, 5].Value2 = row["BoxCount"]; // E23 (적입 박스)
+                worksheet.Cells[29, 6].Value2 = "=D29*E29"; // F23 (소계)
+                worksheet.Cells[29, 7].Value2 = "=F29*20";
+                worksheet.Cells[29, 8].Value2 = "=F29*40";
+                worksheet.Cells[29, 9].Value2 = row["TransportCost20Feet"]; // J23 (운송 단가)
+                worksheet.Cells[29, 10].Value2 = row["TransportCost40Feet"]; // J23 (운송 단가)
+                worksheet.Cells[29, 11].Value2 = "=I29/G29"; // K23 (개당 물류비)
+                worksheet.Cells[29, 12].Value2 = "=J29/H29"; // K23 (개당 물류비)
             }
             catch(Exception e)
             {
@@ -361,6 +407,8 @@ namespace TcPCM_Connect_Global
 
 
                 ApplyDataToExcelGroup(dataToMostFreq, new List<(Excel.Range, object)>(), new List<(Excel.Range, object)>());
+
+
 
             }
             catch (Exception e)
@@ -959,8 +1007,8 @@ namespace TcPCM_Connect_Global
                         row[$"Total_{num}"] = global.ConvertDouble(element["총액"]);
                         row[$"Carbon footprint_{num}"] = global.ConvertDouble(element["Carbon ㅣfootprint (Calculation)[kg CO2e]"]);
 
-                        row[$"재료비_{num}"] = $"=INDIRECT(\"{global.NumberToLetter((cnt - 1) * 2 + 22 + num * 13)}\"&ROW())";
-                        row[$"탄소배출량_{num}"] = $"=INDIRECT(\"{global.NumberToLetter((cnt - 1) * 2 + 23 + num * 13)}\" &ROW())";
+                        row[$"재료비_{num}"] = $"=INDIRECT(\"{global.NumberToLetter((cnt - 1) * 2 + 22 + num * 13)}\"&ROW())*INDIRECT(\"D\"&ROW())";
+                        row[$"탄소배출량_{num}"] = $"=INDIRECT(\"{global.NumberToLetter((cnt - 1) * 2 + 23 + num * 13)}\" &ROW())*INDIRECT(\"D\"&ROW())";
                         idx++;
                     }
                 }               

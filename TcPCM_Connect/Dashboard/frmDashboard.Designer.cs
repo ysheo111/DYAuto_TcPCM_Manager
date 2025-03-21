@@ -38,6 +38,7 @@ namespace TcPCM_Connect
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.테스트ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.견적및표준원가다운로드ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.공정라이브러리ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bOMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.업로드ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,7 +61,7 @@ namespace TcPCM_Connect
             this.btn_Configuration = new CustomControls.RJControls.RJButton();
             this.dgv_BaicInfo = new System.Windows.Forms.DataGridView();
             this.tv_Bom = new System.Windows.Forms.TreeView();
-            this.견적및표준원가다운로드ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.실적원가비교다운로드ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.roundBorderPanel2.SuspendLayout();
             this.p_lang.SuspendLayout();
@@ -73,11 +74,12 @@ namespace TcPCM_Connect
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.테스트ToolStripMenuItem,
+            this.실적원가비교다운로드ToolStripMenuItem,
             this.견적및표준원가다운로드ToolStripMenuItem,
             this.공정라이브러리ToolStripMenuItem,
             this.bOMToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(219, 114);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(219, 136);
             // 
             // 테스트ToolStripMenuItem
             // 
@@ -85,6 +87,13 @@ namespace TcPCM_Connect
             this.테스트ToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.테스트ToolStripMenuItem.Text = "부품원가계산서 다운로드";
             this.테스트ToolStripMenuItem.Click += new System.EventHandler(this.테스트ToolStripMenuItem_Click);
+            // 
+            // 견적및표준원가다운로드ToolStripMenuItem
+            // 
+            this.견적및표준원가다운로드ToolStripMenuItem.Name = "견적및표준원가다운로드ToolStripMenuItem";
+            this.견적및표준원가다운로드ToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.견적및표준원가다운로드ToolStripMenuItem.Text = "견적 및 표준원가 다운로드";
+            this.견적및표준원가다운로드ToolStripMenuItem.Click += new System.EventHandler(this.견적및표준원가다운로드ToolStripMenuItem_Click);
             // 
             // 공정라이브러리ToolStripMenuItem
             // 
@@ -352,12 +361,12 @@ namespace TcPCM_Connect
             this.tv_Bom.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.tv_Bom_AfterExpand);
             this.tv_Bom.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tv_Bom_MouseDown);
             // 
-            // 견적및표준원가다운로드ToolStripMenuItem
+            // 실적원가비교다운로드ToolStripMenuItem
             // 
-            this.견적및표준원가다운로드ToolStripMenuItem.Name = "견적및표준원가다운로드ToolStripMenuItem";
-            this.견적및표준원가다운로드ToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.견적및표준원가다운로드ToolStripMenuItem.Text = "견적 및 표준원가 다운로드";
-            this.견적및표준원가다운로드ToolStripMenuItem.Click += new System.EventHandler(this.견적및표준원가다운로드ToolStripMenuItem_Click);
+            this.실적원가비교다운로드ToolStripMenuItem.Name = "실적원가비교다운로드ToolStripMenuItem";
+            this.실적원가비교다운로드ToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.실적원가비교다운로드ToolStripMenuItem.Text = "실적원가 비교 다운로드";
+            this.실적원가비교다운로드ToolStripMenuItem.Click += new System.EventHandler(this.실적원가비교다운로드ToolStripMenuItem_Click);
             // 
             // frmDashboard
             // 
@@ -406,5 +415,6 @@ namespace TcPCM_Connect
         private System.Windows.Forms.RadioButton rb_ENG;
         private System.Windows.Forms.RadioButton rb_KOR;
         private System.Windows.Forms.ToolStripMenuItem 견적및표준원가다운로드ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 실적원가비교다운로드ToolStripMenuItem;
     }
 }
