@@ -278,19 +278,59 @@ namespace TcPCM_Connect
                 CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "견적 및 표준원가 내보내기", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() != CommonFileDialogResult.Ok)
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = ".xlsx|";
+            dialog.FileName = $"견적 및 표준원가.xlsx";
+
+            if (dialog.ShowDialog() != DialogResult.OK)
             {
-                CustomMessageBox.RJMessageBox.Show($"폴더 오픈을 실패하였습니다", "BOM Import", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomMessageBox.RJMessageBox.Show($"파일 오픈을 실패하였습니다", "견적 및 표준원가 내보내기", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             List<string> calcList = export.AllRootCalcId(selectItem);
             ExcelStandard excel = new ExcelStandard();
             string err= excel.Export(calcList, dialog.FileName);
-            if (err != null && err.Length>0) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다", "견적 및 표준원가 양식", err, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "견적 및 표준원가 양식", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (err != null && err.Length>0) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다", "견적 및 표준원가 내보내기", err, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "견적 및 표준원가 내보내기", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        }
+
+        private void 실적원가비교다운로드ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selectItem.Count == 0)
+            {
+                CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "실적원가 내보내기", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            else if(selectItem.Count > 1)
+            {
+                CustomMessageBox.RJMessageBox.Show($"부품은 하나만 선택하셔야 합니다..", "실적원가 내보내기", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = ".xlsx|";
+            dialog.FileName = $"SAP 실적 원가 비교.xlsx";
+
+            if (dialog.ShowDialog() != DialogResult.OK)
+            {
+                CustomMessageBox.RJMessageBox.Show($"폴더 오픈을 실패하였습니다", "실적원가 내보내기", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            List<string> calcList = export.AllRootCalcId(selectItem);
+            ExcelSAP excel = new ExcelSAP();
+
+            if(calcList.Count == 0)
+            {
+                CustomMessageBox.RJMessageBox.Show($"내보낼 부품이 선택되지 않았습니다.", "실적원가 내보내기", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            frmSAPDataSearch sap = new frmSAPDataSearch();
+            string err = excel.Export(calcList[0], dialog.FileName, sap);
+            if (err != null && err.Length > 0) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다", "실적원가 내보내기식", err, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "실적원가 내보내기", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
 

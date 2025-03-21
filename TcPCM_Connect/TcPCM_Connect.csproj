@@ -185,6 +185,12 @@
     <Compile Include="Dashboard\frmDashboard.Designer.cs">
       <DependentUpon>frmDashboard.cs</DependentUpon>
     </Compile>
+    <Compile Include="Dashboard\frmSAPDataSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dashboard\frmSAPDataSearch.Designer.cs">
+      <DependentUpon>frmSAPDataSearch.cs</DependentUpon>
+    </Compile>
     <Compile Include="Dashboard\frmDetailSearch.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -297,6 +303,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Dashboard\frmDashboard.resx">
       <DependentUpon>frmDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dashboard\frmSAPDataSearch.resx">
+      <DependentUpon>frmSAPDataSearch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Dashboard\frmDetailSearch.resx">
       <DependentUpon>frmDetailSearch.cs</DependentUpon>
