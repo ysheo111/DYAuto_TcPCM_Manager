@@ -247,28 +247,39 @@ namespace TcPCM_Connect
         private void 삭제하기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string result = null;
+            bool notErr = true;
             foreach (int row in rowIndex)
             {
-                string query = $"delete from VendorMaterial where VendorInfoId = {dgv_Vendor.Rows[row].Cells["Id"]}";
+                string query = $"delete from VendorMaterial where VendorInfoId = {dgv_Vendor.Rows[row].Cells["Id"].Value}";
                 result = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
-                if(result == null)
+                if(string.IsNullOrEmpty(result))
                 {
-                    query = $"delete from VendorManufacturing where VendorInfoId = {dgv_Vendor.Rows[row].Cells["Id"]}";
+                    query = $"delete from VendorManufacturing where VendorInfoId = {dgv_Vendor.Rows[row].Cells["Id"].Value}";
                     result = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
-                    if(result == null)
+                    if (string.IsNullOrEmpty(result))
                     { 
-                        query = $"delete from VendorInfo where id = {dgv_Vendor.Rows[row].Cells["Id"]}";
+                        query = $"delete from VendorInfo where id = {dgv_Vendor.Rows[row].Cells["Id"].Value}";
                         result = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
-                        if(result != null)
+                        if (!string.IsNullOrEmpty(result))
+                        {
+                            notErr = false;
                             CustomMessageBox.RJMessageBox.Show($"{dgv_Vendor.Rows[row].Cells["품번"]}의 VendorInfo 삭제를 실패하였습니다\n{result}", "VendorPart", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
                     }
                     else
+                    {
+                        notErr = false;
                         CustomMessageBox.RJMessageBox.Show($"{dgv_Vendor.Rows[row].Cells["품번"]}의 VendorManufacturing 삭제를 실패하였습니다\n{result}", "VendorPart", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
                 else
+                {
+                    notErr = false;
                     CustomMessageBox.RJMessageBox.Show($"{dgv_Vendor.Rows[row].Cells["품번"]}의 VendorMaterial 삭제를 실패하였습니다\n{result}", "VendorPart", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
-            CustomMessageBox.RJMessageBox.Show($"삭제를 완료하였습니다", "VendorPart", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (notErr)
+                CustomMessageBox.RJMessageBox.Show($"삭제를 완료하였습니다", "VendorPart", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
