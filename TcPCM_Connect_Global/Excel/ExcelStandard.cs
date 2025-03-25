@@ -985,7 +985,7 @@ namespace TcPCM_Connect_Global
                         }
 
                         row["Level"] = global.ConvertDouble(element["Level"]);
-                        row["품번"] = element["품번"]?.ToString() ?? "";
+                        row["품번"] =$"{(element["품번"]?.ToString() ?? "")}{(element["리비전"]?.ToString() ?? "")}";
                         row["품명"] = element["품명"]?.ToString() ?? "";
                         row["단위"] = element["단위"]?.ToString() ?? "";
                         row["단위2"] = element["단위2"]?.ToString() ?? "";
