@@ -499,8 +499,8 @@ namespace TcPCM_Connect_Global
                                         RequiredNumberOfMachinesInManufacturingStep,
 	                                    CASE 
 		                                    When  ManualCycleTime = 0 or m.RequiredNumberOfMachinesInManufacturingStep = 0 then null
-		                                    WHEN UseManualMachineHourlyRate = 0 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime / m.RequiredNumberOfMachinesInManufacturingStep
-		                                    WHEN UseManualMachineHourlyRate = 1 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime * ManualUtilizationRate / m.RequiredNumberOfMachinesInManufacturingStep
+		                                    WHEN UseManualMachineHourlyRate = 0 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime / m.RequiredNumberOfMachinesInManufacturingStep + [SetUpLaborCostsPerPart]+[SetUpMachineCostsPerPart] +[SetUpDirectCostsPerPart]
+		                                    WHEN UseManualMachineHourlyRate = 1 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime * ManualUtilizationRate / m.RequiredNumberOfMachinesInManufacturingStep + [SetUpLaborCostsPerPart]+[SetUpMachineCostsPerPart] +[SetUpDirectCostsPerPart]
 	                                    END  AS Machine,
 
 	                                    case
