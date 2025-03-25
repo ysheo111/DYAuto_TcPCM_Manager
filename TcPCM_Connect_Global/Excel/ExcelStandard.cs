@@ -541,12 +541,17 @@ namespace TcPCM_Connect_Global
                 {                   
                     return "가공비가 존재하지 않습니다.";
                 }
+                try
+                {
+                    worksheet4.Rows[5].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 4].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("DirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("DirectCost")));
+                    worksheet4.Rows[6].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 5].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("IndirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("IndirectCost")));
+                    worksheet4.Rows[7].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 6].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("RequiredNumberOfMachinesInManufacturingStep")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("Machine")));
+                    worksheet.Cells[22 + addRowIndex, 9].Value = table.AsEnumerable().Average(row => global.ConvertDouble(row.Field<double?>("ManualUtilizationRate")));
 
-                worksheet4.Rows[5].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 4].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("DirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("DirectCost")));
-                worksheet4.Rows[6].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 5].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("IndirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("IndirectCost")));
-                worksheet4.Rows[7].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 6].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("RequiredNumberOfMachinesInManufacturingStep")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("Machine")));
-                worksheet.Cells[22 + addRowIndex, 9].Value = table.AsEnumerable().Average(row => global.ConvertDouble(row.Field<double?>("ManualUtilizationRate")));
-
+                }
+                catch(Exception e)
+                { 
+                }
                 for (int i = 1; i < after; i++)
                 {
                     worksheet4.Rows[5].Cells[5 + i].Formula = $"={global.NumberToLetter(5 + (i - 1))}5*(1+{global.NumberToLetter(5 + (after))}5)";
@@ -796,12 +801,14 @@ namespace TcPCM_Connect_Global
                 startCell.Select();
                 Excel.Range endCell = (Excel.Range)worksheet6.Cells[startRow + rowCount - 1, startCol + colCount - 1];
                 Excel.Range writeRange = worksheet6.Range[startCell, endCell];
-                writeRange.Style = "표준"; // 한국어 엑셀
+                if (rowCount != 0)
+                {
+                    writeRange.Style = "표준"; // 한국어 엑셀
 
-                // 모든 셀에 테두리 추가
-                writeRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous; // 실선 테두리
-                //writeRange.Borders.Weight = Excel.XlBorderWeight.xlThin;       // 기본 두께 설정
-
+                    // 모든 셀에 테두리 추가
+                    writeRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous; // 실선 테두리
+                                                                                   //writeRange.Borders.Weight = Excel.XlBorderWeight.xlThin;       // 기본 두께 설정
+                }
                 // 숫자 포맷 적용
                 worksheet6.Range[startCell, endCell].NumberFormat = "#,##0";
 
@@ -1150,14 +1157,16 @@ namespace TcPCM_Connect_Global
                 writeRange.PasteSpecial(Excel.XlPasteType.xlPasteFormats);
                 sourceRow.Application.CutCopyMode = 0;
                 // 클립보드 해제 (엑셀 실행 속도 최적화)
-  
+
+                worksheet7.Range[worksheet7.Cells[6, 4], worksheet7.Cells[6 + dt2.Rows.Count - 1, 4]].NumberFormat = "@";
+                worksheet.Range[worksheet.Cells[5, 2], worksheet.Cells[6 + dt.Rows.Count - 1, 2]].NumberFormat = "@";
+
                 WriteDataToExcel(dt2, worksheet7, 6, 3);
 
                 worksheet.Range[worksheet.Cells[5, 7], worksheet.Cells[6 + dt.Rows.Count - 1, 7+dt.Columns.Count]].HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignRight;
                 worksheet.Range[worksheet.Cells[5, 1], worksheet.Cells[6 + dt.Rows.Count - 1, 6]].HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
 
-                worksheet7.Range[worksheet7.Cells[6, 4], worksheet7.Cells[6 + dt2.Rows.Count - 1, 4]].NumberFormat = "@";
-                worksheet.Range[worksheet.Cells[5, 2], worksheet.Cells[6 + dt.Rows.Count - 1, 2]].NumberFormat = "@";
+
                 worksheet7.Range[worksheet7.Cells[6, 3], worksheet7.Cells[6 + dt2.Rows.Count - 1,dt2.Columns.Count - 2]].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
 
                 return null;
@@ -1197,7 +1206,7 @@ namespace TcPCM_Connect_Global
 
         private double? FindMostFrequents(Dictionary<int, List<double>> dict, int idx)
         {
-            if (!dict.ContainsKey(idx)) return 0;
+            if (!dict.ContainsKey(idx) || dict[425].Count==0) return 0;
 
             return dict[idx].GroupBy(x => x).OrderByDescending(g => g.Count()).First().Key;
         }
