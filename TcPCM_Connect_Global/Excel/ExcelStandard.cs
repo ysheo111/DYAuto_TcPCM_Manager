@@ -683,7 +683,7 @@ namespace TcPCM_Connect_Global
                         row4[-5 + 8] = row["ManualUtilizationRate"];
                         row4[-5 + 9] = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
                         row4[-5 + 10] = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
-                        row4[-5 + 11] = row["Machine"];
+                        row4[-5 + 11] = row["MachineData"];
                         row4[-5 + 12] = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
                         dt.Rows.InsertAt(row4, 4 + rowCount * 3);
 
