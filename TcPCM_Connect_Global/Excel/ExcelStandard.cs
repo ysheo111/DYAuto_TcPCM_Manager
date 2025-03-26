@@ -474,6 +474,20 @@ namespace TcPCM_Connect_Global
                                         LEFT JOIN MDCostFactorHeaders AS e ON b.WageCostFactorHeaderId = e.Id
                                         WHERE a.CalculationId IN ({string.Join(", ", calcList)})
                                         GROUP BY a.id, e.UniqueKey
+                                    ),
+                                    Machine as 
+                                    (
+                                       select
+	                                    a.Id as ManufacturingStepId,
+                                        sum(RequiredNumberOfMachinesInManufacturingStep) as RequiredNumberOfMachinesInManufacturingStep,
+	                                    sum(CASE 
+		                                    When  ManualCycleTime = 0 or m.RequiredNumberOfMachinesInManufacturingStep = 0 then null
+		                                    WHEN UseManualMachineHourlyRate = 0 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime / m.RequiredNumberOfMachinesInManufacturingStep + [SetUpLaborCostsPerPart]+[SetUpMachineCostsPerPart] +[SetUpDirectCostsPerPart]
+		                                    WHEN UseManualMachineHourlyRate = 1 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime * ManualUtilizationRate / m.RequiredNumberOfMachinesInManufacturingStep + [SetUpLaborCostsPerPart]+[SetUpMachineCostsPerPart] +[SetUpDirectCostsPerPart]
+	                                    END ) AS MachineData
+	                                    FROM  [ManufacturingSteps] as a
+	                                    left JOIN Machines AS m ON a.Id = m.ManufacturingStepId
+	                                    group by a.Id
                                     )
                                     SELECT					
  	                                    t.LifeTimeToolCount,
@@ -497,12 +511,7 @@ namespace TcPCM_Connect_Global
 	                                    ManualCycleTime,
 	                                    ManualUtilizationRate,
                                         RequiredNumberOfMachinesInManufacturingStep,
-	                                    CASE 
-		                                    When  ManualCycleTime = 0 or m.RequiredNumberOfMachinesInManufacturingStep = 0 then null
-		                                    WHEN UseManualMachineHourlyRate = 0 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime / m.RequiredNumberOfMachinesInManufacturingStep + [SetUpLaborCostsPerPart]+[SetUpMachineCostsPerPart] +[SetUpDirectCostsPerPart]
-		                                    WHEN UseManualMachineHourlyRate = 1 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime * ManualUtilizationRate / m.RequiredNumberOfMachinesInManufacturingStep + [SetUpLaborCostsPerPart]+[SetUpMachineCostsPerPart] +[SetUpDirectCostsPerPart]
-	                                    END  AS Machine,
-
+	                                    MachineData,
 	                                    case
 		                                    When  ManualCycleTime = 0 or a.ShiftsPerDay = 0 then null
 		                                    when a.ShiftModelMode=2 then a.ShiftModelProductionTimePerYearCostFactorValue/3600/a.ShiftsPerDay*(3600/ManualCycleTime*ManualUtilizationRate)
@@ -523,7 +532,7 @@ namespace TcPCM_Connect_Global
                                         MAX(CASE WHEN ld.UniqueKey = N'간접노무비' THEN ld.AvgCost END) AS IndirectCost
                                     FROM LaborData ld
                                     GROUP BY ld.Mid) as L on L.Mid = a.Id
-                                    left JOIN Machines AS m ON a.Id = m.ManufacturingStepId
+                                    left JOIN Machine AS m ON a.Id = m.ManufacturingStepId
                                     left join Tools as t on t.ManufacturingStepId = a.Id
                                     Join Calculations as c on c.Id = a.CalculationId
                                     Join Parts as p on p.Id = c.PartId
@@ -654,7 +663,7 @@ namespace TcPCM_Connect_Global
                         row2[-5 + 10] = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
                         row2[-5 + 11] = row["DirectCost"];
                         row2[-5 + 12] = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
-                        dt.Rows.InsertAt(row2, rowCount);
+                         dt.Rows.InsertAt(row2, rowCount);
 
                         DataRow row3 = dt.NewRow();
                         row3[-5 + 5] = row["name"];
