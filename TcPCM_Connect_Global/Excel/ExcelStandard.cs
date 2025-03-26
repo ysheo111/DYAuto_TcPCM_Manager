@@ -689,7 +689,7 @@ namespace TcPCM_Connect_Global
 
                         rowCount++;
                     }
-
+                    manufacturingId = global.ConvertDouble(row["ManufacturingId"]);
                     if (global.ConvertDouble(row["MasterToolId"]) == 5)
                     {
                         int add = part + (rowCount - 1) * 3 + (calcList.Count - partCnt - 1) * 7 + machine.Rows.Count + 21;
