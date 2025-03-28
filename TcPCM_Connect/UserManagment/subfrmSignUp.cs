@@ -26,7 +26,7 @@ namespace TcPCM_Connect
         private void btn_SignUp_Click(object sender, EventArgs e)
         {
             //필수정보 내용이 없다면, 오류 메세지창을 띄움.
-            if(txt_ID.Texts?.Length <= 0 && txt_Password.Texts?.Length <= 0 && txt_FirstName.Texts?.Length <= 0 && txt_LastName.Texts?.Length <= 0)
+            if(txt_ID.Texts?.Length <= 0 || txt_Password.Texts?.Length <= 0 || txt_FirstName.Texts?.Length <= 0 || txt_LastName.Texts?.Length <= 0)
             {
                 CustomMessageBox.RJMessageBox.Show("필수정보 누락으로 회원가입에 실패하였습니다. 다시 확인해주세요.", "회원가입"
                     , MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
