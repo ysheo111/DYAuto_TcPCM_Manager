@@ -41,6 +41,7 @@ namespace TcPCM_Connect_Global
                 incorrect.Add($"{cbd.FindValue(cbd2, colCol)}을 다시 확인해주세요. ({name} {rowCol} {colCol})");
                 //(worksheet.Cells[row, excelCol]).Interior.Color = Excel.XlRgbColor.rgbYellow;
             }
+            else if(colName == Report.Material.unit) value.Add(colName, $"{worksheet.Cells[rowValue, colValue].Value?.ToString().Trim()}");
             else value.Add(colName, $"{worksheet.Cells[rowValue, colValue].Value}");
         }
 
@@ -65,7 +66,8 @@ namespace TcPCM_Connect_Global
             else
             {
                 if (!value.Columns.Contains(colName)) value.Columns.Add(colName);
-                value.Rows[value.Rows.Count - 1][colName] = $"{worksheet.Cells[rowValue, colValue].Value}";
+                if (colName == Report.Material.unit) value.Rows[value.Rows.Count - 1][colName] = $"{worksheet.Cells[rowValue, colValue].Value?.ToString().Trim()}";
+                else value.Rows[value.Rows.Count - 1][colName] = $"{worksheet.Cells[rowValue, colValue].Value}";
             }
         }
 
@@ -290,7 +292,12 @@ namespace TcPCM_Connect_Global
                             for (int category = xlRng.GetLowerBound(0); category < keys.Length; category++)
                             {
                                 if (keys[category] == null) continue;
+
+                                int matchedIndex = Array.FindIndex(keys, k => k != null && k.Contains(col.Name));
+                                if (matchedIndex != category) continue;
+
                                 if (keys[category].Contains(col.Name) && !keys.Where(key => key != keys[category]).Any(key => key == col.Name)) //!keys.Where(key => key != keys[category]).Contains(col.Name))
+                                    //!keys.Where((key, idx) => idx != category).Any(key => key == col.Name))
                                 {
                                     if (xlRng[row, category] == null)
                                     {
@@ -342,7 +349,7 @@ namespace TcPCM_Connect_Global
                                     }
                                     if (!double.TryParse(resultValue, out double resultDouble)) dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Style.BackColor = Color.Yellow;
                                 }
-                                else if (keys[category] == "임률" && !keys.Where(key => key != keys[category]).Any(key => key == col.Name))
+                                else if (keys[category] == "임률" && !keys.Where((key, idx) => idx != category).Any(key => key == col.Name)) //!keys.Where(key => key != keys[category]).Any(key => key == col.Name))
                                 {
                                     if (xlRng[row, category] == null)
                                     {
@@ -363,8 +370,11 @@ namespace TcPCM_Connect_Global
                             }
                         }
                         if (!flag) dgv.Rows.RemoveAt(dgv.Rows.Count - 1);
-                        else if(dgv.Columns.Contains("Valid From"))
-                            if(string.IsNullOrEmpty(dgv.Rows[dgv.Rows.Count - 1].Cells["Valid From"].Value?.ToString())) dgv.Rows.RemoveAt(dgv.Rows.Count - 1);
+                        else if (dgv.Columns.Contains("Valid From") && string.IsNullOrEmpty(dgv.Rows[dgv.Rows.Count - 1].Cells["Valid From"].Value?.ToString()))
+                            if (worksheetName == "표준 공정")
+                                dgv.Rows[dgv.RowCount-1].Cells["Valid From"].Value = DateTime.Now.ToString("yyyy-MM-dd");
+                            else
+                                dgv.Rows.RemoveAt(dgv.Rows.Count - 1);
                     }
                 }
             }

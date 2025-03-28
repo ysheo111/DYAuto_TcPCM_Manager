@@ -125,8 +125,11 @@ namespace TcPCM_Connect_Global
                 {
                     row = 25 + i;
                     excelCol = 2;
+                    if(i > 25)
+                        ((Excel.Range)worksheet.Rows[row]).Insert(Missing.Value, worksheet.Rows[row - 1]);
                     Excel.Range cell = worksheet.Cells[row, excelCol] as Excel.Range;
                     cell.Select();
+
                     worksheet.Cells[row, excelCol++].Value = i + 1;
                     worksheet.Cells[row, excelCol++].Value = part.material[i].name?.Replace("[DYA]", "");
                     excelCol++;
@@ -151,9 +154,18 @@ namespace TcPCM_Connect_Global
                 //가공비        
                 for (int i = 0; i < part.manufacturing.Count; i++)
                 {
-                    row = 57 + i;
+                    row = 57 +(part.material.Count > 26 ? part.material.Count - 26 : 0)+ i;
                     int row2 = 8 + i;
                     excelCol = 2;
+                    if (i > 32)
+                    {
+                        ((Excel.Range)worksheet.Rows[row]).Insert(Missing.Value, worksheet.Rows[row - 1]);
+
+                        worksheet.Range[worksheet.Cells[row - 1, excelCol], worksheet.Cells[row - 1, 23]].Copy();
+                        worksheet.Range[worksheet.Cells[row, excelCol], worksheet.Cells[row, 23]].PasteSpecial(Excel.XlPasteType.xlPasteFormats);
+                        worksheet.Application.CutCopyMode = 0;
+                    }
+
                     Excel.Range cell = worksheet.Cells[row, excelCol] as Excel.Range;
                     cell.Select();
                     worksheet.Cells[row, excelCol++].Value = i + 1;
@@ -163,8 +175,10 @@ namespace TcPCM_Connect_Global
                     category = part.manufacturing[i].category != null ? part.manufacturing[i].category?.Split('-')[0].Replace(" ", "").Replace("[DYA]", "") : "";
                     worksheet.Cells[row, excelCol++].Value = category;
 
-                    string[] machineName = part.manufacturing[i].machineName?.Replace("[DYA]", "").Split('_');
-                    worksheet.Cells[row, excelCol++].Value = machineName[0];
+                    string machine = part.manufacturing[i].machineName == null ? "" : part.manufacturing[i].machineName;
+                    string[] machineName = machine.Replace("[DYA]", "").Split('_');
+                    
+                    worksheet.Cells[row, excelCol++].Value = ( machineName.Length > 1 ? machineName[0] : "");
 
                     string sec = (machineName.Length >= 2 ? machineName[1] : "");
                     int start = 2;
@@ -444,7 +458,7 @@ namespace TcPCM_Connect_Global
                             }
                             excel.CellVaildation(colName[i], nameRow, row++, excelCol, worksheet, date, ref header, row - 1);
                         }
-                        else if (i == 10) header.Add(Report.Header.exchangeRateCurrency, worksheet.Cells[row++, excelCol + 1].Value);
+                        else if (i == 10) header.Add(Report.Header.exchangeRateCurrency, worksheet.Cells[row++, excelCol + 1].Value.Trim());
                         else if (colName[i] == Report.Header.category) segment = $"{worksheet.Cells[row++, excelCol + 1].Value}";
                         else
                         {
@@ -986,7 +1000,7 @@ namespace TcPCM_Connect_Global
                     }
 
                     if (!header.Columns.Contains(Report.Header.category)) header.Columns.Add(Report.Header.category);
-                    header.Rows[header.Rows.Count - 1][Report.Header.category] = $"{header.Rows[header.Rows.Count - 1][Report.Header.suppier]}||{segment}";
+                    header.Rows[header.Rows.Count - 1][Report.Header.suppier] = $"{header.Rows[header.Rows.Count - 1][Report.Header.suppier]}||{segment}";
 
                     excelCol = 8; row = 11;
                     for (int i = 13; i < 16; i++)
@@ -1246,15 +1260,9 @@ namespace TcPCM_Connect_Global
                     string query = GenerateInsertQuery(header.Rows[0], manufacturing, material);
                     query = query.Replace("\r\n", " ");
                     string result = global_DB.ScalarExecute(query, ((int)global_DB.connDB.selfDB));
-                    if (workBook != null)
+                    if(string.IsNullOrEmpty(result))
                     {
-                        //변경점 저장하면서 닫기
-                        workBook.Close(true);
-                        //Excel 프로그램 종료
-                        application.Quit();
-                        //오브젝트 해제1
-                        ExcelCommon.ReleaseExcelObject(workBook);
-                        ExcelCommon.ReleaseExcelObject(application);
+                        return result;
                     }
                 }
 
@@ -1264,6 +1272,19 @@ namespace TcPCM_Connect_Global
             {
                 LoadingScreen.CloseSplashScreen();
                 return exc.Message;
+            }
+            finally
+            {
+                if (workBook != null)
+                {
+                    //변경점 저장하면서 닫기
+                    workBook.Close(true);
+                    //Excel 프로그램 종료
+                    application.Quit();
+                    //오브젝트 해제1
+                    ExcelCommon.ReleaseExcelObject(workBook);
+                    ExcelCommon.ReleaseExcelObject(application);
+                }
             }
 
             return err;
