@@ -1142,7 +1142,7 @@ namespace TcPCM_Connect_Global
                 {
                     d2[cnt2 + 6] = $"=SUM({global.NumberToLetter(cnt2 + 9)}6:{global.NumberToLetter(cnt2 + 9)}{dt2.Rows.Count + 4})";
                     if (cnt2 == cnt) continue;
-                    worksheet3.Rows[33 + cnt-1].Cells[5 + cnt2 * 2].Formula = $"= '{worksheet7.Name}'!{ worksheet7.Cells[dt2.Rows.Count + 5, cnt2 + 9].Address[false]}*(1+E{23+addiction})";
+                    worksheet3.Rows[33 + cnt-1].Cells[5 + cnt2 * 2].Formula = $"= '{worksheet7.Name}'!{ worksheet7.Cells[dt2.Rows.Count + 5, cnt2 + 9].Address[false]}*(1+E{21+ cnt})";
                     worksheet3.Rows[33 + cnt-1].Cells[5 + cnt2 * 2].NumberFormat = "#,##0";
                     worksheet3.Rows[46 + cnt - 1].Cells[5 + cnt2 * 2].NumberFormat = "0.00%";                    
                     //list.Add($"={global.NumberToLetter(7 + cnt2)}{row}");
