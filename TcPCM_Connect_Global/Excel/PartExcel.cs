@@ -1258,12 +1258,11 @@ namespace TcPCM_Connect_Global
 
                     String callUrl = $"{global.serverURL}/{global.serverURLPath}/api/{global.version}/Calculations/Import";
                     string query = GenerateInsertQuery(header.Rows[0], manufacturing, material);
+                    if (!query.StartsWith("BEGIN")) return query;
+
                     query = query.Replace("\r\n", " ");
                     string result = global_DB.ScalarExecute(query, ((int)global_DB.connDB.selfDB));
-                    if(string.IsNullOrEmpty(result))
-                    {
-                        return result;
-                    }
+                    if(string.IsNullOrEmpty(result)) return result;
                 }
 
                 LoadingScreen.CloseSplashScreen();
@@ -1301,6 +1300,9 @@ namespace TcPCM_Connect_Global
                 string vendorInfoColumns = string.Join(", ", vendorInfo.Table.Columns.Cast<DataColumn>().Select(col => $"[{col.ColumnName}]"));
                 string vendorInfoValues = string.Join(", ", vendorInfo.Table.Columns.Cast<DataColumn>().Select(col => FormatValue(vendorInfo[col])));
                 string vendorInfoPkColumn = "Id";
+                if (string.IsNullOrEmpty(vendorInfo["품번"]?.ToString())) 
+                    return "품번은 null값일 수 없습니다.";
+
                 query.AppendLine($@"
     DECLARE @ExistingId INT;
     SELECT @ExistingId = {vendorInfoPkColumn} FROM VendorInfo 
@@ -1333,6 +1335,7 @@ BEGIN
                     int count = 0;
                     foreach (DataRow row in vendorManufacturing.Rows)
                     {
+                        //if (string.IsNullOrEmpty(row["품번"]?.ToString())) return "품번은 null값일 수 없습니다.";
                         if (count++ > 0) query.AppendLine(",");
                         query.Append($"({string.Join(", ", vendorManufacturing.Columns.Cast<DataColumn>().Select(col => FormatValue(row[col])))}, @ExistingId)");
                     }
@@ -1351,6 +1354,11 @@ BEGIN
                     int count = 0;
                     foreach (DataRow row in vendorMaterial.Rows)
                     {
+                        if (string.IsNullOrEmpty(row["품번"]?.ToString()))
+                        {
+                            MessageBox.Show($"Material-{row[0]}의 품번은 null값일 수 없습니다.");
+                            continue;
+                        }
                         if (count++ > 0) query.AppendLine(",");
                         query.Append($"({string.Join(", ", vendorMaterial.Columns.Cast<DataColumn>().Select(col => FormatValue(row[col])))}, @ExistingId)");
                     }
@@ -1364,7 +1372,7 @@ BEGIN
             catch(Exception e)
             {
                 MessageBox.Show(e.Message);
-                return null;
+                return e.Message;// null;
             }            
         }
 
