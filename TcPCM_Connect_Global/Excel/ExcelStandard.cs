@@ -258,17 +258,17 @@ namespace TcPCM_Connect_Global
             WHERE p.Id = {requirements.Rows[0]["ProjectId"]} AND c.Deleted IS NULL";
 
                 System.Data.DataTable increase = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
-                if (increase.Rows.Count == 0)  return "수익성 데이터가 존재하지 않습니다."; 
+               
                 // ** 2. EconomicOverheadRates 조회 **
                 query = $@"
             SELECT * FROM [TcPCM2312_Patch3].[dbo].[EconomicOverheadRates] AS i
             LEFT JOIN EconomicCalculations AS c ON i.EconomicCalculationId = c.Id
             LEFT JOIN CostElementDefinition AS e ON e.Id = I.CostElementDefinitionId
-            WHERE c.Id = {increase.Rows[0]["EconomicCalculationId"]} AND c.Deleted IS NULL 
+            LEFT JOIN Projects AS p ON c.ProjectId = p.Id
+            WHERE p.Id = {requirements.Rows[0]["ProjectId"]} AND c.Deleted IS NULL 
             ORDER BY CostElementDefinitionId, DateValidFrom";
 
                 System.Data.DataTable overheads = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
-                if (overheads.Rows.Count == 0) return "수익성 데이터가 존재하지 않습니다.";
                 System.Data.DataTable increaseDataTable = new System.Data.DataTable();
                 System.Data.DataTable formulaDataTable = new System.Data.DataTable();
 
@@ -316,8 +316,13 @@ namespace TcPCM_Connect_Global
                     formulaDataTable.Rows.Add();
                 }
 
-                // ** 4. Increase 데이터 처리 **
-                foreach (DataRow row in increase.Rows)
+                for (int i = 0; i < after; i++)
+                {
+                    GenerateFormula(worksheet2, i, partName, ref formulaDataTable);
+                }
+
+                    // ** 4. Increase 데이터 처리 **
+               foreach (DataRow row in increase.Rows)
                 {
                     int rowIdx = 0;
                     int idx = int.Parse(row["CostElementDefinitionId"].ToString());
@@ -335,13 +340,6 @@ namespace TcPCM_Connect_Global
                         string name = i == 0 ? "FractionValue0" : $"FractionValueAfter{i}";
                         increaseDataTable.Rows[rowIdx - 4][$"Col_{i}"] = global.ConvertDouble(row[name]);
                         if (global.ConvertDouble(row[name]) != 0) list.Add(global.ConvertDouble(row[name]));
-                        //dataToWrite.Add((worksheet2.Cells[rowIdx, 5 + i], global.ConvertDouble(row[name])));
-                        //if (global.ConvertDouble(row[name]) != 0) list.Add(global.ConvertDouble(row[name]));
-                        //dataToFormat.Add((worksheet2.Cells[rowIdx, 5 + i], "0.00%"));
-
-                        GenerateFormula(worksheet2,  i,  partName, ref formulaDataTable);
-                        //// **최적화된 방식으로 엑셀에 수식 입력**
-                        //ApplyDataToExcel(new List<(Excel.Range, object)>(), dataToFormula, new List<(Excel.Range, object)>());
                     }
 
                     if (!profitAndLoss.ContainsKey(idx)) profitAndLoss.Add(idx, list);
@@ -351,15 +349,14 @@ namespace TcPCM_Connect_Global
                 // ** 🚀 한 번에 Excel에 쓰기 (DataTable → Excel) **
                 int startRow = 4;
                 int startCol = 5; // **🔥 5번째 열부터 데이터 시작**
-             
-                WriteDataToExcel(increaseDataTable, worksheet2, startRow, startCol);
+
+                if (increase.Rows.Count != 0)  WriteDataToExcel(increaseDataTable, worksheet2, startRow, startCol);
 
                 // ** 🚀 한 번에 Excel에 쓰기 (DataTable → Excel) **
                 startRow = 16 + 22 * partName.Count;
                  startCol = 5; // **🔥 5번째 열부터 데이터 시작**
 
-                WriteDataToExcel(formulaDataTable, worksheet2, startRow, startCol);
-
+                if (formulaDataTable.Rows.Count != 0)  WriteDataToExcel(formulaDataTable, worksheet2, startRow, startCol);
                 worksheet2.Range[worksheet2.Cells[16, 5 + after], worksheet2.Cells[37, 5 + after]].Copy();
                 worksheet2.Range[worksheet2.Cells[38, 5 + after], worksheet2.Cells[37 + (partName.Count-1) * 22, 5 + after]].PasteSpecial(Excel.XlPasteType.xlPasteFormats);
                 // 클립보드 해제 (엑셀 실행 속도 최적화)
@@ -405,11 +402,7 @@ namespace TcPCM_Connect_Global
                 worksheet3.Cells[4, 4].Value = FindMostFrequents(profitAndLoss, 157);                
                 worksheet3.Cells[4, 8].Value = FindMostFrequents(profitAndLoss, 152);
 
-
                 ApplyDataToExcelGroup(dataToMostFreq, new List<(Excel.Range, object)>(), new List<(Excel.Range, object)>());
-
-
-
             }
             catch (Exception e)
             {
@@ -468,8 +461,8 @@ namespace TcPCM_Connect_Global
                                                 ELSE d.Value 
                                             END) * 3600) AS AvgCost
                                         FROM ManufacturingSteps AS a  
-                                        JOIN RestManufacturingOverheadCosts AS c ON a.Id = c.ManufacturingStepId
-                                        JOIN [Labor] AS b ON a.Id = b.ManufacturingStepId OR b.RestManufacturingOverheadCostsId = c.Id
+                                        LEFT JOIN RestManufacturingOverheadCosts AS c ON a.Id = c.ManufacturingStepId
+                                        LEFT JOIN [Labor] AS b ON a.Id = b.ManufacturingStepId OR b.RestManufacturingOverheadCostsId = c.Id
                                         LEFT JOIN MDCostFactorDetails AS d ON b.WageCostFactorDetailId = d.Id
                                         LEFT JOIN MDCostFactorHeaders AS e ON b.WageCostFactorHeaderId = e.Id
                                         WHERE a.CalculationId IN ({string.Join(", ", calcList)})
@@ -746,33 +739,6 @@ namespace TcPCM_Connect_Global
                             }
                         }
                     }
-
-                    //worksheet4.Rows[part + rowCount].Cells[5].Value = row["name"];
-                    //worksheet4.Rows[part + rowCount].Cells[6].Value = row["DirectPerson"];
-                    //worksheet4.Rows[part + rowCount].Cells[7].Value = row["ManualCycleTime"];
-                    //worksheet4.Rows[part + rowCount].Cells[8].Value = row["ManualUtilizationRate"];
-                    //worksheet4.Rows[part + rowCount].Cells[9].Formula = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
-                    //worksheet4.Rows[part + rowCount].Cells[10].Formula = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
-                    //worksheet4.Rows[part + rowCount].Cells[11].Value = row["DirectCost"];
-                    //worksheet4.Rows[part + rowCount].Cells[12].Formula = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
-
-                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[5].Value = row["name"];
-                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[6].Value = row["IndirectPerson"];
-                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[7].Value = row["ManualCycleTime"];
-                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[8].Value = row["ManualUtilizationRate"];
-                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[9].Formula = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
-                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[10].Formula = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
-                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[11].Value = row["IndirectCost"];
-                    //worksheet4.Rows[part + 2 + rowCount * 2].Cells[12].Formula = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
-
-                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[5].Value = row["name"];
-                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[6].Value = row["RequiredNumberOfMachinesInManufacturingStep"];
-                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[7].Value = row["ManualCycleTime"];
-                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[8].Value = row["ManualUtilizationRate"];
-                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[9].Formula = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
-                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[10].Formula = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
-                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[11].Value = row["Machine"];
-                    //worksheet4.Rows[part + 4 + rowCount * 3].Cells[12].Formula = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
                 }
 
                 WriteDataToExcel(dt, worksheet4, part, 5);
@@ -795,7 +761,7 @@ namespace TcPCM_Connect_Global
                     targetCol++;
                     for(int j=0; j<15;j++)
                     {                        
-                        worksheet.Cells[32 + addRowIndex+j, targetCol].Formula = $"={global.NumberToLetter(targetCol-1)}{32+addRowIndex+j}/{global.NumberToLetter(targetCol - 1)}{32 + addRowIndex}";
+                        worksheet.Cells[31 + addRowIndex+j, targetCol].Formula = $"=IFERROR({global.NumberToLetter(targetCol-1)}{31+addRowIndex+j}/{global.NumberToLetter(targetCol - 1)}{31 + addRowIndex},0)";
                     }
                 }
 
@@ -1271,7 +1237,7 @@ namespace TcPCM_Connect_Global
 
                     dataToWrite.Add((worksheet.Cells[30 + addRowIndex, 5 + partName.Count * 2], "금액"));
                     dataToWrite.Add((worksheet.Cells[30 + addRowIndex, 5 + partName.Count * 2 + 1], "비중"));
-                    dataToWrite.Add((worksheet.Cells[31 + addRowIndex, 5 + partName.Count * 2], row["SalesPrice"]));
+                    dataToWrite.Add((worksheet.Cells[31 + addRowIndex, 5 + partName.Count * 2], global.ConvertDouble( row["SalesPrice"])));
                     dataToFormat.Add((worksheet.Cells[31 + addRowIndex, 5 + partName.Count * 2], "#,##0"));
 
                     string colName = global.NumberToLetter(5 + partName.Count * 2);
@@ -1281,11 +1247,11 @@ namespace TcPCM_Connect_Global
                         (32, $"=SUM({colName}{40 + totalRowIndex}:{colName}{44 + totalRowIndex})"),
                         (40, $"=SUM({colName}{33 + totalRowIndex}:{colName}{39 + totalRowIndex})"),
                         (41, $"={colName}{31 + totalRowIndex}*G{24 + totalRowIndex}"),
-                        (42, "=IFERR('포장 및 물류비 '!N11,0)"),
-                        (43, "=IFERR('포장 및 물류비 '!J23,0)"),
+                        (42, "=IFERROR('포장 및 물류비 '!N11,0)"),
+                        (43, "=IFERROR('포장 및 물류비 '!J23,0)"),
                         (44, $"=({colName}{31 + totalRowIndex}-재료비!J17)*K{22 + totalRowIndex}"),
                         (45, $"={colName}{31 + totalRowIndex}-{colName}{32 + totalRowIndex}"),
-                        (46, $"={colName}{45 + totalRowIndex}/{colName}{31 + totalRowIndex}")
+                        (46, $"=IFERROR({colName}{45 + totalRowIndex}/{colName}{31 + totalRowIndex},0)")
                     };
                     foreach (var (rowOffset, formula) in formulas)
                     {
@@ -1410,15 +1376,15 @@ namespace TcPCM_Connect_Global
                         profitTargetRow = 31 + (partName.Count - 1) * 22;
                         profitSourceRow = 11;
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 15}-{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 14}"));
-                        dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}/{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 16}"));
+                        dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"=IFERROR({global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}/{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 16},0)"));
 
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol],
-                            $"='{worksheet5.Name}'!{worksheet5.Cells[15, profitTargetCol + 1].Address[false]} * {global.NumberToLetter(profitTargetCol)}{profitSourceRow++}/'{worksheet.Name}'!{worksheet.Cells[12 + requirements.Rows.Count-1, profitTargetCol ].Address[false]}"));
+                            $"=IFERROR('{worksheet5.Name}'!{worksheet5.Cells[15, profitTargetCol + 1].Address[false]} * {global.NumberToLetter(profitTargetCol)}{profitSourceRow++}/'{worksheet.Name}'!{worksheet.Cells[12 + requirements.Rows.Count-1, profitTargetCol ].Address[false]},0)"));
 
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 4}-{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}"));
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}*{global.NumberToLetter(profitTargetCol)}{profitSourceRow++}"));
                         dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 3}-{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}"));
-                        dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"={global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}/{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 21}"));
+                        dataToFormula.Add((worksheet2.Cells[profitTargetRow++, profitTargetCol], $"=IFERROR({global.NumberToLetter(profitTargetCol)}{profitTargetRow - 2}/{global.NumberToLetter(profitTargetCol)}{profitTargetRow - 21},0)"));
 
                         if (totalRow == addRowIndex)
                         {
