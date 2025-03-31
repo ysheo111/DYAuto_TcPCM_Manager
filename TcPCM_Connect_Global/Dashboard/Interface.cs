@@ -175,7 +175,7 @@ namespace TcPCM_Connect_Global
                 {
                     index = Array.FindIndex(name, m => m.Contains("ko-KR"));
                     if (index > -1) node.Text = name[index].Split(':')[1];
-                    else node.Text = name[0].Split(':')[1];
+                    else if(name[0].Split(':').Length > 2) node.Text = name[0].Split(':')[1];
                 }
                 parent.Add(node);
             }
