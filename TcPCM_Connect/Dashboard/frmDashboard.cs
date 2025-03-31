@@ -56,7 +56,7 @@ namespace TcPCM_Connect
             List<string> init = global_DB.ListSelect(query, (int)global_DB.connDB.PCMDB);
             export.ExploreNodeAdd(tv_Bom.Nodes, init);
             //tv_Bom.TreeViewNodeSorter = new NodeSorter();
-            //tv_Bom.Sort();
+            tv_Bom.Sort();
         }
 
         private void btn_Configuration_Click(object sender, EventArgs e)
