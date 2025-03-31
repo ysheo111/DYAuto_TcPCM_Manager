@@ -70,14 +70,14 @@ namespace TcPCM_Connect_Global
 	                            pp.PartNo,
 	                            pr.Number,
                                 tc.*
-                            FROM EconomicCalculations c
-                            JOIN Projects p ON c.ProjectId = p.Id
-                            JOIN ProjectPartEntries ppe ON p.Id = ppe.ProjectId
-                            join Parts pp on pp.Id = ppe.PartId
-                            JOIN Calculations c3 ON ppe.PartId = c3.PartId
-                            JOIN PivotResult pd ON c.Id = pd.CalculationId
-                            Join PartRevisions pr on pr.PartId = pp.Id
-                            join [PCI].[dbo].[Transport] as tc on tc.CalculationId = c3.id
+                            FROM Calculations c3
+							left join Parts pp on pp.Id = c3.PartId
+							left join [PCI].[dbo].[Transport] as tc on tc.CalculationId = c3.id
+							left Join PartRevisions pr on pr.PartId = pp.Id
+							left JOIN PivotResult pd ON c3.Id = pd.CalculationId     
+							left JOIN ProjectPartEntries ppe ON ppe.PartId = pp.Id
+							left JOIN Projects p ON p.PartId = pp.Id
+                            left JOIN EconomicCalculations c ON c.ProjectId = p.Id                                                                  
                             AND YEAR(pd.DateValidFrom) = YEAR(c3.CalculationTime)-- 연도 매칭
                             WHERE c3.Id = {calc}
                             AND c.Deleted IS NULL;
@@ -90,11 +90,11 @@ namespace TcPCM_Connect_Global
                     salesPrice = global.ConvertDouble(basic.Rows[0]["SalesPrice"]);
                     partNo = basic.Rows[0]["PartNo"].ToString();
                     revision = basic.Rows[0]["Number"].ToString();
-                    requirement = basic.Rows[0]["requirement"].ToString();
-                    saleoverhead = basic.Rows[0]["판관비율"].ToString();
-                    roytal = basic.Rows[0]["로열티"].ToString();
-                    package = basic.Rows[0]["Package"].ToString();
-                    transport = basic.Rows[0]["Transport"].ToString();
+                    requirement = global.ConvertDouble( basic.Rows[0]["requirement"]).ToString();
+                    saleoverhead = global.ConvertDouble(basic.Rows[0]["판관비율"]).ToString();
+                    roytal = global.ConvertDouble(basic.Rows[0]["로열티"]).ToString();
+                    package = global.ConvertDouble(basic.Rows[0]["Package"]).ToString();
+                    transport = global.ConvertDouble(basic.Rows[0]["Transport"]).ToString();
                 }
 
                 Interface export = new Interface();
