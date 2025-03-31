@@ -131,7 +131,11 @@
             this.cb_Classification.IconColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Items.AddRange(new object[] {
             "재료관리비율",
-            "판매관리비율"});
+            "판매관리비율",
+            "재료 Loss율",
+            "경제성 검토",
+            "년간손익분석",
+            "Overheads"});
             this.cb_Classification.ListBackColor = System.Drawing.Color.White;
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Location = new System.Drawing.Point(65, 21);
@@ -140,7 +144,7 @@
             this.cb_Classification.Padding = new System.Windows.Forms.Padding(1);
             this.cb_Classification.Size = new System.Drawing.Size(136, 38);
             this.cb_Classification.TabIndex = 63;
-            this.cb_Classification.Texts = "재료관리비";
+            this.cb_Classification.Texts = "재료관리비율";
             this.cb_Classification.OnSelectedIndexChanged += new System.EventHandler(this.cb_Classification_OnSelectedIndexChanged);
             // 
             // btn_Configuration

@@ -126,7 +126,13 @@ namespace TcPCM_Connect_Global
                     row = 25 + i;
                     excelCol = 2;
                     if(i > 25)
+                    {
                         ((Excel.Range)worksheet.Rows[row]).Insert(Missing.Value, worksheet.Rows[row - 1]);
+
+                        worksheet.Range[worksheet.Cells[row - 1, excelCol], worksheet.Cells[row - 1, 23]].Copy();
+                        worksheet.Range[worksheet.Cells[row, excelCol], worksheet.Cells[row, 23]].PasteSpecial(Excel.XlPasteType.xlPasteFormats);
+                        worksheet.Application.CutCopyMode = 0;
+                    }
                     Excel.Range cell = worksheet.Cells[row, excelCol] as Excel.Range;
                     cell.Select();
 
@@ -134,6 +140,7 @@ namespace TcPCM_Connect_Global
                     worksheet.Cells[row, excelCol++].Value = part.material[i].name?.Replace("[DYA]", "");
                     excelCol++;
                     worksheet.Cells[row, excelCol++].Value = part.material[i].itemNumber?.Replace("[DYA]", "");
+                    worksheet.Cells[row, excelCol++].Style.Numberformat.Format = "@";
                     worksheet.Cells[row, excelCol++].Value = part.material[i].transport;//공급기준
                     worksheet.Cells[row, excelCol++].Value = part.material[i].substance?.Replace("[DYA]", "");
                     worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.material[i].thickness);//두께
