@@ -30,13 +30,14 @@ namespace TcPCM_Connect
             string quertSAP = $@"select distinct MATNR,
                                 MAKTX
                                 from MD_Profit 
-                                where  MATNR like '{partNo + revision}%'";
+                                where  MATNR like '%{partNo + revision}%'";
            
             DataTable sap = global_DB.MutiSelect(quertSAP, (int)global_DB.connDB.selfDB);
             if(sap.Rows.Count <= 0)
             {
-                ReturnValue1 = new List<string>();
+                ReturnValue1 = new List<string>();                
                 this.Close();
+                return;
             }
             foreach(DataRow row in sap.Rows)
             {
