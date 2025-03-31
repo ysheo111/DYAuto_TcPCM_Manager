@@ -72,7 +72,7 @@ namespace TcPCM_Connect
         private void tv_Bom_AfterExpand(object sender, TreeViewEventArgs e)
         {
             e.Node.Nodes.RemoveByKey("expand");
-            List<string> add = export.HierarchicalExplore((TagType)e.Node.Tag, e.Node.Name.Remove(0, 1));
+            List<string> add = export.HierarchicalExplore((TagType)e.Node.Tag, (TagType)e.Node.Tag == TagType.Part? e.Node.Name :  e.Node.Name.Remove(0, 1));
             export.ExploreNodeAdd(e.Node.Nodes, add);
         }
 
