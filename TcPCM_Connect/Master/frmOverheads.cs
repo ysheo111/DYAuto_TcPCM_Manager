@@ -36,7 +36,7 @@ namespace TcPCM_Connect
         private void btn_Create_Click(object sender, EventArgs e)
         {
             ExcelImport excel = new ExcelImport();            
-            string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "재료관리비" : cb_Classification.SelectedItem.ToString(),dgv_Overheads);
+            string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString(),dgv_Overheads);
 
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -44,7 +44,7 @@ namespace TcPCM_Connect
         private void btn_ExcelCreate_Click(object sender, EventArgs e)
         {
             ExcelExport excel = new ExcelExport();
-            string columnName = cb_Classification.SelectedItem == null ? "재료관리비" : cb_Classification.SelectedItem.ToString();
+            string columnName = cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString();
             string err = excel.ExportLocationGrid(dgv_Overheads, columnName);
 
             if (err != null) CustomMessageBox.RJMessageBox.Show($"Export 실패하였습니다\n{err}", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -102,7 +102,7 @@ namespace TcPCM_Connect
             {
                 ValidFromAdd("Valid From");
                 dgv_Overheads.Columns.Add("지역", "지역");
-                dgv_Overheads.Columns.Add("Plant", "Plant");
+                //dgv_Overheads.Columns.Add("Plant", "Plant");
                 dgv_Overheads.Columns.Add("업종", "업종");
                 dgv_Overheads.Columns.Add("재료 관리비율", "재료 관리비율");
                 dgv_Overheads.Columns["재료 관리비율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC";
@@ -195,24 +195,30 @@ namespace TcPCM_Connect
                 row.Cells[e.ColumnIndex].Value = !DateTime.TryParse(row.Cells[e.ColumnIndex].Value.ToString(), out DateTime dt) ?
                     row.Cells[e.ColumnIndex].Value : dt.ToString("yyyy-MM-dd");
             }
-            if (dgv_Overheads.Columns[e.ColumnIndex].Name.Contains("관리비율"))
-            {
-                if (decimal.TryParse(e.Value.ToString(), out decimal value))
-                {
-                    e.Value = value.ToString("N2");
-                    e.FormattingApplied = true;
-                }
-            }
+            //if (new List<string>() { "율", "WACC", "법인세", "운전 자금" }.Any(key => dgv_Overheads.Columns[e.ColumnIndex].Name.Contains(key)))
+            //{
+            //    if (decimal.TryParse(e.Value.ToString(), out decimal value))
+            //    {
+            //        e.Value = value.ToString("N2");
+            //        e.FormattingApplied = true;
+            //    }
+            //}
         }
 
         private void dgv_Overheads_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
-            if (dgv_Overheads.Columns[e.ColumnIndex].Name == "재료 관리비율" && !dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().Contains("%"))
+            if (new List<string>() { "율", "WACC", "법인세", "운전 자금" }.Any(key => dgv_Overheads.Columns[e.ColumnIndex].Name.Contains(key))
+                && !dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().Contains("%"))
             {
-                string percent = $"{dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}%";
-                dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = percent;
+                string percentValue = $"{dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
+                if (decimal.TryParse(dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString(), out decimal value))
+                {
+                    if (value >= 0 && value < 1)
+                        percentValue = (value * 100).ToString();
+                }
+                dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = $"{percentValue}%";
             }
 
             global.MasterDataValiding((DataGridView)sender, e);
@@ -259,10 +265,7 @@ namespace TcPCM_Connect
                 foreach (DataColumn col in dataTable.Columns)
                 {
                     string result = row[col].ToString();
-                    if(columnName == "재료관리비" && double.TryParse(result, out double parseResult) && parseResult < 1)
-                    {
-                        result = $"{(parseResult * 100).ToString()}%";
-                    }
+
                     int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
                     dgv_Overheads.Rows[dgv_Overheads.Rows.Count - 2].Cells[count].Value = result;
                 }
