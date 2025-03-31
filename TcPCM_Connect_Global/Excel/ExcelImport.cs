@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace TcPCM_Connect_Global
 {
@@ -293,8 +294,8 @@ namespace TcPCM_Connect_Global
                             {
                                 if (keys[category] == null) continue;
 
-                                int matchedIndex = Array.FindIndex(keys, k => k != null && k.Contains(col.Name));
-                                if (matchedIndex != category) continue;
+                                //int matchedIndex = Array.FindIndex(keys, k => k != null && k.Contains(col.Name));
+                                //if (matchedIndex != category) continue;
 
                                 if (keys[category].Contains(col.Name) && !keys.Where(key => key != keys[category]).Any(key => key == col.Name)) //!keys.Where(key => key != keys[category]).Contains(col.Name))
                                     //!keys.Where((key, idx) => idx != category).Any(key => key == col.Name))
@@ -319,9 +320,11 @@ namespace TcPCM_Connect_Global
                                     
                                     flag = true;
 
-                                    if (resultValue.Contains("CO2e/kg"))
-                                        resultValue = resultValue.Replace("CO2e/kg","").Trim();
-                                    if(worksheetName == "임률" && col.Name == "지역")
+                                    //if (resultValue.Contains("CO2e/kg"))
+                                    //    resultValue = resultValue.Replace("CO2e/kg","").Trim();
+                                    if (Regex.IsMatch(resultValue, "CO\\d+e\\/[a-zA-Z]+"))
+                                        resultValue = Regex.Replace(resultValue, "CO\\d+e\\/[a-zA-Z]+", "").Trim();
+                                    if (worksheetName == "임률" && col.Name == "지역")
                                         dgv.Rows[dgv.Rows.Count - 1].Cells["Plant"].Value = resultValue;
                                     else if (worksheetName == "표준 공정")
                                     {

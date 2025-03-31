@@ -279,7 +279,11 @@ namespace TcPCM_Connect
                 }
             }
             if (notErr)
+            {
+                searchButton1.text = null;
+                SearchMethod(null);
                 CustomMessageBox.RJMessageBox.Show($"삭제를 완료하였습니다", "VendorPart", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

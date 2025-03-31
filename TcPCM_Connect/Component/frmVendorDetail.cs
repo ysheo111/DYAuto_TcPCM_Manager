@@ -81,24 +81,30 @@ namespace TcPCM_Connect.Component
 
         private void 삭제하기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //foreach (DataRow row in dgv_VendorMaterial.SelectedRows)
-            //{
-            //    string query = $"delete from VendorMaterial VendorInfo where id = {row["Id"]}";
-            //    string result = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
-            //}
             foreach (var item in items)
             {
                 if(item.Value == "Material")
                 {
                     string query = $"delete from VendorMaterial where id = {item.Key}";
                     string result = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        CustomMessageBox.RJMessageBox.Show($"삭제를 실패하였습니다\n{result}", "VendorMaterial", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                 }
                 else if(item.Value == "Manufacturing")
                 {
                     string query = $"delete from VendorManufacturing where id = {item.Key}";
                     string result = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        CustomMessageBox.RJMessageBox.Show($"삭제를 실패하였습니다\n{result}", "VendorMaterial", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                 }
             }
+            LoadMaterial();
         }
         Dictionary<string, string> items = new Dictionary<string, string>();
         private void dgv_VendorDetail_MouseDown(object sender, MouseEventArgs e)
