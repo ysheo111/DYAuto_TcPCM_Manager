@@ -263,10 +263,11 @@ namespace TcPCM_Connect_Global
                                         key = key.Substring(0, index).Trim();
                                 }
                             }
-                            else if (worksheetName == "재료관리비")
+                            else if (worksheetName == "재료관리비율" && key.Contains("1차 기준"))
                             {
-                                if (key.Contains("재료") && key.Contains("Loss") && key.Contains("율"))
-                                    key = "재료 관리비율";
+                                //if (key.Contains("재료") && key.Contains("Loss") && key.Contains("율"))
+                                //    key = "재료 관리비율";
+                                key = "재료 관리비율";
                             }
                             else if (worksheetName == "Sprue" && key == "1차 기준")
                             {
@@ -341,6 +342,15 @@ namespace TcPCM_Connect_Global
                                     {
                                         dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue.Trim();
                                     }
+                                    //else if (new List<string>() { "재료관리비율", "판매관리비율", "재료 Loss율", "경제성 검토", "년간손익분석", "Overheads" }.Any(key => worksheetName.Contains(key)))
+                                    //{
+                                    //    if (double.TryParse(resultValue, out double value))
+                                    //    {
+                                    //        if (value >= 0 && value <= 1)
+                                    //            resultValue = (value * 100).ToString();
+                                    //    }
+                                    //    dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue;
+                                    //}
                                     else
                                         dgv.Rows[dgv.Rows.Count - 1].Cells[col.Name].Value = resultValue;
 

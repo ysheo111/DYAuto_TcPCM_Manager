@@ -42,13 +42,10 @@ namespace TcPCM_Connect_Global
                         {
                             if(name == "판매관리비율")
                                 detailInfo.Add(col.Name, cellValue);
+                            else if(name == "재료관리비율")
+                                detailInfo.Add(col.Name, $"{row.Cells["지역"].Value}||{cellValue}");
                             else
-                            {
-                                if (cellValue != null)
-                                    detailInfo.Add(col.Name, $"{row.Cells["Plant"].Value?.ToString()}||{cellValue}");
-                                else
-                                    detailInfo.Add(col.Name, "||");
-                            }
+                                detailInfo.Add(col.Name, $"{row.Cells["Plant"].Value}||{cellValue}");
                         }
                         else if((col.Name.Contains("WACC") || col.Name.Contains("법인세") || col.Name.Contains("운전 자금")) && !string.IsNullOrEmpty(cellValue))
                         {
