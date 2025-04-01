@@ -262,6 +262,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UserManagment\frmTcPCM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserManagment\frmTcPCM.Designer.cs">
+      <DependentUpon>frmTcPCM.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserManagment\frmLogin.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -346,6 +352,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Master\Select.resx">
       <DependentUpon>Select.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserManagment\frmTcPCM.resx">
+      <DependentUpon>frmTcPCM.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserManagment\frmLogin.resx">
       <DependentUpon>frmLogin.cs</DependentUpon>

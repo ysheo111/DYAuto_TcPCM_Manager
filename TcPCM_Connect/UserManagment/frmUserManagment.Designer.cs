@@ -29,11 +29,11 @@ namespace TcPCM_Connect
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dgv_UserInfo = new System.Windows.Forms.DataGridView();
             this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -48,21 +48,16 @@ namespace TcPCM_Connect
             this.btn_Edit = new CustomControls.RJControls.RJButton();
             this.btn_SignUp = new CustomControls.RJControls.RJButton();
             this.btn_Delete = new CustomControls.RJControls.RJButton();
-            this.txt_ID = new CustomControls.RJControls.RJTextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txt_Password = new CustomControls.RJControls.RJTextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.btn_Change = new CustomControls.RJControls.RJButton();
+            this.btn_TcPCM = new CustomControls.RJControls.RJButton();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_UserInfo)).BeginInit();
             this.SuspendLayout();
             // 
             // dgv_UserInfo
             // 
             this.dgv_UserInfo.AllowUserToAddRows = false;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Menu;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.DimGray;
-            this.dgv_UserInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Menu;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.DimGray;
+            this.dgv_UserInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
             this.dgv_UserInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -71,14 +66,14 @@ namespace TcPCM_Connect
             this.dgv_UserInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgv_UserInfo.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgv_UserInfo.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Menu;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_UserInfo.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Menu;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_UserInfo.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.dgv_UserInfo.ColumnHeadersHeight = 30;
             this.dgv_UserInfo.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ID,
@@ -86,43 +81,43 @@ namespace TcPCM_Connect
             this.Column2,
             this.Column3,
             this.Column4});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_UserInfo.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_UserInfo.DefaultCellStyle = dataGridViewCellStyle8;
             this.dgv_UserInfo.EnableHeadersVisualStyles = false;
             this.dgv_UserInfo.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            this.dgv_UserInfo.Location = new System.Drawing.Point(44, 83);
+            this.dgv_UserInfo.Location = new System.Drawing.Point(40, 73);
             this.dgv_UserInfo.Name = "dgv_UserInfo";
             this.dgv_UserInfo.ReadOnly = true;
             this.dgv_UserInfo.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.PaleVioletRed;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_UserInfo.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.PaleVioletRed;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_UserInfo.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.dgv_UserInfo.RowHeadersVisible = false;
             this.dgv_UserInfo.RowHeadersWidth = 51;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.White;
-            this.dgv_UserInfo.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.Color.White;
+            this.dgv_UserInfo.RowsDefaultCellStyle = dataGridViewCellStyle10;
             this.dgv_UserInfo.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.White;
-            this.dgv_UserInfo.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.dgv_UserInfo.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.dgv_UserInfo.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.dgv_UserInfo.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.dgv_UserInfo.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
             this.dgv_UserInfo.RowTemplate.Height = 35;
-            this.dgv_UserInfo.Size = new System.Drawing.Size(670, 327);
+            this.dgv_UserInfo.Size = new System.Drawing.Size(670, 378);
             this.dgv_UserInfo.TabIndex = 7;
             this.dgv_UserInfo.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_UserInfo_CellDoubleClick);
             this.dgv_UserInfo.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgv_UserInfo_DataBindingComplete);
@@ -217,9 +212,9 @@ namespace TcPCM_Connect
             this.btn_Edit.BorderSize = 1;
             this.btn_Edit.FlatAppearance.BorderSize = 0;
             this.btn_Edit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Edit.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_Edit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Edit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.btn_Edit.Location = new System.Drawing.Point(757, 120);
+            this.btn_Edit.Location = new System.Drawing.Point(744, 110);
             this.btn_Edit.Name = "btn_Edit";
             this.btn_Edit.Size = new System.Drawing.Size(92, 31);
             this.btn_Edit.TabIndex = 59;
@@ -239,9 +234,9 @@ namespace TcPCM_Connect
             this.btn_SignUp.BorderSize = 1;
             this.btn_SignUp.FlatAppearance.BorderSize = 0;
             this.btn_SignUp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_SignUp.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_SignUp.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_SignUp.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.btn_SignUp.Location = new System.Drawing.Point(757, 83);
+            this.btn_SignUp.Location = new System.Drawing.Point(744, 73);
             this.btn_SignUp.Name = "btn_SignUp";
             this.btn_SignUp.Size = new System.Drawing.Size(92, 31);
             this.btn_SignUp.TabIndex = 60;
@@ -260,9 +255,9 @@ namespace TcPCM_Connect
             this.btn_Delete.BorderSize = 1;
             this.btn_Delete.FlatAppearance.BorderSize = 0;
             this.btn_Delete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Delete.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_Delete.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_Delete.ForeColor = System.Drawing.Color.Crimson;
-            this.btn_Delete.Location = new System.Drawing.Point(757, 157);
+            this.btn_Delete.Location = new System.Drawing.Point(744, 147);
             this.btn_Delete.Name = "btn_Delete";
             this.btn_Delete.Size = new System.Drawing.Size(92, 31);
             this.btn_Delete.TabIndex = 61;
@@ -271,121 +266,35 @@ namespace TcPCM_Connect
             this.btn_Delete.UseVisualStyleBackColor = false;
             this.btn_Delete.Click += new System.EventHandler(this.btn_Delete_Click);
             // 
-            // txt_ID
+            // btn_TcPCM
             // 
-            this.txt_ID.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.txt_ID.BorderColor = System.Drawing.Color.Gray;
-            this.txt_ID.BorderFocusColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(61)))), ((int)(((byte)(92)))));
-            this.txt_ID.BorderRadius = 0;
-            this.txt_ID.BorderSize = 2;
-            this.txt_ID.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.txt_ID.ForeColor = System.Drawing.Color.DimGray;
-            this.txt_ID.Location = new System.Drawing.Point(190, 25);
-            this.txt_ID.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txt_ID.Multiline = false;
-            this.txt_ID.Name = "txt_ID";
-            this.txt_ID.Padding = new System.Windows.Forms.Padding(7, 7, 7, 7);
-            this.txt_ID.PasswordChar = false;
-            this.txt_ID.PlaceholderColor = System.Drawing.Color.DarkGray;
-            this.txt_ID.PlaceholderText = "";
-            this.txt_ID.ReadOnly = false;
-            this.txt_ID.Size = new System.Drawing.Size(145, 30);
-            this.txt_ID.TabIndex = 62;
-            this.txt_ID.Texts = "";
-            this.txt_ID.UnderlinedStyle = true;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.Transparent;
-            this.label2.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label2.ForeColor = System.Drawing.Color.DimGray;
-            this.label2.Location = new System.Drawing.Point(161, 36);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(28, 15);
-            this.label2.TabIndex = 63;
-            this.label2.Text = "ID : ";
-            // 
-            // txt_Password
-            // 
-            this.txt_Password.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.txt_Password.BorderColor = System.Drawing.Color.Gray;
-            this.txt_Password.BorderFocusColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(61)))), ((int)(((byte)(92)))));
-            this.txt_Password.BorderRadius = 0;
-            this.txt_Password.BorderSize = 2;
-            this.txt_Password.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.txt_Password.ForeColor = System.Drawing.Color.DimGray;
-            this.txt_Password.Location = new System.Drawing.Point(437, 25);
-            this.txt_Password.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.txt_Password.Multiline = false;
-            this.txt_Password.Name = "txt_Password";
-            this.txt_Password.Padding = new System.Windows.Forms.Padding(7, 7, 7, 7);
-            this.txt_Password.PasswordChar = false;
-            this.txt_Password.PlaceholderColor = System.Drawing.Color.DarkGray;
-            this.txt_Password.PlaceholderText = "";
-            this.txt_Password.ReadOnly = false;
-            this.txt_Password.Size = new System.Drawing.Size(205, 30);
-            this.txt_Password.TabIndex = 64;
-            this.txt_Password.Texts = "";
-            this.txt_Password.UnderlinedStyle = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label1.ForeColor = System.Drawing.Color.DimGray;
-            this.label1.Location = new System.Drawing.Point(360, 36);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 15);
-            this.label1.TabIndex = 65;
-            this.label1.Text = "Password :";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label3.ForeColor = System.Drawing.Color.DimGray;
-            this.label3.Location = new System.Drawing.Point(41, 36);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(101, 15);
-            this.label3.TabIndex = 66;
-            this.label3.Text = "TcPCM 계정 관리";
-            // 
-            // btn_Change
-            // 
-            this.btn_Change.AllowDrop = true;
-            this.btn_Change.BackColor = System.Drawing.Color.White;
-            this.btn_Change.BackgroundColor = System.Drawing.Color.White;
-            this.btn_Change.BorderColor = System.Drawing.Color.DodgerBlue;
-            this.btn_Change.BorderRadius = 5;
-            this.btn_Change.BorderSize = 1;
-            this.btn_Change.FlatAppearance.BorderSize = 0;
-            this.btn_Change.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_Change.Font = new System.Drawing.Font("감탄로드돋움체 Regular", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Change.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.btn_Change.Location = new System.Drawing.Point(663, 22);
-            this.btn_Change.Name = "btn_Change";
-            this.btn_Change.Size = new System.Drawing.Size(51, 31);
-            this.btn_Change.TabIndex = 67;
-            this.btn_Change.Text = "변경";
-            this.btn_Change.TextColor = System.Drawing.Color.DodgerBlue;
-            this.btn_Change.UseVisualStyleBackColor = false;
-            this.btn_Change.Click += new System.EventHandler(this.btn_Change_Click);
+            this.btn_TcPCM.AllowDrop = true;
+            this.btn_TcPCM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_TcPCM.BackColor = System.Drawing.Color.White;
+            this.btn_TcPCM.BackgroundColor = System.Drawing.Color.White;
+            this.btn_TcPCM.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.btn_TcPCM.BorderRadius = 5;
+            this.btn_TcPCM.BorderSize = 1;
+            this.btn_TcPCM.FlatAppearance.BorderSize = 0;
+            this.btn_TcPCM.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_TcPCM.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.btn_TcPCM.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.btn_TcPCM.Location = new System.Drawing.Point(649, 12);
+            this.btn_TcPCM.Name = "btn_TcPCM";
+            this.btn_TcPCM.Size = new System.Drawing.Size(187, 33);
+            this.btn_TcPCM.TabIndex = 68;
+            this.btn_TcPCM.Text = "TcPCM 연결 계정 정보 변경";
+            this.btn_TcPCM.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.btn_TcPCM.UseVisualStyleBackColor = false;
+            this.btn_TcPCM.Click += new System.EventHandler(this.btn_TcPCM_Click);
             // 
             // frmUserManagment
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(882, 450);
-            this.Controls.Add(this.btn_Change);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.txt_Password);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.txt_ID);
-            this.Controls.Add(this.label2);
+            this.ClientSize = new System.Drawing.Size(882, 476);
+            this.Controls.Add(this.btn_TcPCM);
             this.Controls.Add(this.btn_Edit);
             this.Controls.Add(this.btn_SignUp);
             this.Controls.Add(this.btn_Delete);
@@ -396,7 +305,6 @@ namespace TcPCM_Connect
             this.Load += new System.EventHandler(this.frmUserManagment_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_UserInfo)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -415,11 +323,6 @@ namespace TcPCM_Connect
         private CustomControls.RJControls.RJButton btn_Edit;
         private CustomControls.RJControls.RJButton btn_SignUp;
         private CustomControls.RJControls.RJButton btn_Delete;
-        private CustomControls.RJControls.RJTextBox txt_ID;
-        private System.Windows.Forms.Label label2;
-        private CustomControls.RJControls.RJTextBox txt_Password;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label3;
-        private CustomControls.RJControls.RJButton btn_Change;
+        private CustomControls.RJControls.RJButton btn_TcPCM;
     }
 }
