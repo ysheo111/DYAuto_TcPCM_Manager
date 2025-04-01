@@ -148,7 +148,12 @@ namespace TcPCM_Connect
                 frmmain.connectName = info.Split('\\')[1];
                 global.loginID = uc.txtUser.Text;
                 auth = info.Split('\\')[2];
-
+                if(auth == "associate")
+                {
+                    CustomMessageBox.RJMessageBox.Show("권한이 없습니다. 관리자에게 권한을 요청해주세요.", "로그인"
+    , MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
                 frmmain.Show(this);
                 this.Hide();
 
