@@ -113,16 +113,9 @@ namespace TcPCM_Connect
             SelectUserInfo();
         }
 
-        private void btn_Change_Click(object sender, EventArgs e)
+        private void btn_TcPCM_Click(object sender, EventArgs e)
         {
-            if (txt_ID.Texts== null) return;
-            string query = $@"Update TcPCM 
-                    Set UserID='{txt_ID.Texts}',Password='{txt_Password.Texts}'
-                    Where ID=1; ";
-        
-            global_DB.ScalarExecute(query, (int) global_DB.connDB.selfDB);
-            CustomMessageBox.RJMessageBox.Show("수정이 완료 되었습니다.", "TcPCM 계정"
-                , MessageBoxButtons.OK, MessageBoxIcon.Information);
+            new frmTcPCM().Show();
         }
     }
 }
