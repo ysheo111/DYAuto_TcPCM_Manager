@@ -54,6 +54,8 @@ namespace TcPCM_Connect
             global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
             CustomMessageBox.RJMessageBox.Show("수정이 완료 되었습니다.", "TcPCM 계정"
                 , MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            this.Close();
         }
     }
 }
