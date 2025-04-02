@@ -100,7 +100,7 @@ namespace TcPCM_Connect
 	                            join Currencies on CurrencyId = Currencies.Id
 	                            join BDSegments on SegmentId = BDSegments.Id
 	                            join MDAssetHeaders on AssetHeaderId = MDAssetHeaders.Id
-	                            Join Manufacturers on Manufacturers.id = MDAssetHeaders.ManufacturerId
+	                            left Join Manufacturers on Manufacturers.id = MDAssetHeaders.ManufacturerId
 	                            Join MDAssetDetailInvests on MDAssetDetailInvests.AssetDetailId = MDAssetDetails.Id
 	                            join CostElementDefinition on CostElementDefinition.id = MDAssetDetailInvests.CostElementDefinitionId
                             where AssetHeaderId in (select id from MDAssetHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%')";
@@ -136,6 +136,12 @@ namespace TcPCM_Connect
                         {
                             dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["설비명"].Value = aa[0];
                             dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].Value = aa[1];
+                        }
+                        if (aa.Length == 3)
+                        {
+                            dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["설비명"].Value = aa[0];
+                            dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["최대 톤수"].Value = aa[1];
+                            dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].Value = aa[2];
                         }
                         else if (aa.Length > 3)
                         {
