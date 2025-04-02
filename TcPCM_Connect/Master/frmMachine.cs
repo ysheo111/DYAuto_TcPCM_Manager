@@ -161,7 +161,7 @@ namespace TcPCM_Connect
                                 }
                             }
                         }
-                        i += 3;
+                        i += 2;
                         dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["설비명"].ReadOnly = true;
                         dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["최대 톤수"].ReadOnly = true;
                         dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].ReadOnly = true;
@@ -274,7 +274,7 @@ namespace TcPCM_Connect
 
         private void Capitalcolumn()
         {
-            dgv_Machine.Columns.Add(MasterData.Machine.customer, "업체명");
+            //dgv_Machine.Columns.Add(MasterData.Machine.customer, "업체명");
             dgv_Machine.Columns.Add(MasterData.Machine.designation1, MasterData.Machine.designation1);
             dgv_Machine.Columns.Add(MasterData.Machine.maxClampingForce, MasterData.Machine.maxClampingForce);
             dgv_Machine.Columns.Add(MasterData.Machine.maker, MasterData.Machine.maker);
