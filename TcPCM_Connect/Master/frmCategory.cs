@@ -120,17 +120,20 @@ namespace TcPCM_Connect
                 else if(columnName == "전력단가")
                 {
                     err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
-                    if (err == null)
-                        err = costFactor.Import("Category", "탄소배출량", dgv_Category);
+                    //if (err == null)
+                    //    err = costFactor.Import("Category", "탄소배출량", dgv_Category);
                 }
-                else if (columnName == "임률")
+                else if (columnName == "사외 임률")
                 {
-                    err = costFactor.Import("Category", $"직접{columnName.Replace("4", "")}", dgv_Category);
+                    err = costFactor.Import("Category", $"직접임률2", dgv_Category);
+                   
+                }
+                else if (columnName == "사내 임률")
+                {
+                    err = costFactor.Import("Category", $"직접임률", dgv_Category);
                     if (err == null)
                     {
-                        err = costFactor.Import("Category", $"간접{columnName.Replace("4", "")}", dgv_Category);
-                        if (err == null)
-                            err = costFactor.Import("Category", "경비", dgv_Category);
+                        err = costFactor.Import("Category", $"간접임률", dgv_Category);
                     }
                 }
                 else
@@ -191,30 +194,35 @@ namespace TcPCM_Connect
                 ValidFromAdd("Valid From");
                 RegionAdd("지역");
                 CurrencyAdd("통화");
-                PlantAdd("Plant");
+                //PlantAdd("Plant");
                 dgv_Category.Columns.Add("전력단가", "전력단가");
                 dgv_Category.Columns["전력단가"].DefaultCellStyle.Format = "N2";
                 dgv_Category.Columns.Add("탄소배출량", "탄소배출량");
                 dgv_Category.Columns["탄소배출량"].DefaultCellStyle.Format = "N2";
+                dgv_Category.Columns["탄소배출량"].ReadOnly = true;
+                carbon(0);
             }
-            else if (columnName == "임률")
+            else if (columnName == "사내 임률")
             {
                 ValidFromAdd("Valid From");
                 RegionAdd("지역");
-                //dgv_Category.Columns.Add("구분4", "구분4");
                 PlantAdd("Plant");
-                SegmentAdd("업종"); 
                 CurrencyAdd("통화");
                 dgv_Category.Columns.Add("간접임률", "간접임률");
                 dgv_Category.Columns["간접임률"].DefaultCellStyle.Format = "N2";
                 dgv_Category.Columns.Add("직접임률", "직접임률");
                 dgv_Category.Columns["직접임률"].DefaultCellStyle.Format = "N2";
-                //dgv_Category.Columns.Add("경비", "경비");
-                //dgv_Category.Columns["경비"].DefaultCellStyle.Format = "N2";
-
-                //dgv_Category.Columns.Add("Labor burden (1Shift)", "Labor burden (1Shift)");
-                //dgv_Category.Columns.Add("Labor burden (2Shift)", "Labor burden (2Shift)");
-                //dgv_Category.Columns.Add("Labor burden (3Shift)", "Labor burden (3Shift)");
+            }
+            else if (columnName == "사외 임률")
+            {
+                ValidFromAdd("Valid From");
+                RegionAdd("지역");
+                //PlantAdd("Plant");
+                SegmentAdd("업종");
+                CurrencyAdd("통화");
+                //dgv_Category.Columns["Plant"].Visible = false;
+                dgv_Category.Columns.Add("직접임률", "직접임률");
+                dgv_Category.Columns["직접임률"].DefaultCellStyle.Format = "N2";
             }
             else if (columnName == "업종")
             {
@@ -316,14 +324,12 @@ namespace TcPCM_Connect
         }
 
         private void dgv_Category_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            
+        {            
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
-            
-            if(dgv_Category.Columns.Contains("Designation") && dgv_Category.Columns[e.ColumnIndex].Name != "Designation")
+            string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+            if (dgv_Category.Columns.Contains("Designation") && dgv_Category.Columns[e.ColumnIndex].Name != "Designation")
             {
-                //if(dgv_Category.Columns[e.ColumnIndex].Name != "Designation-US")
-                string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+                //if(dgv_Category.Columns[e.ColumnIndex].Name != "Designation-US")               
                 if (columnName == "업종")
                 {
                     dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells["업종"].Value}";
@@ -335,7 +341,33 @@ namespace TcPCM_Connect
             {
                 dgv_Category.Rows[e.RowIndex].Cells["UniqueId"].Value = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null ? null : dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().ToLower();
             }
+            else if(dgv_Category.Columns[e.ColumnIndex].Name == "Valid From" && columnName == "전력단가")
+            {
+                DateTime cell;
+                if (dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value is DateTime)
+                {
+                    cell = (DateTime)dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                }
+                else return;
+                string query = $@"SELECT top 1 d.Value*3600*1000 as name, d.*
+                          FROM [TcPCM2312_Patch3].[dbo].[MDCostFactorHeaders] as h
+                          join [TcPCM2312_Patch3].[dbo].[MDCostFactorDetails] as d on h.ID = d.CostFactorHeaderId
+                          where h.UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Carbon.RateForEnergy.Electricity' 
+                                and RegionId = (select Id from BDRegions where UniqueKey = 'Siemens.TCPCM.Region.Common.SouthKorea')
+		                        and DateValidFrom <= '{cell.ToString("yyyy-MM-dd")}'
+                        union all
 
+		                  SELECT top 1 d.Value*3600*1000 as name, d.*
+                          FROM [TcPCM2312_Patch3].[dbo].[MDCostFactorHeaders] as h
+                          join [TcPCM2312_Patch3].[dbo].[MDCostFactorDetails] as d on h.ID = d.CostFactorHeaderId
+                          where h.UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Carbon.RateForEnergy.Electricity' 
+                                and RegionId = (select Id from BDRegions where UniqueKey = 'Siemens.TCPCM.Region.Common.SouthKorea')
+		                        order by DateValidFrom desc";
+
+                List<string> value = global_DB.ListSelect(query, (int)global_DB.connDB.PCMDB);
+
+                if(value.Count != 0) dgv_Category.Rows[e.RowIndex].Cells["탄소배출량"].Value = value[0];
+            }
             global.MasterDataValiding((DataGridView)sender, e);
         }
 
@@ -382,25 +414,56 @@ namespace TcPCM_Connect
 	                        where CostFactorHeaderId in (
 		                        select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ElectricityPrice' )
 	                        And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
-                Bselect = $@"), B As(
-	                        select DateValidFrom,BDRegions.UniqueKey As region,BDPlants.UniqueKey As plant,ComplexUnitValue*3600*1000 As value
-                            from MDCostFactorDetails
-	                        LEFT join BDRegions ON RegionId = BDRegions.Id
-	                        LEFT JOIN BDPlants ON PlantId = BDPlants.Id
-	                        where CostFactorHeaderId in(
-		                        select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Carbon.RateForEnergy.Electricity' )
-	                        And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
-                FullJoin = $@") SELECT COALESCE(A.DateValidFrom, B.DateValidFrom) As 'Valid From',
-	                                    COALESCE(A.region, B.region) As '지역',
-	                                    IsoCode As '통화',
-	                                    COALESCE(A.plant, B.plant) As 'Plant',
-	                                    A.Value As '전력단가',
-	                                    B.Value As '탄소배출량'
-                                    From A
-                                    Full Outer Join B ON A.DateValidFrom = B.DateValidFrom And A.region = B.region";
-                searchQuery = Aselect + Bselect + FullJoin;
+                Bselect = $@"), B AS( SELECT top 1 d.Value * 3600 * 1000 as name, d.*
+                              FROM[TcPCM2312_Patch3].[dbo].[MDCostFactorHeaders] as h
+                          join[TcPCM2312_Patch3].[dbo].[MDCostFactorDetails] as d on h.ID = d.CostFactorHeaderId
+                          where h.UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Carbon.RateForEnergy.Electricity'
+                                and RegionId = (select Id from BDRegions where UniqueKey = 'Siemens.TCPCM.Region.Common.SouthKorea')";
+
+                FullJoin = $@") SELECT A.DateValidFrom As 'Valid From',
+	                                    A.region As '지역',
+                                        IsoCode As '통화',
+                                        A.Value As '전력단가',
+                                        b1.name As '탄소배출량'
+                                        From A
+                                        OUTER APPLY (
+                                            SELECT TOP 1 name, DateValidFrom
+                                            FROM B
+                                            WHERE B.DateValidFrom < A.DateValidFrom
+                                            ORDER BY B.DateValidFrom DESC
+                                        ) AS B1";
+
+                searchQuery = Aselect + Bselect +  FullJoin;
             }
-            else if (columnName == "임률")
+            else if (columnName == "사외 임률")
+            {
+                searchQuery = $@"With A as(
+	                        select DateValidFrom,RegionId,CurrencyId,Value*3600 as value,PlantId,SegmentId
+		                        from MDCostFactorDetails where CostFactorHeaderId in
+		                        (select Id from MDCostFactorHeaders where UniqueKey = N'직접노무비') 
+                            ),B as(
+	                        select DateValidFrom,RegionId,CurrencyId,Value*3600 as value,PlantId,SegmentId
+		                        from MDCostFactorDetails where CostFactorHeaderId in
+		                        ( select Id from MDCostFactorHeaders where UniqueKey = N'간접노무비' )
+                            ),C as(
+	                        select DateValidFrom,RegionId,PlantId,CurrencyId,MachineHourlyRate from MDAssetDetails
+		                        where AssetHeaderId in (select Id from MDAssetHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%경비%') )
+                            select
+                            COALESCE(A.DateValidFrom, B.DateValidFrom) As DateValidFrom,
+                            BDRegions.UniqueKey As Region,
+                            BDSegments.UniqueKey As Segment,
+                            Currencies.IsoCode,
+                            A.value As N'직접임률'
+                            From A
+                            Full outer join B on A.DateValidFrom = B.DateValidFrom And A.RegionId = B.RegionId And A.CurrencyId = B.CurrencyId And A.PlantId = B.PlantId
+                            Full outer join C on COALESCE(A.DateValidFrom, B.DateValidFrom) = C.DateValidFrom And COALESCE(A.CurrencyId, B.CurrencyId) = C.CurrencyId And COALESCE(A.RegionId, B.RegionId) = C.RegionId And COALESCE(A.PlantId, B.PlantId) = C.PlantId
+                            join BDRegions ON COALESCE(A.RegionId, B.RegionId) = BDRegions.Id
+                            join BDPlants ON COALESCE(A.PlantId, B.PlantId) = BDPlants.Id
+                            join Currencies ON COALESCE(A.CurrencyId, B.CurrencyId) = Currencies.Id
+                            join BDSegments ON COALESCE(A.SegmentId, B.SegmentId) = BDSegments.Id
+                            where BDPlants.UniqueKey = BDRegions.UniqueKey ";
+            }
+            else if (columnName == "사내 임률")
             {
                 searchQuery = $@"With A as(
 	                        select DateValidFrom,RegionId,CurrencyId,Value*3600 as value,PlantId,SegmentId
@@ -417,18 +480,16 @@ namespace TcPCM_Connect
                             COALESCE(A.DateValidFrom, B.DateValidFrom) As DateValidFrom,
                             BDRegions.UniqueKey As Region,
                             BDPlants.UniqueKey As Plant,
-                            BDSegments.UniqueKey As Segment,
                             Currencies.IsoCode,
                             B.value As N'간접임률',
-                            A.value As N'직접임률',
-                            C.MachineHourlyRate
+                            A.value As N'직접임률'
                             From A
                             Full outer join B on A.DateValidFrom = B.DateValidFrom And A.RegionId = B.RegionId And A.CurrencyId = B.CurrencyId And A.PlantId = B.PlantId
                             Full outer join C on COALESCE(A.DateValidFrom, B.DateValidFrom) = C.DateValidFrom And COALESCE(A.CurrencyId, B.CurrencyId) = C.CurrencyId And COALESCE(A.RegionId, B.RegionId) = C.RegionId And COALESCE(A.PlantId, B.PlantId) = C.PlantId
                             join BDRegions ON COALESCE(A.RegionId, B.RegionId) = BDRegions.Id
                             join BDPlants ON COALESCE(A.PlantId, B.PlantId) = BDPlants.Id
                             join Currencies ON COALESCE(A.CurrencyId, B.CurrencyId) = Currencies.Id
-                            join BDSegments ON COALESCE(A.SegmentId, B.SegmentId) = BDSegments.Id";
+                            where BDPlants.UniqueKey <> BDRegions.UniqueKey";
             }
             else if (columnName == "공간 생산 비용")
             {
@@ -465,16 +526,16 @@ namespace TcPCM_Connect
                     if (!string.IsNullOrEmpty(detailQuery))
                         searchQuery += $" Where {detailQuery}";
                 }
-                else if (columnName == "임률")
-                {
-                    string searchString = $@"CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                                            or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                                            or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
-                    if (string.IsNullOrEmpty(detailQuery))
-                        searchQuery += $@" where {searchString}";
-                    else
-                        searchQuery += $" where ({searchString}) AND {detailQuery}";
-                }
+                //else if (columnName == "임률")
+                //{
+                //    string searchString = $@"CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                //                            or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                //                            or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                //    if (string.IsNullOrEmpty(detailQuery))
+                //        searchQuery += $@" where {searchString}";
+                //    else
+                //        searchQuery += $" where ({searchString}) AND {detailQuery}";
+                //}
                 else if (columnName == "공간 생산 비용")
                 {
                     searchQuery = searchQuery + $@"And (CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
@@ -598,6 +659,41 @@ namespace TcPCM_Connect
                     input = name;
             }
             return input;
+        }
+        private void carbon(int row)
+        {
+            string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+            if (columnName == "전력단가")
+            {
+                DateTime cell;
+                if (dgv_Category.Rows[row].Cells["Valid From"].Value is DateTime)
+                {
+                    cell = (DateTime)dgv_Category.Rows[row].Cells["Valid From"].Value;
+                }
+                else return;
+                string query = $@"SELECT top 1 d.Value*3600*1000 as name, d.*
+                          FROM [TcPCM2312_Patch3].[dbo].[MDCostFactorHeaders] as h
+                          join [TcPCM2312_Patch3].[dbo].[MDCostFactorDetails] as d on h.ID = d.CostFactorHeaderId
+                          where h.UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Carbon.RateForEnergy.Electricity' 
+                                and RegionId = (select Id from BDRegions where UniqueKey = 'Siemens.TCPCM.Region.Common.SouthKorea')
+		                        and DateValidFrom <= '{cell.ToString("yyyy-MM-dd")}'
+                        union all
+
+		                  SELECT top 1 d.Value*3600*1000 as name, d.*
+                          FROM [TcPCM2312_Patch3].[dbo].[MDCostFactorHeaders] as h
+                          join [TcPCM2312_Patch3].[dbo].[MDCostFactorDetails] as d on h.ID = d.CostFactorHeaderId
+                          where h.UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Carbon.RateForEnergy.Electricity' 
+                                and RegionId = (select Id from BDRegions where UniqueKey = 'Siemens.TCPCM.Region.Common.SouthKorea')
+		                        order by DateValidFrom desc";
+
+                List<string> value = global_DB.ListSelect(query, (int)global_DB.connDB.PCMDB);
+
+                if (value.Count != 0) dgv_Category.Rows[row].Cells["탄소배출량"].Value = value[0];
+            }
+        }
+        private void dgv_Category_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+            if (dgv_Category.Columns.Contains("탄소배출량")) carbon(e.RowIndex);
         }
     }
 }
