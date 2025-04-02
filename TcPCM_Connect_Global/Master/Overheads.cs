@@ -22,7 +22,7 @@ namespace TcPCM_Connect_Global
                 foreach (DataGridViewColumn col in dgv.Columns)
                 {
                     string cellValue = row.Cells[col.Name].Value?.ToString();
-                    if(name == "재료관리비율" || name == "판매관리비율" || name == "재료 Loss율" || name == "경제성 검토")
+                    if(name.Contains("재료관리비율") || name == "판매관리비율" || name == "재료 Loss율" || name == "경제성 검토")
                     {
                         if (col.Name.Contains("율") && !string.IsNullOrEmpty(cellValue))
                         {
@@ -31,18 +31,11 @@ namespace TcPCM_Connect_Global
                             detailInfo.Add("Overhead rate unique identifier (Overhead rate detail)", $"{col.Tag}||Siemens.TCPCM.Classification.Overhead.Rate");
                             category.Add(detailInfo);
                         }
-                        else if (col.Name.Contains("Plant"))
-                        {
-                            if(cellValue != null)
-                            detailInfo.Add(col.Name, cellValue);
-                            else
-                            detailInfo.Add(col.Name, row.Cells["지역"].Value?.ToString());
-                        }
+                        else if (col.Name.Contains("Incoterms"))
+                            detailInfo.Add("업종", cellValue);
                         else if (col.Name.Contains("업종"))
                         {
-                            if(name == "판매관리비율")
-                                detailInfo.Add(col.Name, cellValue);
-                            else if(name == "재료관리비율")
+                            if(name == "사외 재료관리비율")
                                 detailInfo.Add(col.Name, $"{row.Cells["지역"].Value}||{cellValue}");
                             else
                                 detailInfo.Add(col.Name, $"{row.Cells["Plant"].Value}||{cellValue}");
@@ -109,10 +102,11 @@ namespace TcPCM_Connect_Global
                 }
             }
             string err = null;
+            //string configName = name.Replace(" ", "").Contains("재료관리비율") ? "재료관리비율" : name.Replace(" ", "");
             JObject postData = new JObject
             {
                 { "Data", category },
-                { "ConfigurationGuid", global_iniLoad.GetConfig(className.Replace("4",""), name.Replace(" ","")) }
+                { "ConfigurationGuid", global_iniLoad.GetConfig(className.Replace("4", ""), name.Replace(" ", "")) }
             };
             err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
             if (name == "년간손익분석" && string.IsNullOrEmpty(err))

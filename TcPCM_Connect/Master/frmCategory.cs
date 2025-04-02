@@ -273,6 +273,7 @@ namespace TcPCM_Connect
             DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
             combo.Name = combo.HeaderText = columnName;
             combo.FlatStyle = FlatStyle.Flat;
+            combo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Category.Columns.Add(combo);
             ((DataGridViewComboBoxColumn)dgv_Category.Columns[MasterData.Machine.currency]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
             dgv_Category.Columns[MasterData.Machine.currency].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -282,6 +283,7 @@ namespace TcPCM_Connect
             DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
             combo.Name = combo.HeaderText = columnName;
             combo.FlatStyle = FlatStyle.Flat;
+            combo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Category.Columns.Add(combo);
             ((DataGridViewComboBoxColumn)dgv_Category.Columns[MasterData.Machine.region]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
             dgv_Category.Columns[MasterData.Machine.region].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -291,6 +293,7 @@ namespace TcPCM_Connect
             DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
             combo.Name = combo.HeaderText = columnName;
             combo.FlatStyle = FlatStyle.Flat;
+            combo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Category.Columns.Add(combo);
             ((DataGridViewComboBoxColumn)dgv_Category.Columns["Plant"]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDPlants where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
             dgv_Category.Columns["Plant"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -300,6 +303,7 @@ namespace TcPCM_Connect
             DataGridViewComboBoxColumn segCombo = new DataGridViewComboBoxColumn();
             segCombo.Name = segCombo.HeaderText = columnName;
             segCombo.FlatStyle = FlatStyle.Flat;
+            segCombo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Category.Columns.Add(segCombo);
             ((DataGridViewComboBoxColumn)dgv_Category.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'", 0);
             dgv_Category.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -308,6 +312,7 @@ namespace TcPCM_Connect
         {
             CalendarColumn calendar = new CalendarColumn();
             calendar.Name = calendar.HeaderText = columnName;
+            calendar.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Category.Columns.Add(calendar);
             dgv_Category.Columns[columnName].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
         }
@@ -716,6 +721,23 @@ namespace TcPCM_Connect
                     }
                 }
             }
+        }
+
+        private void dgv_Category_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (dgv_Category.IsCurrentCellInEditMode)
+                dgv_Category.EndEdit();
+
+            string columnName = dgv_Category.Columns[e.ColumnIndex].Name;
+            bool ascending = true;
+
+            if (dgv_Category.Tag is Tuple<string, bool> prevSort && prevSort.Item1 == columnName)
+                ascending = !prevSort.Item2;
+
+            dgv_Category.Sort(dgv_Category.Columns[columnName],
+                ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
+
+            dgv_Category.Tag = Tuple.Create(columnName, ascending);
         }
     }
 }

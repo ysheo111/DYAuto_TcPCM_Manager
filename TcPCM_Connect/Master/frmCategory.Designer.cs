@@ -259,6 +259,7 @@
             this.dgv_Category.TabIndex = 61;
             this.dgv_Category.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_Category_CellFormatting);
             this.dgv_Category.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Category_CellValueChanged);
+            this.dgv_Category.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_Category_ColumnHeaderMouseClick);
             this.dgv_Category.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Category_DataError);
             this.dgv_Category.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dgv_Category_RowsAdded);
             // 

@@ -247,6 +247,7 @@
             this.dgv_Machine.TabIndex = 61;
             this.dgv_Machine.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_Machine_CellFormatting);
             this.dgv_Machine.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Machine_CellValueChanged);
+            this.dgv_Machine.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_Machine_ColumnHeaderMouseClick);
             this.dgv_Machine.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Machine_DataError);
             // 
             // btn_Create

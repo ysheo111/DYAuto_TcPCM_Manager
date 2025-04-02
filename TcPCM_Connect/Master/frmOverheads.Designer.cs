@@ -130,7 +130,8 @@
             this.cb_Classification.ForeColor = System.Drawing.Color.DimGray;
             this.cb_Classification.IconColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Items.AddRange(new object[] {
-            "재료관리비율",
+            "사내 재료관리비율",
+            "사외 재료관리비율",
             "판매관리비율",
             "재료 Loss율",
             "경제성 검토",
@@ -144,7 +145,7 @@
             this.cb_Classification.Padding = new System.Windows.Forms.Padding(1);
             this.cb_Classification.Size = new System.Drawing.Size(136, 38);
             this.cb_Classification.TabIndex = 63;
-            this.cb_Classification.Texts = "재료관리비율";
+            this.cb_Classification.Texts = "사내 재료관리비율";
             this.cb_Classification.OnSelectedIndexChanged += new System.EventHandler(this.cb_Classification_OnSelectedIndexChanged);
             // 
             // btn_Configuration
@@ -256,6 +257,7 @@
             this.dgv_Overheads.TabIndex = 61;
             this.dgv_Overheads.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_Overheads_CellFormatting);
             this.dgv_Overheads.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Overheads_CellValueChanged);
+            this.dgv_Overheads.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_Overheads_ColumnHeaderMouseClick);
             this.dgv_Overheads.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Overheads_DataError);
             // 
             // btn_Create

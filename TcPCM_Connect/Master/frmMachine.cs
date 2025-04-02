@@ -231,11 +231,13 @@ namespace TcPCM_Connect
             CalendarColumn calendar = new CalendarColumn();
             calendar.Name = calendar.HeaderText = MasterData.Machine.validFrom;
             dgv_Machine.Columns.Add(calendar);
+            calendar.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Machine.Columns[MasterData.Machine.validFrom].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
             
             DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
             combo.Name = combo.HeaderText = MasterData.Machine.currency;
             combo.FlatStyle = FlatStyle.Flat;
+            combo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Machine.Columns.Add(combo);
             ((DataGridViewComboBoxColumn)dgv_Machine.Columns[MasterData.Machine.currency]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
             dgv_Machine.Columns[MasterData.Machine.currency].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -243,6 +245,7 @@ namespace TcPCM_Connect
             DataGridViewComboBoxColumn segCombo = new DataGridViewComboBoxColumn();
             segCombo.Name = segCombo.HeaderText = MasterData.Machine.segment;
             segCombo.FlatStyle = FlatStyle.Flat;
+            segCombo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Machine.Columns.Add(segCombo);
             ((DataGridViewComboBoxColumn)dgv_Machine.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'", 0);
             dgv_Machine.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -312,6 +315,23 @@ namespace TcPCM_Connect
             dgv_Machine.Columns.Add(MasterData.Machine.acquisitionEx, MasterData.Machine.acquisitionEx);
             dgv_Machine.Columns[MasterData.Machine.acquisitionEx].DefaultCellStyle.Format = "N2";
             dgv_Machine.Columns.Add("내용년수", "기타 내용년수");
+        }
+
+        private void dgv_Machine_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (dgv_Machine.IsCurrentCellInEditMode)
+                dgv_Machine.EndEdit();
+
+            string columnName = dgv_Machine.Columns[e.ColumnIndex].Name;
+            bool ascending = true;
+
+            if (dgv_Machine.Tag is Tuple<string, bool> prevSort && prevSort.Item1 == columnName)
+                ascending = !prevSort.Item2;
+
+            dgv_Machine.Sort(dgv_Machine.Columns[columnName],
+                ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
+
+            dgv_Machine.Tag = Tuple.Create(columnName, ascending);
         }
     }
 }

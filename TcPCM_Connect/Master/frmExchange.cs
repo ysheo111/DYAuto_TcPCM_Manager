@@ -29,11 +29,15 @@ namespace TcPCM_Connect
             dgv_ExchangeRate.AllowUserToAddRows= true;
             ((DataGridViewComboBoxColumn)dgv_ExchangeRate.Columns["통화"]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
             dgv_ExchangeRate.Columns["통화"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+            dgv_ExchangeRate.Columns["통화"].SortMode = DataGridViewColumnSortMode.Programmatic;
+
             dgv_ExchangeRate.Columns["Valid_From"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
             dgv_ExchangeRate.Columns["Valid_From"].Name = "Valid From";
+            dgv_ExchangeRate.Columns["Valid_From"].SortMode = DataGridViewColumnSortMode.Programmatic;
 
             ((DataGridViewComboBoxColumn)dgv_ExchangeRate.Columns["구분자"]).DataSource = new List<string> { "계획환율", "실적환율" };
-            dgv_ExchangeRate.Columns["통화"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+            dgv_ExchangeRate.Columns["구분자"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+            dgv_ExchangeRate.Columns["구분자"].SortMode = DataGridViewColumnSortMode.Programmatic;
         }
 
         private void btn_Create_Click(object sender, EventArgs e)
@@ -233,6 +237,23 @@ namespace TcPCM_Connect
                     input = name;
             }
             return input;
+        }
+
+        private void dgv_ExchangeRate_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (dgv_ExchangeRate.IsCurrentCellInEditMode)
+                dgv_ExchangeRate.EndEdit();
+
+            string columnName = dgv_ExchangeRate.Columns[e.ColumnIndex].Name;
+            bool ascending = true;
+
+            if (dgv_ExchangeRate.Tag is Tuple<string, bool> prevSort && prevSort.Item1 == columnName)
+                ascending = !prevSort.Item2;
+
+            dgv_ExchangeRate.Sort(dgv_ExchangeRate.Columns[columnName],
+                ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
+
+            dgv_ExchangeRate.Tag = Tuple.Create(columnName, ascending);
         }
     }
 }

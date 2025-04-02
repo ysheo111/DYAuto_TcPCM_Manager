@@ -506,6 +506,7 @@ namespace TcPCM_Connect
                 {
                     CalendarColumn calendar = new CalendarColumn();
                     calendar.Name = calendar.HeaderText = item;
+                    calendar.SortMode = DataGridViewColumnSortMode.Programmatic;
                     dgv_Material.Columns.Add(calendar);
                     dgv_Material.Columns[item].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
                 }
@@ -514,6 +515,7 @@ namespace TcPCM_Connect
                     DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
                     combo.Name = combo.HeaderText = item;
                     combo.FlatStyle = FlatStyle.Flat;
+                    combo.SortMode = DataGridViewColumnSortMode.Programmatic;
                     dgv_Material.Columns.Add(combo);
                     ((DataGridViewComboBoxColumn)dgv_Material.Columns[item]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
                     dgv_Material.Columns[item].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -523,6 +525,7 @@ namespace TcPCM_Connect
                     DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
                     combo.Name = combo.HeaderText = item;
                     combo.FlatStyle = FlatStyle.Flat;
+                    combo.SortMode = DataGridViewColumnSortMode.Programmatic;
                     dgv_Material.Columns.Add(combo);
                     ((DataGridViewComboBoxColumn)dgv_Material.Columns[MasterData.Machine.region]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
                     dgv_Material.Columns[MasterData.Machine.region].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -532,6 +535,7 @@ namespace TcPCM_Connect
                     DataGridViewComboBoxColumn segCombo = new DataGridViewComboBoxColumn();
                     segCombo.Name = segCombo.HeaderText = item;
                     segCombo.FlatStyle = FlatStyle.Flat;
+                    segCombo.SortMode = DataGridViewColumnSortMode.Programmatic;
                     dgv_Material.Columns.Add(segCombo);
                     ((DataGridViewComboBoxColumn)dgv_Material.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'", 0);
                     dgv_Material.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -887,6 +891,23 @@ namespace TcPCM_Connect
             {
                 SearchMethod(select.query);
             }
+        }
+
+        private void dgv_Material_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (dgv_Material.IsCurrentCellInEditMode)
+                dgv_Material.EndEdit();
+
+            string columnName = dgv_Material.Columns[e.ColumnIndex].Name;
+            bool ascending = true;
+
+            if (dgv_Material.Tag is Tuple<string, bool> prevSort && prevSort.Item1 == columnName)
+                ascending = !prevSort.Item2;
+
+            dgv_Material.Sort(dgv_Material.Columns[columnName],
+                ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
+
+            dgv_Material.Tag = Tuple.Create(columnName, ascending);
         }
     }
 }
