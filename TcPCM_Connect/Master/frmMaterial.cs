@@ -202,6 +202,32 @@ namespace TcPCM_Connect
             {
                 ImportMagnetWire();
             }
+            else if (columnName == "Sprue")
+            {
+                Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+                splashthread.IsBackground = true;
+                splashthread.Start();
+                try
+                {
+                    string query = "";
+                    foreach (DataGridViewRow row in dgv_Material.Rows)
+                    {
+                        if (row.Cells["업종"].Value == null) continue;
+                        double value = 0;
+                        if ((double)row.Cells["반영율"].Value > 1)
+                            value = (double)row.Cells["반영율"].Value * 0.01;
+                        query += $@"Update Sprue Set 반영율 = '{value}' Where 업종 = N'{row.Cells["업종"].Value}' ";
+
+                    }
+                    global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
+                }
+                catch
+                {
+                    CustomMessageBox.RJMessageBox.Show($"Error : 작업중 오류가 발생하였습니다. 다시 시도해주세요.", "마그넷 와이어", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                Thread.Sleep(100);
+                LoadingScreen.CloseSplashScreen();
+            }
             else
                 ImportMethod();
         }
@@ -401,20 +427,38 @@ namespace TcPCM_Connect
             config.className = "Material' or Class = 'Substance";
             config.Show();
         }
-        private void rjButton1_Click(object sender, EventArgs e)
-        {
-            ConfigSetting config = new ConfigSetting();
-            config.buttonName = "Sprue";
-            config.Show();
-        }
 
         private void cb_Classification_OnSelectedIndexChanged(object sender, EventArgs e)
         {
             System.Windows.Forms.ComboBox combo = (System.Windows.Forms.ComboBox)sender;
             if (combo.SelectedIndex < 0) return;
-
+            dgv_Material.Columns.Clear();
+            dgv_Material.DataSource = null;
+            dgv_Material.Rows.Clear();
             btn_DBLoad.Visible = false;
-            if (combo.SelectedItem?.ToString()== "다이캐스팅")
+            if (combo.SelectedItem?.ToString() == "Sprue")
+            {
+                //string query = $@"SELECT DISTINCT UniqueKey as '업종' FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
+                string query = $@"SELECT 업종,반영율*100 as 반영율 FROM [PCI].[dbo].[Sprue]";
+
+                DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
+                if (dataTable == null) return;
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    foreach (DataColumn col in dataTable.Columns)
+                    {
+                        row[col] = row[col]?.ToString().Trim();
+                    }
+                }
+                dgv_Material.DataSource = dataTable;
+                //dgv_Config.Columns.Add("업종", "업종");
+                dgv_Material.Columns["업종"].ReadOnly = true;
+                //dgv_Config.Columns.Add("반영율", "반영율");
+
+                dgv_Material.AllowUserToAddRows = false;                
+            }
+            else if (combo.SelectedItem?.ToString()== "다이캐스팅")
                 Material(MasterData.Material.casting); //DieCastingColumn();
             else if (combo.SelectedItem?.ToString() == "사출")
                 Material(MasterData.Material.injection); //InjectionColumn();
@@ -440,6 +484,7 @@ namespace TcPCM_Connect
                 Material(MasterData.Material.material);
 
             dgv_Material.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            if(dgv_Material.DataSource == null) dgv_Material.Rows.Add();
         }
         private void Material(List<string> variable)
         {
@@ -489,6 +534,8 @@ namespace TcPCM_Connect
 
         private void dgv_Material_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            string columnName = cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString();
+            if (columnName == "Sprue") return;
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
             global.MasterDataValiding((DataGridView)sender, e);
@@ -518,10 +565,38 @@ namespace TcPCM_Connect
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
             splashthread.Start();
-
+            dgv_Material.DataSource = null;
             dgv_Material.Rows.Clear();
 
             string columnName = cb_Classification.SelectedItem == null ? "사출" : cb_Classification.SelectedItem.ToString();
+
+            if (columnName == "Sprue")
+            {
+                //string query = $@"SELECT DISTINCT UniqueKey as '업종' FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
+                string query = $@"SELECT 업종,반영율*100 as 반영율 FROM [PCI].[dbo].[Sprue]";
+
+                DataTable dataTable2 = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
+                if (dataTable2 == null) return;
+
+                foreach (DataRow row in dataTable2.Rows)
+                {
+                    foreach (DataColumn col in dataTable2.Columns)
+                    {
+                        row[col] = row[col]?.ToString().Trim();
+                    }
+                }
+                dgv_Material.DataSource = dataTable2;
+                //dgv_Config.Columns.Add("업종", "업종");
+                dgv_Material.Columns["업종"].ReadOnly = true;
+                //dgv_Config.Columns.Add("반영율", "반영율");
+
+                dgv_Material.AllowUserToAddRows = false;
+
+                LoadingScreen.CloseSplashScreen();
+                return;
+            }
+            
+
             string inputString = "", searchQuery = "", colQuery = "", havingQuery = ""; ;
             inputString = searchButton1.text;
             if (columnName == "원소재 단가")
@@ -668,6 +743,7 @@ namespace TcPCM_Connect
                 return;
             }
 
+           
             foreach (DataRow row in dataTable.Rows)
             {
                 dgv_Material.Rows.Add();
@@ -697,6 +773,7 @@ namespace TcPCM_Connect
                     }
                 }
             }
+            
             LoadingScreen.CloseSplashScreen();
         }
 

@@ -33,21 +33,12 @@ namespace TcPCM_Connect
 
             foreach (DataGridViewRow row in dgv_Config.Rows)
             {
-                if (buttonName == "Sprue")
-                {
-                    if (row.Cells["업종"].Value == null) continue;
-                    double value = 0;
-                    if ((double)row.Cells["반영율"].Value > 1)
-                        value = (double)row.Cells["반영율"].Value * 0.01;
-                    query = $@"Update Sprue Set 반영율 = '{value}' Where 업종 = N'{row.Cells["업종"].Value}' ";
-                }
-                else
-                {
+
                     if (row.Cells["Name"].Value == null || row.Cells["GUID"].Value==null) continue;
                     query += $@"Update Configuration 
                         Set Name=N'{row.Cells["Name"].Value.ToString().Replace(row.Cells["Name"].Value.ToString().Split('_')[0]+"_","")}',GUID='{row.Cells["GUID"].Value}'
                         Where ID={row.Cells["Id"].Value}; ";
-                }
+                
             }
             global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
             LoadConfiguration();
@@ -64,32 +55,7 @@ namespace TcPCM_Connect
         private void LoadConfiguration()
         {
             dgv_Config.Columns.Clear();
-            if(buttonName == "Sprue")
-            {
-                //string query = $@"SELECT DISTINCT UniqueKey as '업종' FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
-                string query = $@"SELECT 업종,반영율*100 as 반영율 FROM [PCI].[dbo].[Sprue]";
-
-                DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.PCMDB);
-                if (dataTable == null) return;
-
-                foreach (DataRow row in dataTable.Rows)
-                {
-                    foreach (DataColumn col in dataTable.Columns)
-                    {
-                        row[col] = row[col]?.ToString().Trim();
-                    }
-                }
-                dgv_Config.DataSource = dataTable;
-                //dgv_Config.Columns.Add("업종", "업종");
-                dgv_Config.Columns["업종"].ReadOnly = true;
-                //dgv_Config.Columns.Add("반영율", "반영율");
-
-                btn_Load.Visible = true;
-                btn_Excel.Visible = true;
-                dgv_Config.AllowUserToAddRows = false;
-            }
-            else
-            {
+           
                 string query = $@"Select Id, Concat(Class, '_', Name) as Name, GUID From Configuration Where Class = '{className}'";
                 DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
                 if (dataTable == null) return;
@@ -97,7 +63,7 @@ namespace TcPCM_Connect
                 dgv_Config.DataSource = dataTable;
                 dgv_Config.Columns["Id"].Visible = false;
                 dgv_Config.Columns["Name"].ReadOnly = true;
-            }
+            
             dgv_Config.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
