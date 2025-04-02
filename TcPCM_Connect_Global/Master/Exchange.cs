@@ -41,11 +41,16 @@ namespace TcPCM_Connect_Global
                 exchange.Add(item);
 
                 string time = row.Cells["Valid From"].Value == null ? "" : !DateTime.TryParse(row.Cells["Valid From"].Value.ToString(), out DateTime dt) ? row.Cells["Valid From"].Value.ToString() : dt.ToString("yyyy-MM-dd");
+                string status = row.Cells["구분자"].Value?.ToString();
+                if (status == "계획환율")
+                    status = "T";
+                else if (status == "실적환율")
+                    status = "M";
                 item = new JObject
                 {
                     { "통화", row.Cells["통화"].Value?.ToString() },
                     { "환율", global.ConvertDouble(row.Cells["환율"].Value)},
-                    { "구분자", row.Cells["구분자"].Value?.ToString() },
+                    { "구분자", status },
                     //global.ConvertDouble(eur[row.Cells["Valid From"].Value])/Math.Round( global.ConvertDouble(row.Cells["환율"].Value), 4) },
                     { "Valid From", time }
                 };

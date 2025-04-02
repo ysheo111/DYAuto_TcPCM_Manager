@@ -28,6 +28,7 @@ namespace TcPCM_Connect
 
         private void frmExchange_Load(object sender, EventArgs e)
         {
+            if (!frmLogin.auth.Contains("admin")) btn_Configuration.Visible = false;
             dgv_Overheads.AllowUserToAddRows= true;
             ColumnAdd();
             dgv_Overheads.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -101,18 +102,17 @@ namespace TcPCM_Connect
             if (columnName == "재료관리비율")
             {
                 ValidFromAdd("Valid From");
-                dgv_Overheads.Columns.Add("지역", "지역");
-                //dgv_Overheads.Columns.Add("Plant", "Plant");
-                dgv_Overheads.Columns.Add("업종", "업종");
+                RegionAdd("지역");
+                SegmentAdd("업종");
                 dgv_Overheads.Columns.Add("재료 관리비율", "재료 관리비율");
                 dgv_Overheads.Columns["재료 관리비율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC";
             }
             else if (columnName == "판매관리비율")
             {
                 ValidFromAdd("Valid From");
-                dgv_Overheads.Columns.Add("지역", "지역");
-                dgv_Overheads.Columns.Add("Plant", "Plant");
-                dgv_Overheads.Columns.Add("업종", "업종");
+                RegionAdd("지역");
+                PlantAdd("Plant");
+                SegmentAdd("업종");
                 dgv_Overheads.Columns.Add("판매관리비율", "판매관리비율");
                 dgv_Overheads.Columns["판매관리비율"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts03";
                 //dgv_Overheads.Columns["판매관리비율"].DefaultCellStyle.Format = "N2";
@@ -120,16 +120,16 @@ namespace TcPCM_Connect
             else if (columnName == "재료 Loss율")
             {
                 ValidFromAdd("Valid From");
-                dgv_Overheads.Columns.Add("지역", "지역");
-                dgv_Overheads.Columns.Add("Plant", "Plant");
+                RegionAdd("지역");
+                PlantAdd("Plant");
                 dgv_Overheads.Columns.Add("재료 Loss율", "재료 Loss율");
                 dgv_Overheads.Columns["재료 Loss율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC2";
             }
             else if (columnName == "경제성 검토")
             {
                 ValidFromAdd("Valid From");
-                dgv_Overheads.Columns.Add("지역", "지역");
-                dgv_Overheads.Columns.Add("Plant", "Plant");
+                RegionAdd("지역");
+                PlantAdd("Plant");
                 dgv_Overheads.Columns.Add("WACC", "WACC");
                 dgv_Overheads.Columns["WACC"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts09";
                 dgv_Overheads.Columns.Add("법인세", "법인세");
@@ -140,8 +140,8 @@ namespace TcPCM_Connect
             else if(columnName == "년간손익분석")
             {
                 ValidFromAdd("Valid From");
-                dgv_Overheads.Columns.Add("지역", "지역");
-                dgv_Overheads.Columns.Add("Plant", "Plant");
+                RegionAdd("지역");
+                PlantAdd("Plant");
                 dgv_Overheads.Columns.Add("판가 A/CR율", "판가 A/CR율");
                 dgv_Overheads.Columns["판가 A/CR율"].Tag = "BE05B382-8303-4827-A6ED-460454B3AF2D";//Siemens.TCPCM.CostType.Netsalesprice";
                 dgv_Overheads.Columns.Add("구매 A/CR율", "구매 A/CR율");
@@ -160,8 +160,8 @@ namespace TcPCM_Connect
             else
             {
                 ValidFromAdd("Valid From");
-                dgv_Overheads.Columns.Add("지역", "지역");
-                dgv_Overheads.Columns.Add("업종", "업종");
+                RegionAdd("지역");
+                SegmentAdd("업종");
                 //dgv_Overheads.Columns.Add("수량", "수량");
                 dgv_Overheads.Columns.Add("간접 경비율", "간접 경비율");
                 dgv_Overheads.Columns["간접 경비율"].Tag = "Siemens.TCPCM.CostType.Residualmanufacturingoverheadcosts";
@@ -183,7 +183,36 @@ namespace TcPCM_Connect
             dgv_Overheads.Columns.Add(calendar);
             dgv_Overheads.Columns[columnName].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
         }
-
+        private void RegionAdd(string columnName)
+        {
+            DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
+            combo.Name = combo.HeaderText = columnName;
+            combo.FlatStyle = FlatStyle.Flat;
+            dgv_Overheads.Columns.Add(combo);
+            ((DataGridViewComboBoxColumn)dgv_Overheads.Columns[MasterData.Machine.region]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+            dgv_Overheads.Columns[MasterData.Machine.region].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+        }
+        private void PlantAdd(string columnName)
+        {
+            DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
+            combo.Name = combo.HeaderText = columnName;
+            combo.FlatStyle = FlatStyle.Flat;
+            dgv_Overheads.Columns.Add(combo);
+            ((DataGridViewComboBoxColumn)dgv_Overheads.Columns["Plant"]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDPlants where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+            dgv_Overheads.Columns["Plant"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+        }
+        private void SegmentAdd(string columnName)
+        {
+            DataGridViewComboBoxColumn segCombo = new DataGridViewComboBoxColumn();
+            segCombo.Name = segCombo.HeaderText = columnName;
+            segCombo.FlatStyle = FlatStyle.Flat;
+            dgv_Overheads.Columns.Add(segCombo);
+            if ((cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString()) == "판매관리비율")
+                ((DataGridViewComboBoxColumn)dgv_Overheads.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+            else
+                ((DataGridViewComboBoxColumn)dgv_Overheads.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'", 0);
+            dgv_Overheads.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+        }
         private void dgv_Overheads_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             DataGridViewRow row = dgv_Overheads.Rows[e.RowIndex];
@@ -233,19 +262,41 @@ namespace TcPCM_Connect
         {
             dgv_Overheads.Rows.Clear();
 
-            string columnName = cb_Classification.SelectedItem == null ? "재료관리비" : cb_Classification.SelectedItem.ToString();
+            string columnName = cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString();
             string inputString = "", searchQuery = "";
             inputString = searchButton1.text;
 
-            //전체 검색
-            searchQuery = $@"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, BDSegments.UniqueKey, Value
-                            as name FROM MDOverheadDetails
-                            LEFT join BDRegions ON RegionId = BDRegions.Id
-                            LEFT join BDSegments ON SegmentId = BDSegments.Id
-                            LEFT join BDPlants ON MDOverheadDetails.PlantId = BDPlants.Id
-                            where OverheadHeaderID
-                            IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%재료 관리비%')
-                            And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
+            if(columnName == "재료관리비율")
+                searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDSegments.UniqueKey, Value
+                                as name FROM MDOverheadDetails
+                                LEFT join BDRegions ON RegionId = BDRegions.Id
+                                LEFT join BDSegments ON SegmentId = BDSegments.Id
+                                where OverheadHeaderID
+                                IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%재료 관리비%')
+                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
+            else if(columnName == "판매관리비율")
+                searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, BDCustomers.UniqueKey, Value
+                                as name FROM MDOverheadDetails
+                                LEFT join BDRegions ON RegionId = BDRegions.Id
+                                LEFT join BDPlants ON MDOverheadDetails.PlantId = BDPlants.Id
+                                LEFT join BDCustomers ON CustomerId = BDCustomers.Id
+                                where OverheadHeaderID
+                                IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%판관비율%')
+                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
+            else if (columnName == "재료 Loss율")
+                searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, Value
+                                as name FROM MDOverheadDetails
+                                LEFT join BDRegions ON RegionId = BDRegions.Id
+                                LEFT join BDPlants ON MDOverheadDetails.PlantId = BDPlants.Id
+                                where OverheadHeaderID
+                                IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%Loss율%')
+                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
+            else if (columnName == "경제성 검토")
+                searchQuery = @"";
+            else if (columnName == "년간손익분석")
+                searchQuery = @"";
+            else
+                searchQuery = @"";
 
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
@@ -255,21 +306,24 @@ namespace TcPCM_Connect
                                                 OR CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
             }
 
-            DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
-            if (dataTable == null) return;
-
-            foreach (DataRow row in dataTable.Rows)
+            if (!string.IsNullOrEmpty(searchQuery))
             {
-                dgv_Overheads.Rows.Add();
-                int i = 0;
-                foreach (DataColumn col in dataTable.Columns)
-                {
-                    string result = row[col].ToString();
+                DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
+                if (dataTable != null)
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        dgv_Overheads.Rows.Add();
+                        int i = 0;
+                        foreach (DataColumn col in dataTable.Columns)
+                        {
+                            string result = row[col].ToString();
 
-                    int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
-                    dgv_Overheads.Rows[dgv_Overheads.Rows.Count - 2].Cells[count].Value = result;
-                }
+                            int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
+                            dgv_Overheads.Rows[dgv_Overheads.Rows.Count - 2].Cells[count].Value = result;
+                        }
+                    }
             }
+
         }
 
         private void searchButton1_DetailSearchButtonClick(object sender, EventArgs e)

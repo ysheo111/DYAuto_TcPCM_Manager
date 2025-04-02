@@ -31,6 +31,9 @@ namespace TcPCM_Connect
             dgv_ExchangeRate.Columns["통화"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
             dgv_ExchangeRate.Columns["Valid_From"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
             dgv_ExchangeRate.Columns["Valid_From"].Name = "Valid From";
+
+            ((DataGridViewComboBoxColumn)dgv_ExchangeRate.Columns["구분자"]).DataSource = new List<string> { "계획환율", "실적환율" };
+            dgv_ExchangeRate.Columns["통화"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
         }
 
         private void btn_Create_Click(object sender, EventArgs e)
@@ -88,7 +91,7 @@ namespace TcPCM_Connect
             {
                 if (double.TryParse(dgv_ExchangeRate.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(), out double number))
                 {
-                    dgv_ExchangeRate.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = number.ToString("#,##0.##");
+                    dgv_ExchangeRate.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = number.ToString("#,##0.#####");
                 }
             }
 
@@ -116,25 +119,27 @@ namespace TcPCM_Connect
             inputString = searchButton1.text;
 
             //전체 검색
-            searchQuery = $@"SELECT MDExchangeRateDetails.DateValidFrom, MDExchangeRateDetails.StateId, MDExchangeRateHeaders.Name_LOC, Currencies.IsoCode, MDExchangeRateDetails.ExchangeRate
+            searchQuery = $@"SELECT MDExchangeRateDetails.DateValidFrom, BDState.UniqueKey, MDExchangeRateHeaders.Name_LOC, Currencies.IsoCode, MDExchangeRateDetails.ExchangeRate
                              FROM MDExchangeRateHeaders
                              JOIN MDExchangeRateDetails ON MDExchangeRateHeaders.Id = MDExchangeRateDetails.ExchangeRateHeaderId
-                             JOIN Currencies ON MDExchangeRateHeaders.CurrencyId = Currencies.Id";
+                             JOIN Currencies ON MDExchangeRateHeaders.CurrencyId = Currencies.Id
+                             JOIN BDState on BDState.Id = MDExchangeRateDetails.StateId
+                            Where Currencies.IsoCode != 'KRW'";
 
             if (!string.IsNullOrEmpty(inputString) && !string.IsNullOrEmpty(detailQuery))//검색 값 있고 상세 검색O
             {
-                searchQuery += $@" where {detailQuery}
+                searchQuery += $@" And {detailQuery}
                             And ( CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
                             or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%' )";
             }
             else if (!string.IsNullOrEmpty(inputString) && string.IsNullOrEmpty(detailQuery))//검색 값 있고 상세 검색X
             {
-                searchQuery += $@" where CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                             or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'";
+                searchQuery += $@" And ( CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                             or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%' ) ";
             }
             else if (string.IsNullOrEmpty(inputString) && !string.IsNullOrEmpty(detailQuery))//검색 값 없고 상세 검색O
             {
-                searchQuery += $" Where {detailQuery}";
+                searchQuery += $" AND {detailQuery}";
             }
 
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
@@ -149,6 +154,10 @@ namespace TcPCM_Connect
                     string result = row[col].ToString();
                     result = NameSplit(result);
                     int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
+                    if (result == "M")
+                        result = "실적환율";
+                    else if (result == "T")
+                        result = "계획환율";
                     dgv_ExchangeRate.Rows[dgv_ExchangeRate.Rows.Count - 2].Cells[count].Value = result;
                 }
             }
@@ -157,7 +166,7 @@ namespace TcPCM_Connect
 
         private void searchButton1_SearchButtonClick(object sender, EventArgs e)
         {
-            
+            SearchMethod(null);
         }
         public string NameSplit(string input)
         {

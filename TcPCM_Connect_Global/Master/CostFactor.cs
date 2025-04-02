@@ -32,17 +32,31 @@ namespace TcPCM_Connect_Global
                 {
                     if (row.Cells[col.Name].Value != null && !col.Name.ToLower().Contains("valid")) nullCheck = true;
 
-                    if (name == "Plant")
+                    if(name == "Plant")
+                    {
+                        item.Add("지역", row.Cells["지역"].Value?.ToString());
+                        item.Add("Designation", $"[DYA]{row.Cells["Plant"].Value}");
+                        item.Add("Number", row.Cells["Plant"].Value?.ToString());
+                        item.Add("지역 영문명", $"[DYA]{row.Cells["Plant"].Value}");
+
+                        break;
+                    }
+                    if (name == "Plant2")
                     {
                         item.Add("지역", row.Cells["지역"].Value?.ToString());
                         item.Add("Designation", row.Cells["Designation"].Value?.ToString());
 
-                        if(!string.IsNullOrEmpty(row.Cells["Designation-US"].Value?.ToString()))
-                            item.Add("Designation-US", "[DYA]"+row.Cells["Designation-US"].Value.ToString());
+                        if (!string.IsNullOrEmpty(row.Cells["지역 영문명"].Value?.ToString()))
+                        {
+                            if (row.Cells["지역 영문명"].Value.ToString().StartsWith("[DYA]"))
+                                item.Add("지역 영문명", row.Cells["지역 영문명"].Value.ToString());
+                            else
+                                item.Add("지역 영문명", $"[DYA]{row.Cells["지역 영문명"].Value}");
+                        }
                         else if(!string.IsNullOrEmpty(USDesignName) )
-                            item.Add("Designation-US", USDesignName);
+                            item.Add("지역 영문명", USDesignName);
                         else
-                            item.Add("Designation-US", null);
+                            item.Add("지역 영문명", null);
 
                         item.Add("Number", row.Cells["지역"].Value?.ToString());
                         break;
@@ -58,19 +72,21 @@ namespace TcPCM_Connect_Global
                         addictionalItem.Add("구분", categoryName);
                         if (nullCheck) categoryLabor.Add(addictionalItem);
                     }
-                    else if (col.Name.Contains("Designation-US") && !string.IsNullOrEmpty(item["지역"]?.ToString()) )
+                    else if (col.Name.Contains("지역 영문명") && !string.IsNullOrEmpty(item["지역"]?.ToString()) )
                     {
                         if(row.Cells[col.Name].Value == null)
                         {
                             string searchQuery = $"select Name_LOC from BDRegions" +
-                                $" where CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{item["지역"].ToString()}%'" +
+                                $" where CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{item["지역"]}%'" +
                                 $" And CAST(Name_LOC AS NVARCHAR(MAX)) like '%en-US%'";
                             string result = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
                             USDesignName = NameSplit(result);
                             item.Add(col.Name, USDesignName);
                         }
+                        else if (row.Cells["지역 영문명"].Value.ToString().StartsWith("[DYA]"))
+                            item.Add(col.Name, row.Cells[col.Name].Value?.ToString());
                         else
-                            item.Add(col.Name, "[DYA]"+row.Cells[col.Name].Value?.ToString());
+                            item.Add(col.Name, $"[DYA]{row.Cells[col.Name].Value}");
                     }
                     else if (name == "공간 생산 비용" && col.Name.Contains("업종"))
                     {
@@ -135,7 +151,7 @@ namespace TcPCM_Connect_Global
                 JObject postData = new JObject
                 {
                     { "Data", category },
-                    { "ConfigurationGuid", global_iniLoad.GetConfig(className, name.Replace(" ","")) }
+                    { "ConfigurationGuid", global_iniLoad.GetConfig(className, name.Replace(" ","") == "Plant2" ? "Plant" : name.Replace(" ","")) }
                 };
                 err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
             }

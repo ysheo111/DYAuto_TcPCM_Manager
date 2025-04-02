@@ -30,6 +30,9 @@ namespace TcPCM_Connect
 
         private void frmDashboard_Load(object sender, EventArgs e)
         {
+
+            searchButton1.detailSearchButton.Visible = false;
+            
             if (!frmLogin.auth.Contains("admin")) btn_Configuration.Visible = false;
 
             // 아이콘 리스트 만들기
