@@ -586,6 +586,12 @@ namespace TcPCM_Connect
                             }
                             else
                                 dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].Value = result;
+                            
+                            if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey"))
+                            {
+                                dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].ReadOnly = true;
+                                dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
+                            }
                         }
                     }
             }

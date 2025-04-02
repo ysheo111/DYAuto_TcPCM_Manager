@@ -320,6 +320,12 @@ namespace TcPCM_Connect
 
                             int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
                             dgv_Overheads.Rows[dgv_Overheads.Rows.Count - 2].Cells[count].Value = result;
+
+                            if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey"))
+                            {
+                                dgv_Overheads.Rows[dgv_Overheads.Rows.Count - 2].Cells[count].ReadOnly = true;
+                                dgv_Overheads.Rows[dgv_Overheads.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
+                            }
                         }
                     }
             }

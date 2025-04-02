@@ -157,6 +157,12 @@ namespace TcPCM_Connect
                     {
                         dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells[count].Value = result;
                     }
+                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey") || col.ColumnName.Contains("업종")
+                        || col.ColumnName.Contains("설비명") || col.ColumnName.Contains("최대 톤수") || col.ColumnName.Contains("사양 정보"))
+                    {
+                        dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells[count].ReadOnly = true;
+                        dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
+                    }
                 }
             }
             LoadingScreen.CloseSplashScreen();
