@@ -237,6 +237,7 @@ namespace TcPCM_Connect
             int selectedRowCount = dgv_Vendor.SelectedCells.Cast<DataGridViewCell>()
                 .Select(cell => cell.OwningRow).Distinct().Count();
             if (selectedRowCount > 1) return;
+            if (dgv_Vendor.Rows[e.RowIndex].IsNewRow) return;
 
             string infoId = dgv_Vendor.Rows[e.RowIndex].Cells["Id"].Value.ToString();
             Component.frmVendorDetail vendorDetail = new Component.frmVendorDetail();

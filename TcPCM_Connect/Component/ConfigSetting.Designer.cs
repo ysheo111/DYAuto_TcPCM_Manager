@@ -200,6 +200,7 @@
             this.btn_Create.Text = "수정";
             this.btn_Create.TextColor = System.Drawing.Color.DodgerBlue;
             this.btn_Create.UseVisualStyleBackColor = false;
+            this.btn_Create.Visible = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
             // 
             // dgv_Config

@@ -8,7 +8,7 @@ namespace TcPCM_Connect.Controller
     public partial class SearchButton : UserControl
     {
         private TextBox searchTextBox;
-        private Button detailSearchButton;
+        public Button detailSearchButton;
 
         public SearchButton()
         {

@@ -91,15 +91,15 @@ namespace TcPCM_Connect
                     }
                     string searchQuery = $@"SELECT id FROM [PCI].[dbo].[PartInfo]
                         where Info = '{row.Cells["품번"].Value}'
-                        And PartName = N'{row.Cells["대표품명"].Value}'";
-                        //And ValidFrom = N'{row.Cells["Valid From"].Value}'";
+                        And PartName = N'{row.Cells["대표품명"].Value}'
+                        And ValidFrom = N'{row.Cells["Valid From"].Value}'";
                     string partId = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
                     //
                     if (string.IsNullOrEmpty(partId))
                     {
-                        searchQuery = $"Insert into [PCI].[dbo].[PartInfo] (Info, PartName) Values (N'{row.Cells["품번"].Value}', N'{row.Cells["대표품명"].Value}')";//, N'{row.Cells["Valid From"].Value}' )";
+                        searchQuery = $"Insert into [PCI].[dbo].[PartInfo] (Info, PartName, ValidFrom) Values (N'{row.Cells["품번"].Value}', N'{row.Cells["대표품명"].Value}', N'{row.Cells["Valid From"].Value}' )";
                         err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
-                        searchQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where Info = '{row.Cells["품번"].Value}' And PartName = N'{row.Cells["대표품명"].Value}'";//, And ValidFrom = N'{row.Cells["Valid From"].Value}'";
+                        searchQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where Info = '{row.Cells["품번"].Value}' And PartName = N'{row.Cells["대표품명"].Value}' And ValidFrom = N'{row.Cells["Valid From"].Value}'";
                         partId = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
                         partIds.Add(partId);
                     }
@@ -123,6 +123,92 @@ namespace TcPCM_Connect
                     }
                     string name = row.Cells["세부 공정명"].Value?.ToString().Trim();
                     string itemName = string.Join("_",new[] {row.Cells["기계명"].Value, row.Cells["톤수"].Value, row.Cells["메이커"].Value }.Select(obj => obj?.ToString()).Where(n => !string.IsNullOrEmpty(n))).Trim();
+                    string sagName = row.Cells["업종"].Value?.ToString().Trim();
+                    string comment = row.Cells["comment"].Value?.ToString().Trim();
+
+                    string insertQuery = $@"Insert into [PCI].[dbo].[Manufacturing]
+                                            (PartId,Name,Machine,Category,Cycletime,Cavity,Quantity,Utilization,NumberOfWorkers,Comment)
+                                            Values ({partId},N'{name}',N'{itemName}',N'{sagName}',{global.ConvertDouble(row.Cells["Cycle time"].Value)},{global.ConvertDouble(row.Cells["Cavity"].Value)},{global.ConvertDouble(row.Cells["Q'ty"].Value)},{global.ConvertDouble(ratio)},{global.ConvertDouble(row.Cells["Number of workers"].Value)},N'{comment}')";
+                    err = global_DB.ScalarExecute(insertQuery, (int)global_DB.connDB.PCMDB);
+                    if (!string.IsNullOrEmpty(err)) break;
+                }
+                if (!string.IsNullOrEmpty(err)) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "표준 공정", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "표준 공정", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch
+            {
+                CustomMessageBox.RJMessageBox.Show($"Error : 작업중 오류가 발생하였습니다. 다시 시도해주세요.", "표준 공정", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            Thread.Sleep(100);
+            LoadingScreen.CloseSplashScreen();
+        }
+        private void click()
+        {
+            Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
+            splashthread.IsBackground = true;
+            splashthread.Start();
+            try
+            {
+                string err = null;
+                List<string> partIds = new List<string>();
+                
+                HashSet<(string Info, string Name, string ValidFrom)> partKeys = new HashSet<(string Info, string Name, string ValidFrom)>();
+                for (int rowIndex = 0; rowIndex < dgv_PartManufacturing.Rows.Count - 1; rowIndex++)
+                {
+                    DataGridViewRow row = dgv_PartManufacturing.Rows[rowIndex];
+                    partKeys.Add((
+                            row.Cells["품번"].Value?.ToString().Trim(),
+                            row.Cells["대표품명"].Value?.ToString().Trim(),
+                            row.Cells["Valid From"].Value?.ToString()
+                        ));
+                }
+                string partInfoSelect = string.Join(" or ", partKeys.Select(key =>
+                $"(Info = '{key.Info}' AND PartName = N'{key.Name}' AND ValidFrom = '{key.ValidFrom}')"));
+                string partInfoQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where {partInfoSelect}";
+                DataTable partInfoTable = global_DB.MutiSelect(partInfoQuery, (int)global_DB.connDB.PCMDB);
+
+                for (int rowIndex = 0; rowIndex < dgv_PartManufacturing.Rows.Count - 1; rowIndex++)
+                {
+                    DataGridViewRow row = dgv_PartManufacturing.Rows[rowIndex];
+                    if (string.IsNullOrEmpty(row.Cells["세부 공정명"].Value?.ToString()))
+                    {
+                        err = "세부 공정명에는 빈 값이 있으면 안됩니다.";
+                        break;
+                    }
+                    string searchQuery = $@"SELECT id FROM [PCI].[dbo].[PartInfo]
+                        where Info = '{row.Cells["품번"].Value}'
+                        And PartName = N'{row.Cells["대표품명"].Value}'
+                        And ValidFrom = N'{row.Cells["Valid From"].Value}'";
+                    string partId = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
+                    //
+                    if (string.IsNullOrEmpty(partId))
+                    {
+                        searchQuery = $"Insert into [PCI].[dbo].[PartInfo] (Info, PartName, ValidFrom) Values (N'{row.Cells["품번"].Value}', N'{row.Cells["대표품명"].Value}', N'{row.Cells["Valid From"].Value}' )";
+                        err = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
+                        searchQuery = $"SELECT id FROM [PCI].[dbo].[PartInfo] where Info = '{row.Cells["품번"].Value}' And PartName = N'{row.Cells["대표품명"].Value}' And ValidFrom = N'{row.Cells["Valid From"].Value}'";
+                        partId = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
+                        partIds.Add(partId);
+                    }
+                    else if (!partIds.Contains(partId))
+                    {
+                        partIds.Add(partId);
+                        searchQuery = $"delete from [PCI].[dbo].[Manufacturing] where PartId = '{partId}'";
+                        string result = global_DB.ScalarExecute(searchQuery, (int)global_DB.connDB.PCMDB);
+                    }
+
+                    object ratioValue = row.Cells["Utilization ratio"].Value;
+                    string ratio = null;
+                    if (ratioValue != null)
+                    {
+                        double ratioFlot = double.Parse(ratioValue.ToString());
+                        if (ratioFlot > 1)
+                        {
+                            ratioFlot = ratioFlot / 100;
+                        }
+                        ratio = ratioFlot.ToString();
+                    }
+                    string name = row.Cells["세부 공정명"].Value?.ToString().Trim();
+                    string itemName = string.Join("_", new[] { row.Cells["기계명"].Value, row.Cells["톤수"].Value, row.Cells["메이커"].Value }.Select(obj => obj?.ToString()).Where(n => !string.IsNullOrEmpty(n))).Trim();
                     string sagName = row.Cells["업종"].Value?.ToString().Trim();
                     string comment = row.Cells["comment"].Value?.ToString().Trim();
 
@@ -177,7 +263,7 @@ namespace TcPCM_Connect
             inputString = searchButton1.text;
 
             //전체 검색
-            searchQuery = @"select Info,PartName,Name,Category,Machine,Cycletime,Cavity,Quantity,Utilization,NumberOfWorkers,Comment from [PCI].[dbo].[Manufacturing]
+            searchQuery = @"select ValidFrom,Info,PartName,Name,Category,Machine,Cycletime,Cavity,Quantity,Utilization,NumberOfWorkers,Comment from [PCI].[dbo].[Manufacturing]
                                 join[PCI].[dbo].[PartInfo] on[PCI].[dbo].[PartInfo].Id = [PCI].[dbo].[Manufacturing].PartId";
 
             //입력값 검색

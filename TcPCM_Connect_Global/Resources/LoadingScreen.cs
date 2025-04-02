@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace TcPCM_Connect_Global
@@ -31,6 +32,12 @@ namespace TcPCM_Connect_Global
 
         public static void CloseSplashScreen()
         {
+            int count = 0;
+            while(sf == null & count < 100)
+            {
+                Thread.Sleep(10);
+                count++;
+            }
             if (sf != null)
             {
                 sf.CloseSplashScreen();

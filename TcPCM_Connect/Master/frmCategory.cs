@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using TcPCM_Connect_Global;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace TcPCM_Connect
 {
@@ -28,6 +29,9 @@ namespace TcPCM_Connect
 
         private void frmExchange_Load(object sender, EventArgs e)
         {
+            searchButton1.detailSearchButton.Visible = false;
+            if (!frmLogin.auth.Contains("admin")) btn_Configuration.Visible = false;
+
             dgv_Category.AllowUserToAddRows= true;
             ColumnAdd();
             dgv_Category.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -73,13 +77,23 @@ namespace TcPCM_Connect
                     err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
                     if (err == null)
                     {
-                        err = costFactor.Import("Category", "Plant", dgv_Category);
+                        err = costFactor.Import("Category", "Plant2", dgv_Category);
                         if (err == null)
                         {
                             string searchQuery = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
                             List<string> segmantList = global_DB.ListSelect(searchQuery, (int)global_DB.connDB.PCMDB);
                             err = costFactor.SegmantImport("Category", "업종", dgv_Category, segmantList);
                         }
+                    }
+                }
+                if(columnName == "Plant")
+                {
+                    err = costFactor.Import("Category", "Plant", dgv_Category);
+                    if (err == null)
+                    {
+                        string searchQuery = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
+                        List<string> segmantList = global_DB.ListSelect(searchQuery, (int)global_DB.connDB.PCMDB);
+                        err = costFactor.SegmantImport("Category", "업종", dgv_Category, segmantList);
                     }
                 }
                 else if (columnName == "업종")
@@ -155,9 +169,9 @@ namespace TcPCM_Connect
 
             if (columnName == "작업일수")
             {
-                dgv_Category.Columns.Add("지역", "지역");
+                RegionAdd("지역");
                 ValidFromAdd("Valid From");
-                dgv_Category.Columns.Add("업종", "업종");
+                SegmentAdd("업종");
                 dgv_Category.Columns.Add("연간 작업 일수", "연간 작업 일수");
                 dgv_Category.Columns.Add("Shift", "Shift");
                 dgv_Category.Columns.Add("Shift 당 작업 시간", "Shift 당 작업 시간");
@@ -165,8 +179,8 @@ namespace TcPCM_Connect
             else if (columnName == "공간 생산 비용")
             {
                 ValidFromAdd("Valid From");
-                dgv_Category.Columns.Add("지역", "지역");
-                dgv_Category.Columns.Add("업종", "업종");
+                RegionAdd("지역");
+                SegmentAdd("업종"); 
                 CurrencyAdd("통화");
                 dgv_Category.Columns.Add("부대설비비율", "부대설비비율");
                 dgv_Category.Columns.Add("건축비", "건축비");
@@ -175,9 +189,9 @@ namespace TcPCM_Connect
             else if (columnName == "전력단가")
             {
                 ValidFromAdd("Valid From");
-                dgv_Category.Columns.Add("지역", "지역");
+                RegionAdd("지역");
                 CurrencyAdd("통화");
-                dgv_Category.Columns.Add("Plant", "Plant");
+                PlantAdd("Plant");
                 dgv_Category.Columns.Add("전력단가", "전력단가");
                 dgv_Category.Columns["전력단가"].DefaultCellStyle.Format = "N2";
                 dgv_Category.Columns.Add("탄소배출량", "탄소배출량");
@@ -186,18 +200,17 @@ namespace TcPCM_Connect
             else if (columnName == "임률")
             {
                 ValidFromAdd("Valid From");
-                dgv_Category.Columns.Add("지역", "지역");
+                RegionAdd("지역");
                 //dgv_Category.Columns.Add("구분4", "구분4");
-                //dgv_Category.Columns.Add("업종", "업종");
-                dgv_Category.Columns.Add("Plant", "Plant");
-                dgv_Category.Columns.Add("업종", "업종");
+                PlantAdd("Plant");
+                SegmentAdd("업종"); 
                 CurrencyAdd("통화");
                 dgv_Category.Columns.Add("간접임률", "간접임률");
                 dgv_Category.Columns["간접임률"].DefaultCellStyle.Format = "N2";
                 dgv_Category.Columns.Add("직접임률", "직접임률");
                 dgv_Category.Columns["직접임률"].DefaultCellStyle.Format = "N2";
-                dgv_Category.Columns.Add("경비", "경비");
-                dgv_Category.Columns["경비"].DefaultCellStyle.Format = "N2";
+                //dgv_Category.Columns.Add("경비", "경비");
+                //dgv_Category.Columns["경비"].DefaultCellStyle.Format = "N2";
 
                 //dgv_Category.Columns.Add("Labor burden (1Shift)", "Labor burden (1Shift)");
                 //dgv_Category.Columns.Add("Labor burden (2Shift)", "Labor burden (2Shift)");
@@ -211,19 +224,25 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("Plant", "Plant");
                 dgv_Category.Columns["Plant"].Visible = false;
             }
-            else if (columnName == "단위")
-            {
-                dgv_Category.Columns.Add("UOM Code", "UOM Code");
-                dgv_Category.Columns.Add("UOM 명", "UOM 명");
-                dgv_Category.Columns.Add("UniqueId", "UniqueId");
-                dgv_Category.Columns["UniqueId"].Visible = false;
-            }
+            //else if (columnName == "단위")
+            //{
+            //    dgv_Category.Columns.Add("UOM Code", "UOM Code");
+            //    dgv_Category.Columns.Add("UOM 명", "UOM 명");
+            //    dgv_Category.Columns.Add("UniqueId", "UniqueId");
+            //    dgv_Category.Columns["UniqueId"].Visible = false;
+            //}
             else if (columnName == "지역")
             {
                 dgv_Category.Columns.Add("지역", "지역");
-                dgv_Category.Columns.Add("Designation-US", "지역 영문명");
+                //dgv_Category.Columns.Add("Designation-US", "지역 영문명");
+                dgv_Category.Columns.Add("지역 영문명", "지역 영문명");
                 dgv_Category.Columns.Add("Designation", "Designation");
                 dgv_Category.Columns["Designation"].Visible = false;
+            }
+            else if(columnName == "Plant")
+            {
+                RegionAdd("지역");
+                dgv_Category.Columns.Add("Plant", "Plant");
             }
             else
                 dgv_Category.Columns.Add(columnName, columnName);
@@ -234,7 +253,6 @@ namespace TcPCM_Connect
                 dgv_Category.Columns["Designation"].Visible = false;
             }
         }
-
         private void CurrencyAdd(string columnName)
         {
             DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
@@ -244,7 +262,33 @@ namespace TcPCM_Connect
             ((DataGridViewComboBoxColumn)dgv_Category.Columns[MasterData.Machine.currency]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
             dgv_Category.Columns[MasterData.Machine.currency].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
         }
-
+        private void RegionAdd(string columnName)
+        {
+            DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
+            combo.Name = combo.HeaderText = columnName;
+            combo.FlatStyle = FlatStyle.Flat;
+            dgv_Category.Columns.Add(combo);
+            ((DataGridViewComboBoxColumn)dgv_Category.Columns[MasterData.Machine.region]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+            dgv_Category.Columns[MasterData.Machine.region].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+        }
+        private void PlantAdd(string columnName)
+        {
+            DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
+            combo.Name = combo.HeaderText = columnName;
+            combo.FlatStyle = FlatStyle.Flat;
+            dgv_Category.Columns.Add(combo);
+            ((DataGridViewComboBoxColumn)dgv_Category.Columns["Plant"]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDPlants where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+            dgv_Category.Columns["Plant"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+        }
+        private void SegmentAdd(string columnName)
+        {
+            DataGridViewComboBoxColumn segCombo = new DataGridViewComboBoxColumn();
+            segCombo.Name = segCombo.HeaderText = columnName;
+            segCombo.FlatStyle = FlatStyle.Flat;
+            dgv_Category.Columns.Add(segCombo);
+            ((DataGridViewComboBoxColumn)dgv_Category.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'", 0);
+            dgv_Category.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+        }
         private void ValidFromAdd(string columnName)
         {
             CalendarColumn calendar = new CalendarColumn();
@@ -285,17 +329,12 @@ namespace TcPCM_Connect
                     dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells["업종"].Value}";
                 }
                 else
-                    dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}";
+                    dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells["지역"].Value}";
             }
             else if(dgv_Category.Columns[e.ColumnIndex].Name == "UOM Code")
             {
                 dgv_Category.Rows[e.RowIndex].Cells["UniqueId"].Value = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value == null ? null : dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().ToLower();
             }
-            //var cell = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex];
-            //if (cell.Value != null && decimal.TryParse(cell.Value.ToString(), out decimal number))
-            //{
-            //    cell.Value = number.ToString("#,##0");
-            //}
 
             global.MasterDataValiding((DataGridView)sender, e);
         }
@@ -323,11 +362,15 @@ namespace TcPCM_Connect
 
             //전체 검색
             if (columnName == "지역")
-                searchQuery = $"SELECT UniqueKey,Name_LOC as name FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+                searchQuery = $"SELECT UniqueKey,Name_LOC FROM BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) Like '%[[DYA]]%'";
+            else if (columnName == "Plant")
+                searchQuery = @"select BDRegions.UniqueKey,BDPlants.UniqueKey from BDPlants
+                                    join BDRegions on BDRegions.id = RegionId
+                                where CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
             else if (columnName == "업종")
-                searchQuery = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
+                searchQuery = "SELECT DISTINCT UniqueKey FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
             else if (columnName == "단위")
-                searchQuery = $"SELECT DisplayName_LOC,FullName_LOC as name FROM Units";
+                searchQuery = $"SELECT DisplayName_LOC,FullName_LOC FROM Units";
             else if (columnName == "전력단가")
             {
                 Aselect = $@"With A AS(
@@ -404,9 +447,9 @@ namespace TcPCM_Connect
             if (!string.IsNullOrEmpty(inputString))
             {
                 if (columnName == "지역")
-                {
-                    searchQuery = searchQuery + $" And Cast(Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'";
-                }
+                    searchQuery = searchQuery + $" And(Cast(Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%' or Cast(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
+                else if(columnName == "Plant")
+                    searchQuery = searchQuery + $" And(Cast(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%' or Cast(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
                 else if (columnName == "업종")
                     searchQuery = searchQuery + $" And UniqueKey LIKE N'%{inputString}%'";
                 else if (columnName == "단위")
@@ -450,30 +493,40 @@ namespace TcPCM_Connect
                     searchQuery += $" WHERE {detailQuery}";
             }
 
-            DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
-            if (dataTable == null) return;
-
-            foreach (DataRow row in dataTable.Rows)
+            if (!string.IsNullOrEmpty(searchQuery))
             {
-                dgv_Category.Rows.Add();
-                int i = 0;
-                foreach (DataColumn col in dataTable.Columns)
-                {
-                    string result = row[col].ToString();
-                    result = NameSplit(result);
-                    int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
-                    if (columnName == "공간 생산 비용" && col.ColumnName == "comment")
+                DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
+                if (dataTable != null)
+                    foreach (DataRow row in dataTable.Rows)
                     {
-                        string[] splitResult = result.Split('_');
-                        dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells["부대설비비율"].Value = splitResult[0];
-                        dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells["건축비"].Value = splitResult[1];
-                        dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells["내용년수"].Value = splitResult[2];
+                        dgv_Category.Rows.Add();
+                        int i = 0;
+                        foreach (DataColumn col in dataTable.Columns)
+                        {
+                            string result = row[col].ToString();
+                            result = NameSplit(result);
+                            int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
+                            if (columnName == "공간 생산 비용" && col.ColumnName == "comment")
+                            {
+                                string[] splitResult = result.Split('_');
+                                dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells["부대설비비율"].Value = splitResult[0];
+                                dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells["건축비"].Value = splitResult[1];
+                                dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells["내용년수"].Value = splitResult[2];
+                            }
+                            else if(columnName == "지역" && col.ColumnName == "Name_LOC")
+                            {
+                                if(result != null)
+                                {
+                                    result = result.Replace("[DYA]", "");
+                                    if (!Regex.IsMatch(result, "[A-Za-z]"))
+                                        result = null;
+                                }
+                                dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].Value = result;
+                            }
+                            else
+                                dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].Value = result;
+                        }
                     }
-                    else
-                    {
-                        dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].Value = result;
-                    }
-                }
             }
 
             LoadingScreen.CloseSplashScreen();

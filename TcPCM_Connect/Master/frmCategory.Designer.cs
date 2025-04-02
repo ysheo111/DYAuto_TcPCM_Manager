@@ -131,12 +131,12 @@
             this.cb_Classification.IconColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Items.AddRange(new object[] {
             "지역",
+            "Plant",
             "업종",
             "작업일수",
             "공간 생산 비용",
             "전력단가",
-            "임률",
-            "단위"});
+            "임률"});
             this.cb_Classification.ListBackColor = System.Drawing.Color.White;
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Location = new System.Drawing.Point(87, 24);

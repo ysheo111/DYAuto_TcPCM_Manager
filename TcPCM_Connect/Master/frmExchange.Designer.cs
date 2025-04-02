@@ -30,24 +30,25 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dgv_ExchangeRate = new System.Windows.Forms.DataGridView();
-            this.Valid_From = new TcPCM_Connect.CalendarColumn();
-            this.구분자 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.이름 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.통화 = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.환율 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.roundBorderPanel2 = new TcPCM_Connect.RoundBorderPanel();
             this.btn_ExcelCreate = new CustomControls.RJControls.RJButton();
             this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.btn_Configuration = new CustomControls.RJControls.RJButton();
             this.btn_Save = new CustomControls.RJControls.RJButton();
             this.btn_Create = new CustomControls.RJControls.RJButton();
+            this.Valid_From = new TcPCM_Connect.CalendarColumn();
+            this.구분자 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.이름 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.통화 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.환율 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ExchangeRate)).BeginInit();
             this.roundBorderPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -80,36 +81,36 @@
             this.이름,
             this.통화,
             this.환율});
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_ExchangeRate.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_ExchangeRate.DefaultCellStyle = dataGridViewCellStyle7;
             this.dgv_ExchangeRate.EnableHeadersVisualStyles = false;
             this.dgv_ExchangeRate.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
             this.dgv_ExchangeRate.Location = new System.Drawing.Point(26, 78);
             this.dgv_ExchangeRate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dgv_ExchangeRate.Name = "dgv_ExchangeRate";
             this.dgv_ExchangeRate.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.PaleVioletRed;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_ExchangeRate.RowHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.PaleVioletRed;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_ExchangeRate.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.dgv_ExchangeRate.RowHeadersVisible = false;
             this.dgv_ExchangeRate.RowHeadersWidth = 32;
-            dataGridViewCellStyle8.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.Color.White;
-            this.dgv_ExchangeRate.RowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.White;
+            this.dgv_ExchangeRate.RowsDefaultCellStyle = dataGridViewCellStyle9;
             this.dgv_ExchangeRate.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.White;
             this.dgv_ExchangeRate.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.dgv_ExchangeRate.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -120,53 +121,6 @@
             this.dgv_ExchangeRate.TabIndex = 61;
             this.dgv_ExchangeRate.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_ExchangeRate_CellValueChanged);
             this.dgv_ExchangeRate.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_ExchangeRate_DataError);
-            // 
-            // Valid_From
-            // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Valid_From.DefaultCellStyle = dataGridViewCellStyle3;
-            this.Valid_From.HeaderText = "Valid From";
-            this.Valid_From.MinimumWidth = 6;
-            this.Valid_From.Name = "Valid_From";
-            this.Valid_From.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Valid_From.ToolTipText = "유효 날짜에 입력한 다음날 부터 해당 데이터가 적용됩니다.";
-            this.Valid_From.Width = 200;
-            // 
-            // 구분자
-            // 
-            this.구분자.HeaderText = "구분자";
-            this.구분자.MinimumWidth = 6;
-            this.구분자.Name = "구분자";
-            this.구분자.Width = 125;
-            // 
-            // 이름
-            // 
-            this.이름.HeaderText = "이름";
-            this.이름.MinimumWidth = 6;
-            this.이름.Name = "이름";
-            this.이름.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.이름.Width = 260;
-            // 
-            // 통화
-            // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.통화.DefaultCellStyle = dataGridViewCellStyle4;
-            this.통화.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.통화.HeaderText = "통화";
-            this.통화.MinimumWidth = 6;
-            this.통화.Name = "통화";
-            this.통화.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.통화.Width = 200;
-            // 
-            // 환율
-            // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.환율.DefaultCellStyle = dataGridViewCellStyle5;
-            this.환율.HeaderText = "환율";
-            this.환율.MinimumWidth = 6;
-            this.환율.Name = "환율";
-            this.환율.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.환율.Width = 200;
             // 
             // roundBorderPanel2
             // 
@@ -296,6 +250,57 @@
             this.btn_Create.UseVisualStyleBackColor = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
             // 
+            // Valid_From
+            // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Valid_From.DefaultCellStyle = dataGridViewCellStyle3;
+            this.Valid_From.HeaderText = "Valid From";
+            this.Valid_From.MinimumWidth = 6;
+            this.Valid_From.Name = "Valid_From";
+            this.Valid_From.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Valid_From.ToolTipText = "유효 날짜에 입력한 다음날 부터 해당 데이터가 적용됩니다.";
+            this.Valid_From.Width = 200;
+            // 
+            // 구분자
+            // 
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.구분자.DefaultCellStyle = dataGridViewCellStyle4;
+            this.구분자.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.구분자.HeaderText = "구분자";
+            this.구분자.MinimumWidth = 6;
+            this.구분자.Name = "구분자";
+            this.구분자.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.구분자.Width = 120;
+            // 
+            // 이름
+            // 
+            this.이름.HeaderText = "이름";
+            this.이름.MinimumWidth = 6;
+            this.이름.Name = "이름";
+            this.이름.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.이름.Width = 260;
+            // 
+            // 통화
+            // 
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.통화.DefaultCellStyle = dataGridViewCellStyle5;
+            this.통화.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.통화.HeaderText = "통화";
+            this.통화.MinimumWidth = 6;
+            this.통화.Name = "통화";
+            this.통화.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.통화.Width = 200;
+            // 
+            // 환율
+            // 
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.환율.DefaultCellStyle = dataGridViewCellStyle6;
+            this.환율.HeaderText = "환율";
+            this.환율.MinimumWidth = 6;
+            this.환율.Name = "환율";
+            this.환율.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.환율.Width = 200;
+            // 
             // frmExchange
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -322,7 +327,7 @@
         private CustomControls.RJControls.RJButton btn_ExcelCreate;
         private Controller.SearchButton searchButton1;
         private CalendarColumn Valid_From;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 구분자;
+        private System.Windows.Forms.DataGridViewComboBoxColumn 구분자;
         private System.Windows.Forms.DataGridViewTextBoxColumn 이름;
         private System.Windows.Forms.DataGridViewComboBoxColumn 통화;
         private System.Windows.Forms.DataGridViewTextBoxColumn 환율;

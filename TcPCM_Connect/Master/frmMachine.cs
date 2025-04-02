@@ -25,6 +25,7 @@ namespace TcPCM_Connect
 
         private void frmExchange_Load(object sender, EventArgs e)
         {
+            if (!frmLogin.auth.Contains("admin")) btn_Configuration.Visible = false;
             dgv_Machine.AllowUserToAddRows = true;
             ColumnAdd();
             Capitalcolumn();

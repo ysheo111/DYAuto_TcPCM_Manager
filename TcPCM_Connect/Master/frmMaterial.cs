@@ -30,6 +30,8 @@ namespace TcPCM_Connect
 
         private void frmExchange_Load(object sender, EventArgs e)
         {
+            searchButton1.detailSearchButton.Visible = false;
+            if (!frmLogin.auth.Contains("admin")) btn_Configuration.Visible = false;
             dgv_Material.AllowUserToAddRows = true;
             Material(MasterData.Material.injection);
             //InjectionColumn();
@@ -422,11 +424,18 @@ namespace TcPCM_Connect
             {
                 Material(MasterData.Material.price); //PriceColumn();
                 btn_DBLoad.Visible = true;
+                searchButton1.detailSearchButton.Visible = true;
             }
             else if (combo.SelectedItem?.ToString() == "단가 관리")
+            {
                 Material(MasterData.Material.management);
+                searchButton1.detailSearchButton.Visible = true;
+            }
             else if (combo.SelectedItem?.ToString() == "마그넷 와이어")
+            {
                 Material(MasterData.Material.magnet);
+                searchButton1.detailSearchButton.Visible = true;
+            }
             else
                 Material(MasterData.Material.material);
 
@@ -453,6 +462,24 @@ namespace TcPCM_Connect
                     dgv_Material.Columns.Add(combo);
                     ((DataGridViewComboBoxColumn)dgv_Material.Columns[item]).DataSource = global_DB.ListSelect("Select IsoCode as name From Currencies", 0);
                     dgv_Material.Columns[item].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+                }
+                else if (item.Contains("지역"))
+                {
+                    DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
+                    combo.Name = combo.HeaderText = item;
+                    combo.FlatStyle = FlatStyle.Flat;
+                    dgv_Material.Columns.Add(combo);
+                    ((DataGridViewComboBoxColumn)dgv_Material.Columns[MasterData.Machine.region]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+                    dgv_Material.Columns[MasterData.Machine.region].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+                }
+                else if (item.Contains("업종"))
+                {
+                    DataGridViewComboBoxColumn segCombo = new DataGridViewComboBoxColumn();
+                    segCombo.Name = segCombo.HeaderText = item;
+                    segCombo.FlatStyle = FlatStyle.Flat;
+                    dgv_Material.Columns.Add(segCombo);
+                    ((DataGridViewComboBoxColumn)dgv_Material.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'", 0);
+                    dgv_Material.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
                 }
                 else if (item.Contains("탄소발생량 단위"))
                     dgv_Material.Columns.Add("단위", item);

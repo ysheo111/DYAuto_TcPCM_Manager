@@ -195,8 +195,16 @@ namespace TcPCM_Connect_Global
                 OpenFileDialog dlg = new OpenFileDialog();
 
                 DialogResult dialog = dlg.ShowDialog();
-                if (dialog == DialogResult.Cancel) return null;
-                else if (dialog != DialogResult.OK) return "ERROR : 파일 오픈에 실패하였습니다.";
+                if (dialog == DialogResult.Cancel)
+                {
+                    dgv.AllowUserToAddRows = true;
+                    return null;
+                }
+                else if (dialog != DialogResult.OK)
+                {
+                    dgv.AllowUserToAddRows = true;
+                    return "ERROR : 파일 오픈에 실패하였습니다.";
+                }
 
                 //Excel 프로그램 실행
                 application = new Microsoft.Office.Interop.Excel.Application();
