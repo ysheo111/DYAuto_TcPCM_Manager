@@ -37,7 +37,7 @@ namespace TcPCM_Connect
         private void btn_Create_Click(object sender, EventArgs e)
         {
             ExcelImport excel = new ExcelImport();            
-            string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString(),dgv_Overheads);
+            string err = excel.LoadMasterData(cb_Classification.SelectedItem == null ? "사내 재료관리비율" : cb_Classification.SelectedItem.ToString(),dgv_Overheads);
 
             if (err != null)
                 CustomMessageBox.RJMessageBox.Show($"불러오기에 실패하였습니다\nError : {err}", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -45,7 +45,7 @@ namespace TcPCM_Connect
         private void btn_ExcelCreate_Click(object sender, EventArgs e)
         {
             ExcelExport excel = new ExcelExport();
-            string columnName = cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString();
+            string columnName = cb_Classification.SelectedItem == null ? "사내 재료관리비율" : cb_Classification.SelectedItem.ToString();
             string err = excel.ExportLocationGrid(dgv_Overheads, columnName);
 
             if (err != null) CustomMessageBox.RJMessageBox.Show($"Export 실패하였습니다\n{err}", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -66,7 +66,7 @@ namespace TcPCM_Connect
             try
             {
                 Overheads overheads = new Overheads();
-                string columnName = cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString();
+                string columnName = cb_Classification.SelectedItem == null ? "사내 재료관리비율" : cb_Classification.SelectedItem.ToString();
                 string err = overheads.Import("Overheads", columnName, dgv_Overheads);
 
                 if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -98,8 +98,16 @@ namespace TcPCM_Connect
         private void ColumnAdd()
         {
             dgv_Overheads.Columns.Clear();
-            string columnName = cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString();
-            if (columnName == "재료관리비율")
+            string columnName = cb_Classification.SelectedItem == null ? "사내 재료관리비율" : cb_Classification.SelectedItem.ToString();
+            if (columnName == "사내 재료관리비율")
+            {
+                ValidFromAdd("Valid From");
+                RegionAdd("지역");
+                PlantAdd("Plant");
+                dgv_Overheads.Columns.Add("재료 관리비율", "재료 관리비율");
+                dgv_Overheads.Columns["재료 관리비율"].Tag = "Siemens.TCPCM.CostType.OthermaterialcostsafterMOC";
+            }
+            else if (columnName == "사외 재료관리비율")
             {
                 ValidFromAdd("Valid From");
                 RegionAdd("지역");
@@ -112,7 +120,7 @@ namespace TcPCM_Connect
                 ValidFromAdd("Valid From");
                 RegionAdd("지역");
                 PlantAdd("Plant");
-                SegmentAdd("업종");
+                SegmentAdd("Incoterms");
                 dgv_Overheads.Columns.Add("판매관리비율", "판매관리비율");
                 dgv_Overheads.Columns["판매관리비율"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts03";
                 //dgv_Overheads.Columns["판매관리비율"].DefaultCellStyle.Format = "N2";
@@ -180,6 +188,7 @@ namespace TcPCM_Connect
         {
             CalendarColumn calendar = new CalendarColumn();
             calendar.Name = calendar.HeaderText = columnName;
+            calendar.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Overheads.Columns.Add(calendar);
             dgv_Overheads.Columns[columnName].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
         }
@@ -188,6 +197,7 @@ namespace TcPCM_Connect
             DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
             combo.Name = combo.HeaderText = columnName;
             combo.FlatStyle = FlatStyle.Flat;
+            combo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Overheads.Columns.Add(combo);
             ((DataGridViewComboBoxColumn)dgv_Overheads.Columns[MasterData.Machine.region]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDRegions where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
             dgv_Overheads.Columns[MasterData.Machine.region].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -197,21 +207,28 @@ namespace TcPCM_Connect
             DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
             combo.Name = combo.HeaderText = columnName;
             combo.FlatStyle = FlatStyle.Flat;
+            combo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Overheads.Columns.Add(combo);
             ((DataGridViewComboBoxColumn)dgv_Overheads.Columns["Plant"]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDPlants where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
             dgv_Overheads.Columns["Plant"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
         }
         private void SegmentAdd(string columnName)
         {
-            DataGridViewComboBoxColumn segCombo = new DataGridViewComboBoxColumn();
-            segCombo.Name = segCombo.HeaderText = columnName;
-            segCombo.FlatStyle = FlatStyle.Flat;
-            dgv_Overheads.Columns.Add(segCombo);
+            DataGridViewComboBoxColumn combo = new DataGridViewComboBoxColumn();
+            combo.Name = combo.HeaderText = columnName;
+            combo.FlatStyle = FlatStyle.Flat;
+            combo.SortMode = DataGridViewColumnSortMode.Programmatic;
+            dgv_Overheads.Columns.Add(combo);
             if ((cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString()) == "판매관리비율")
-                ((DataGridViewComboBoxColumn)dgv_Overheads.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+            {
+                ((DataGridViewComboBoxColumn)dgv_Overheads.Columns["Incoterms"]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+                dgv_Overheads.Columns["Incoterms"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+            }
             else
+            {
                 ((DataGridViewComboBoxColumn)dgv_Overheads.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'", 0);
-            dgv_Overheads.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+                dgv_Overheads.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+            }
         }
         private void dgv_Overheads_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
@@ -336,6 +353,23 @@ namespace TcPCM_Connect
         {
             Select select = new Select();
             select.ShowDialog();
+        }
+
+        private void dgv_Overheads_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (dgv_Overheads.IsCurrentCellInEditMode)
+                dgv_Overheads.EndEdit();
+
+            string columnName = dgv_Overheads.Columns[e.ColumnIndex].Name;
+            bool ascending = true;
+
+            if (dgv_Overheads.Tag is Tuple<string, bool> prevSort && prevSort.Item1 == columnName)
+                ascending = !prevSort.Item2;
+
+            dgv_Overheads.Sort(dgv_Overheads.Columns[columnName],
+                ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
+
+            dgv_Overheads.Tag = Tuple.Create(columnName, ascending);
         }
     }
 }

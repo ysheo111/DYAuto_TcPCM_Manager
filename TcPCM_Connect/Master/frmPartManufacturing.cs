@@ -36,6 +36,7 @@ namespace TcPCM_Connect
 
             CalendarColumn calendar = new CalendarColumn();
             calendar.Name = calendar.HeaderText = "Valid From";
+            calendar.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_PartManufacturing.Columns.Add(calendar);
             dgv_PartManufacturing.Columns["Valid From"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
             //dgv_PartManufacturing.Columns.Add("Valid From", "Valid From");
@@ -43,7 +44,15 @@ namespace TcPCM_Connect
             dgv_PartManufacturing.Columns.Add("품번", "품번");
             dgv_PartManufacturing.Columns.Add("대표품명", "대표품명");
             dgv_PartManufacturing.Columns.Add("세부 공정명", "세부 공정명");
-            dgv_PartManufacturing.Columns.Add("업종", "업종");
+            //dgv_PartManufacturing.Columns.Add("업종", "업종");
+            DataGridViewComboBoxColumn segCombo = new DataGridViewComboBoxColumn();
+            segCombo.Name = segCombo.HeaderText = MasterData.Machine.segment;
+            segCombo.FlatStyle = FlatStyle.Flat;
+            segCombo.SortMode = DataGridViewColumnSortMode.Programmatic;
+            dgv_PartManufacturing.Columns.Add(segCombo);
+            ((DataGridViewComboBoxColumn)dgv_PartManufacturing.Columns[MasterData.Machine.segment]).DataSource = global_DB.ListSelect("SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'", 0);
+            dgv_PartManufacturing.Columns[MasterData.Machine.segment].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+
             dgv_PartManufacturing.Columns.Add("기계명", "기계명");
             dgv_PartManufacturing.Columns.Add("톤수", "톤수");
             dgv_PartManufacturing.Columns.Add("메이커", "메이커");
@@ -404,6 +413,23 @@ namespace TcPCM_Connect
                 //        where Info = '{item.Cells["품번"]}' and PartName = '{item.Cells["대표품명"]}' ";
                 //result = global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
             }
+        }
+
+        private void dgv_PartManufacturing_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (dgv_PartManufacturing.IsCurrentCellInEditMode)
+                dgv_PartManufacturing.EndEdit();
+
+            string columnName = dgv_PartManufacturing.Columns[e.ColumnIndex].Name;
+            bool ascending = true;
+
+            if (dgv_PartManufacturing.Tag is Tuple<string, bool> prevSort && prevSort.Item1 == columnName)
+                ascending = !prevSort.Item2;
+
+            dgv_PartManufacturing.Sort(dgv_PartManufacturing.Columns[columnName],
+                ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
+
+            dgv_PartManufacturing.Tag = Tuple.Create(columnName, ascending);
         }
     }
 }
