@@ -159,6 +159,11 @@ namespace TcPCM_Connect
                     else if (result == "T")
                         result = "계획환율";
                     dgv_ExchangeRate.Rows[dgv_ExchangeRate.Rows.Count - 2].Cells[count].Value = result;
+                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey"))
+                    {
+                        dgv_ExchangeRate.Rows[dgv_ExchangeRate.Rows.Count - 2].Cells[count].ReadOnly = true;
+                        dgv_ExchangeRate.Rows[dgv_ExchangeRate.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
+                    }
                 }
             }
             dgv_ExchangeRate.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;

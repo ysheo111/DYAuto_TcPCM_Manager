@@ -758,7 +758,11 @@ namespace TcPCM_Connect
                     {
                         string[] aa = result.Split('_');
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["재질명"].Value = aa[0];
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["재질명"].ReadOnly = true;
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["재질명"].Style.BackColor = Color.LightGray;
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["GRADE"].Value = aa[1];
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["GRADE"].ReadOnly = true;
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells["GRADE"].Style.BackColor = Color.LightGray;
                         i++;
                     }
                     else if (col.ColumnName == "소재명")
@@ -770,6 +774,11 @@ namespace TcPCM_Connect
                     else
                     {
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].Value = result;
+                    }
+                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey"))
+                    {
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].ReadOnly = true;
+                        dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
                     }
                 }
             }

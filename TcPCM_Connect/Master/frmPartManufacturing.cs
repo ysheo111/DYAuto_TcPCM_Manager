@@ -310,6 +310,11 @@ namespace TcPCM_Connect
                     }
                     else
                         dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells[count].Value = result.Trim();
+                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("Info") || col.ColumnName.Contains("PartName"))
+                    {
+                        dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells[count].ReadOnly = true;
+                        dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
+                    }
                 }
             }
             dgv_PartManufacturing.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
