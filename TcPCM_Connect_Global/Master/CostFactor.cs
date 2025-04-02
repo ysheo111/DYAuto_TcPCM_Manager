@@ -88,7 +88,7 @@ namespace TcPCM_Connect_Global
                         else
                             item.Add(col.Name, $"[DYA]{row.Cells[col.Name].Value}");
                     }
-                    else if (name == "공간 생산 비용" && col.Name.Contains("업종"))
+                    else if ((name == "공간 생산 비용" || name == "직접임률2") && col.Name.Contains("업종"))
                     {
                         item.Add(col.Name, $"{row.Cells["지역"].Value}||{row.Cells[col.Name].Value}");
                     }
