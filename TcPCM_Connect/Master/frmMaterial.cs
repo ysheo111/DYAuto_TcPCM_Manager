@@ -631,7 +631,7 @@ namespace TcPCM_Connect
 		                                    (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
 		                                    And MDMaterialHeaders.UniqueKey like '%_scrap' ),
                                     C as( select distinct BDRegions.UniqueKey as region, MDMaterialHeaders.UniqueKey As sName,
-		                                    MDMaterialCo2Details.value, Units.Name As '탄소발생량 단위'
+		                                    MDMaterialCo2Details.value, (Units.Name+' CO2e/'+Units.Name) As '탄소발생량 단위'
 	                                    from MDMaterialCo2Details
 		                                    left join MDMaterialHeaders on MaterialHeaderId = MDMaterialHeaders.Id
 		                                    left join Units on MDMaterialCo2Details.UnitId = Units.Id
@@ -639,7 +639,7 @@ namespace TcPCM_Connect
 	                                    where MaterialHeaderId in
 		                                    (select id from MDMaterialHeaders where CAST(Name_LOC AS NVARCHAR(MAX))  like '%[[DYA]]%')
 		                                    And MDMaterialHeaders.UniqueKey like '%_scrap' )
-                                select
+                                select top 1000
                                     A.DateValidFrom as 'Valid From',
                                     COALESCE(A.region, B.region, C.region) as 'Region',
                                     COALESCE(A.IsoCode, B.IsoCode) as '통화',
@@ -816,7 +816,7 @@ namespace TcPCM_Connect
             
             LoadingScreen.CloseSplashScreen();
 
-            if (columnName == "단가 관리" || columnName.Contains("SAP"))
+            if (columnName.Contains("단가"))
             {
                 CustomMessageBox.RJMessageBox.Show($"{columnName}는 최신 날짜를 기준으로 최대 1000개까지 조회가능합니다.", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }

@@ -120,8 +120,11 @@ namespace TcPCM_Connect_Global
                         scrapItem.Add("단가", row.Cells[category].Value?.ToString());
                     else if (category.Contains("탄소발생량 단위"))
                     {
-                        item.Add(category, row.Cells["단위"].Value?.ToString().ToLower());
-                        scrapItem.Add(category, row.Cells["단위"].Value?.ToString().ToLower());
+                        if (row.Cells["단위"].Value == null) continue;
+                        string[] unit = row.Cells["단위"].Value.ToString().Split('/');
+                        if (unit.Length <= 1) continue;
+                        item.Add(category, unit[1]);
+                        scrapItem.Add(category, unit[1]);
                     }
                     else if (category.Contains("탄소발생량"))
                     {
