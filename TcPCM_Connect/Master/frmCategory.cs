@@ -140,7 +140,11 @@ namespace TcPCM_Connect
                     err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
 
                 if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                {
+                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Cost factor", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    CellReadOnly();
+                } 
             }
             catch
             {
@@ -421,7 +425,7 @@ namespace TcPCM_Connect
                                 and RegionId = (select Id from BDRegions where UniqueKey = 'Siemens.TCPCM.Region.Common.SouthKorea')";
 
                 FullJoin = $@") SELECT A.DateValidFrom As 'Valid From',
-	                                    A.region As '지역',
+	                                    A.region As 'Region',
                                         IsoCode As '통화',
                                         A.Value As '전력단가',
                                         b1.name As '탄소배출량'
@@ -493,7 +497,7 @@ namespace TcPCM_Connect
             }
             else if (columnName == "공간 생산 비용")
             {
-                searchQuery = $@"select DateValidFrom,BDRegions.UniqueKey As region,BDSegments.UniqueKey,Currencies.IsoCode,Text_LOC AS comment from MDCostFactorDetails
+                searchQuery = $@"select DateValidFrom,BDRegions.UniqueKey As Region,BDSegments.UniqueKey,Currencies.IsoCode,Text_LOC AS comment from MDCostFactorDetails
                                 JOIN BDRegions ON RegionId = BDRegions.Id
                                 JOIN Currencies ON CurrencyId = Currencies.Id
                                 JOIN BDPlants ON PlantId = BDPlants.Id
@@ -526,16 +530,6 @@ namespace TcPCM_Connect
                     if (!string.IsNullOrEmpty(detailQuery))
                         searchQuery += $" Where {detailQuery}";
                 }
-                //else if (columnName == "임률")
-                //{
-                //    string searchString = $@"CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                //                            or CAST(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                //                            or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
-                //    if (string.IsNullOrEmpty(detailQuery))
-                //        searchQuery += $@" where {searchString}";
-                //    else
-                //        searchQuery += $" where ({searchString}) AND {detailQuery}";
-                //}
                 else if (columnName == "공간 생산 비용")
                 {
                     searchQuery = searchQuery + $@"And (CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
@@ -586,8 +580,9 @@ namespace TcPCM_Connect
                             }
                             else
                                 dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].Value = result;
-                            
-                            if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey"))
+
+                            if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey")
+                                || col.ColumnName.Contains("Region") || col.ColumnName.Contains("Plant") || col.ColumnName.Contains("Segment"))
                             {
                                 dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].ReadOnly = true;
                                 dgv_Category.Rows[dgv_Category.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
@@ -700,6 +695,24 @@ namespace TcPCM_Connect
         private void dgv_Category_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
             if (dgv_Category.Columns.Contains("탄소배출량")) carbon(e.RowIndex);
+        }
+
+        private void CellReadOnly()
+        {
+            //string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
+            List<string> UniqueColumns = new List<string> { "Valid From", "지역", "Plant", "업종" };
+            foreach(DataGridViewRow row in dgv_Category.Rows)
+            {
+                if (row.IsNewRow) continue;
+                foreach(DataGridViewColumn col in dgv_Category.Columns)
+                {
+                    if (UniqueColumns.Contains(col.Name))
+                    {
+                        dgv_Category.Rows[row.Index].Cells[col.Name].ReadOnly = true;
+                        dgv_Category.Rows[row.Index].Cells[col.Name].Style.BackColor = Color.LightGray;
+                    }
+                }
+            }
         }
     }
 }
