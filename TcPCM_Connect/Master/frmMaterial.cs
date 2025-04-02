@@ -429,8 +429,18 @@ namespace TcPCM_Connect
         }
 
         private void cb_Classification_OnSelectedIndexChanged(object sender, EventArgs e)
-        {
+        {   
             System.Windows.Forms.ComboBox combo = (System.Windows.Forms.ComboBox)sender;
+            if (combo.SelectedItem?.ToString().Contains("SAP") == true)
+            {
+                btn_Save.Visible = false;
+                btn_Create.Visible = false;
+            }
+            else
+            {
+                btn_Save.Visible = true;
+                btn_Create.Visible = true;
+            }
             if (combo.SelectedIndex < 0) return;
             dgv_Material.Columns.Clear();
             dgv_Material.DataSource = null;
@@ -470,7 +480,7 @@ namespace TcPCM_Connect
                 btn_DBLoad.Visible = true;
                 searchButton1.detailSearchButton.Visible = true;
             }
-            else if (combo.SelectedItem?.ToString() == "단가 관리")
+            else if (combo.SelectedItem?.ToString() == "단가 관리" || combo.SelectedItem?.ToString().Contains("SAP")==true)
             {
                 Material(MasterData.Material.management);
                 searchButton1.detailSearchButton.Visible = true;
@@ -654,13 +664,33 @@ namespace TcPCM_Connect
             }
             else if(columnName == "단가 관리")
             {
-                searchQuery = @"select DateValidFrom,BDRegions.UniqueKey as 지역,Currencies.IsoCode as 통화, h.UniqueKey + Number as 품번,h.Name_LOC as 참고품명,Price as 단가 from MDMaterialHeaders as h
+                searchQuery = @"select top 1000 DateValidFrom,BDRegions.UniqueKey as 지역,Currencies.IsoCode as 통화, h.UniqueKey + Number as 품번,h.Name_LOC as 참고품명,Price as 단가 from MDMaterialHeaders as h
                                 left join MDMaterialDetails as d on h.id = d.MaterialheaderId
-                                left join MDMaterialHeaderRevisions as r on h.id = r.MaterialHeaderId
+                                LEFT join MDMaterialHeaderRevisions as r on d.MaterialHeaderRevisionId = r.Id
                                 join BDRegions on d.RegionId = BDRegions.Id
                                 join Currencies on d.CurrencyId = Currencies.Id
-                                where LEN(Number) IN (2,3) ";
+                                where LEN(Number) IN (2,3) and h.UniqueKey not like '%SAP_%'";
                                 //where h.UniqueKey Not Like '%SAP%'
+            }
+            else if (columnName == "SAP 구매단가")
+            {
+                searchQuery = @"select top 1000 DateValidFrom,BDRegions.UniqueKey as 지역,Currencies.IsoCode as 통화, REPLACE(h.UniqueKey + Number, 'SAP_', '') as 품번, h.Name_LOC as 참고품명,Price as 단가 from MDMaterialHeaders as h
+                                left join MDMaterialDetails as d on h.id = d.MaterialheaderId
+                                LEFT join MDMaterialHeaderRevisions as r on d.MaterialHeaderRevisionId = r.Id
+                                join BDRegions on d.RegionId = BDRegions.Id
+                                join Currencies on d.CurrencyId = Currencies.Id
+                                where LEN(Number) IN (2,3) and h.UniqueKey like '%SAP_%' and d.TagOfMaterialDetailId = 2";
+                //where h.UniqueKey Not Like '%SAP%'
+            }
+            else if (columnName == "SAP 표준단가")
+            {
+                searchQuery = @"select top 1000 DateValidFrom,BDRegions.UniqueKey as 지역,Currencies.IsoCode as 통화,REPLACE(h.UniqueKey + Number, 'SAP_', '') as 품번,h.Name_LOC as 참고품명,Price as 단가 from MDMaterialHeaders as h
+                                left join MDMaterialDetails as d on h.id = d.MaterialheaderId
+                                LEFT join MDMaterialHeaderRevisions as r on d.MaterialHeaderRevisionId = r.Id
+                                join BDRegions on d.RegionId = BDRegions.Id
+                                join Currencies on d.CurrencyId = Currencies.Id
+                                where LEN(Number) IN (2,3) and h.UniqueKey like '%SAP_%' and d.TagOfMaterialDetailId = 1";
+                //where h.UniqueKey Not Like '%SAP%'
             }
             else
             {
@@ -720,7 +750,7 @@ namespace TcPCM_Connect
                     searchQuery += $" And A.소재명 like N'%{inputString}%'";
                 else if (columnName == "마그넷 와이어")
                     searchQuery += $" where 가공비 like '%{inputString}%' or 두께 like '%{inputString}%' or type like '%{inputString}%'";
-                else if (columnName == "단가 관리")
+                else if (columnName == "단가 관리" || columnName.Contains("SAP"))
                     searchQuery += $" And ( (h.UniqueKey + Number like '%{inputString}%') or (CAST(h.Name_LOC AS NVARCHAR(MAX)) like '%{inputString}%') )";
                 else
                     searchQuery += $" And CAST(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'";
@@ -731,10 +761,13 @@ namespace TcPCM_Connect
                     searchQuery += $" And {dateQuery}";
                 else if (columnName == "마그넷 와이어")
                     searchQuery += $" Where {dateQuery}";
-                else if (columnName == "단가 관리")
+                else if (columnName == "단가 관리" || columnName.Contains("SAP"))
                     searchQuery += $" And {dateQuery}";
             }
-
+            if (columnName.Contains("단가 관리") || columnName.Contains("SAP"))
+            {
+                searchQuery += " order by d.DateValidFrom desc ";
+            }
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
             if (dataTable == null)
             {
@@ -782,6 +815,11 @@ namespace TcPCM_Connect
             }
             
             LoadingScreen.CloseSplashScreen();
+
+            if (columnName == "단가 관리" || columnName.Contains("SAP"))
+            {
+                CustomMessageBox.RJMessageBox.Show($"{columnName}는 최신 날짜를 기준으로 최대 1000개까지 조회가능합니다.", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         public string NameSplit(string input)
