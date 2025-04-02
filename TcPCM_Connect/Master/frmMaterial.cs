@@ -484,7 +484,7 @@ namespace TcPCM_Connect
                 Material(MasterData.Material.material);
 
             dgv_Material.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            if(dgv_Material.DataSource == null) dgv_Material.Rows.Add();
+            if(dgv_Material.DataSource == null) dgv_Material.AllowUserToAddRows = true; //dgv_Material.Rows.Add();
         }
         private void Material(List<string> variable)
         {
@@ -596,7 +596,6 @@ namespace TcPCM_Connect
                 return;
             }
             
-
             string inputString = "", searchQuery = "", colQuery = "", havingQuery = ""; ;
             inputString = searchButton1.text;
             if (columnName == "원소재 단가")
@@ -632,7 +631,7 @@ namespace TcPCM_Connect
 		                                    And MDMaterialHeaders.UniqueKey like '%_scrap' )
                                 select
                                     A.DateValidFrom as 'Valid From',
-                                    COALESCE(A.region, B.region, C.region) as '지역',
+                                    COALESCE(A.region, B.region, C.region) as 'Region',
                                     COALESCE(A.IsoCode, B.IsoCode) as '통화',
                                     A.소재명,
                                     A.UniqueKey,
@@ -651,7 +650,7 @@ namespace TcPCM_Connect
             }
             else if (columnName == "마그넷 와이어")
             {
-                searchQuery = "select * from [PCI].[dbo].[MD_MagnetWire]";
+                searchQuery = "select ValidFrom,가공비,두께,type from [PCI].[dbo].[MD_MagnetWire]";
             }
             else if(columnName == "단가 관리")
             {
@@ -742,8 +741,7 @@ namespace TcPCM_Connect
                 LoadingScreen.CloseSplashScreen();
                 return;
             }
-
-           
+  
             foreach (DataRow row in dataTable.Rows)
             {
                 dgv_Material.Rows.Add();
@@ -775,7 +773,7 @@ namespace TcPCM_Connect
                     {
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].Value = result;
                     }
-                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey"))
+                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey") || col.ColumnName.Contains("Region") || col.ColumnName.Contains("소재명"))
                     {
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].ReadOnly = true;
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;

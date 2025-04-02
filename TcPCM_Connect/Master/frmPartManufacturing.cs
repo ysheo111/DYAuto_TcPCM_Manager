@@ -74,6 +74,8 @@ namespace TcPCM_Connect
 
         private void btn_Save_Click(object sender, EventArgs e)
         {
+            CellReadOnly();
+            return;
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
             splashthread.Start();
@@ -133,7 +135,11 @@ namespace TcPCM_Connect
                     if (!string.IsNullOrEmpty(err)) break;
                 }
                 if (!string.IsNullOrEmpty(err)) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "표준 공정", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "표준 공정", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                {
+                    CellReadOnly();
+                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "표준 공정", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                } 
             }
             catch
             {
@@ -310,7 +316,7 @@ namespace TcPCM_Connect
                     }
                     else
                         dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells[count].Value = result.Trim();
-                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("Info") || col.ColumnName.Contains("PartName"))
+                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("Info"))
                     {
                         dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells[count].ReadOnly = true;
                         dgv_PartManufacturing.Rows[dgv_PartManufacturing.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
@@ -319,7 +325,22 @@ namespace TcPCM_Connect
             }
             dgv_PartManufacturing.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
-
+        private void CellReadOnly()
+        {
+            List<string> UniqueColumns = new List<string> { "Valid From", "품번" };
+            foreach (DataGridViewRow row in dgv_PartManufacturing.Rows)
+            {
+                if (row.IsNewRow) continue;
+                foreach (DataGridViewColumn col in dgv_PartManufacturing.Columns)
+                {
+                    if (UniqueColumns.Contains(col.Name))
+                    {
+                        dgv_PartManufacturing.Rows[row.Index].Cells[col.Name].ReadOnly = true;
+                        dgv_PartManufacturing.Rows[row.Index].Cells[col.Name].Style.BackColor = Color.LightGray;
+                    }
+                }
+            }
+        }
         private void dgv_PartManufacturing_MouseDown(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Right)

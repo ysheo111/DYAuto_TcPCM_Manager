@@ -53,7 +53,11 @@ namespace TcPCM_Connect
                 string err = machine.Import(dgv_Machine, cb_Classification.Texts);                
 
                 if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "Machine", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Machine", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                {
+                    CellReadOnly();
+                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Machine", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                } 
             }
             catch
             {
@@ -152,13 +156,18 @@ namespace TcPCM_Connect
                             }
                         }
                         i += 3;
+                        dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["설비명"].ReadOnly = true;
+                        dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["최대 톤수"].ReadOnly = true;
+                        dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].ReadOnly = true;
+                        dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["설비명"].Style.BackColor = Color.LightGray;
+                        dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["최대 톤수"].Style.BackColor = Color.LightGray;
+                        dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].Style.BackColor = Color.LightGray;
                     }
                     else
                     {
                         dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells[count].Value = result;
                     }
-                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey") || col.ColumnName.Contains("업종")
-                        || col.ColumnName.Contains("설비명") || col.ColumnName.Contains("최대 톤수") || col.ColumnName.Contains("사양 정보"))
+                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey") || col.ColumnName.Contains("업종"))
                     {
                         dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells[count].ReadOnly = true;
                         dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
@@ -166,6 +175,22 @@ namespace TcPCM_Connect
                 }
             }
             LoadingScreen.CloseSplashScreen();
+        }
+        private void CellReadOnly()
+        {
+            List<string> UniqueColumns = new List<string> { "Valid From", "업종", "설비명", "최대 톤수", "사양 정보" };
+            foreach (DataGridViewRow row in dgv_Machine.Rows)
+            {
+                if (row.IsNewRow) continue;
+                foreach (DataGridViewColumn col in dgv_Machine.Columns)
+                {
+                    if (UniqueColumns.Contains(col.Name))
+                    {
+                        dgv_Machine.Rows[row.Index].Cells[col.Name].ReadOnly = true;
+                        dgv_Machine.Rows[row.Index].Cells[col.Name].Style.BackColor = Color.LightGray;
+                    }
+                }
+            }
         }
         private void btn_Configuration_Click(object sender, EventArgs e)
         {

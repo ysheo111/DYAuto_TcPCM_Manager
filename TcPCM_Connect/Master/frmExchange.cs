@@ -65,7 +65,11 @@ namespace TcPCM_Connect
                 string err = exchange.Import(dgv_ExchangeRate);                
 
                 if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "ExchangeRate", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "ExchangeRate", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                {
+                    CellReadOnly();
+                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "ExchangeRate", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                } 
 
             }
             catch
@@ -75,7 +79,22 @@ namespace TcPCM_Connect
             Thread.Sleep(100);
             LoadingScreen.CloseSplashScreen();
         }
-
+        private void CellReadOnly()
+        {
+            List<string> UniqueColumns = new List<string> { "Valid From", "구분자", "통화"};
+            foreach (DataGridViewRow row in dgv_ExchangeRate.Rows)
+            {
+                if (row.IsNewRow) continue;
+                foreach (DataGridViewColumn col in dgv_ExchangeRate.Columns)
+                {
+                    if (UniqueColumns.Contains(col.Name))
+                    {
+                        dgv_ExchangeRate.Rows[row.Index].Cells[col.Name].ReadOnly = true;
+                        dgv_ExchangeRate.Rows[row.Index].Cells[col.Name].Style.BackColor = Color.LightGray;
+                    }
+                }
+            }
+        }
         private void btn_Configuration_Click(object sender, EventArgs e)
         {
             ConfigSetting config = new ConfigSetting();
@@ -159,7 +178,7 @@ namespace TcPCM_Connect
                     else if (result == "T")
                         result = "계획환율";
                     dgv_ExchangeRate.Rows[dgv_ExchangeRate.Rows.Count - 2].Cells[count].Value = result;
-                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey"))
+                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey") || col.ColumnName.Contains("IsoCode"))
                     {
                         dgv_ExchangeRate.Rows[dgv_ExchangeRate.Rows.Count - 2].Cells[count].ReadOnly = true;
                         dgv_ExchangeRate.Rows[dgv_ExchangeRate.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
