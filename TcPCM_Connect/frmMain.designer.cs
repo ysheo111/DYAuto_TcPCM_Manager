@@ -46,6 +46,7 @@
             this.p_Manu = new System.Windows.Forms.Panel();
             this.btn_UserManage = new CustomControls.RJControls.SideButton();
             this.p_Master = new System.Windows.Forms.Panel();
+            this.sideButton3 = new CustomControls.RJControls.SideButton();
             this.sideButton2 = new CustomControls.RJControls.SideButton();
             this.sideButton1 = new CustomControls.RJControls.SideButton();
             this.btn_Overheads = new CustomControls.RJControls.SideButton();
@@ -66,7 +67,6 @@
             this.tmContraerMenu = new System.Windows.Forms.Timer(this.components);
             this.tmFechaHora = new System.Windows.Forms.Timer(this.components);
             this.tip_logout = new System.Windows.Forms.ToolTip(this.components);
-            this.sideButton3 = new CustomControls.RJControls.SideButton();
             this.panelContenedorPrincipal.SuspendLayout();
             this.panelMenu.SuspendLayout();
             this.p_Header.SuspendLayout();
@@ -282,6 +282,32 @@
             this.p_Master.Name = "p_Master";
             this.p_Master.Size = new System.Drawing.Size(201, 231);
             this.p_Master.TabIndex = 3;
+            // 
+            // sideButton3
+            // 
+            this.sideButton3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.sideButton3.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(61)))), ((int)(((byte)(92)))));
+            this.sideButton3.BorderRadius = 0;
+            this.sideButton3.BorderSize = 0;
+            this.sideButton3.FlatAppearance.BorderSize = 0;
+            this.sideButton3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(105)))), ((int)(((byte)(105)))), ((int)(((byte)(105)))));
+            this.sideButton3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.sideButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.sideButton3.ForeColor = System.Drawing.Color.DimGray;
+            this.sideButton3.Image = global::TcPCM_Connect.Properties.Resources.master_factor;
+            this.sideButton3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.sideButton3.Location = new System.Drawing.Point(2, 197);
+            this.sideButton3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.sideButton3.Name = "sideButton3";
+            this.sideButton3.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
+            this.sideButton3.Size = new System.Drawing.Size(196, 27);
+            this.sideButton3.TabIndex = 6;
+            this.sideButton3.Text = "   부품원가계산서";
+            this.sideButton3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.sideButton3.TextColor = System.Drawing.Color.DimGray;
+            this.sideButton3.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.sideButton3.UseVisualStyleBackColor = false;
+            this.sideButton3.Click += new System.EventHandler(this.sideButton3_Click);
             // 
             // sideButton2
             // 
@@ -506,7 +532,7 @@
             this.rjTextBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rjTextBox1.Multiline = false;
             this.rjTextBox1.Name = "rjTextBox1";
-            this.rjTextBox1.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.rjTextBox1.Padding = new System.Windows.Forms.Padding(6);
             this.rjTextBox1.PasswordChar = false;
             this.rjTextBox1.PlaceholderColor = System.Drawing.Color.DarkGray;
             this.rjTextBox1.PlaceholderText = "";
@@ -624,32 +650,6 @@
             // 
             this.tmFechaHora.Enabled = true;
             this.tmFechaHora.Tick += new System.EventHandler(this.tmFechaHora_Tick);
-            // 
-            // sideButton3
-            // 
-            this.sideButton3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.sideButton3.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(61)))), ((int)(((byte)(92)))));
-            this.sideButton3.BorderRadius = 0;
-            this.sideButton3.BorderSize = 0;
-            this.sideButton3.FlatAppearance.BorderSize = 0;
-            this.sideButton3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(105)))), ((int)(((byte)(105)))), ((int)(((byte)(105)))));
-            this.sideButton3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.sideButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.sideButton3.ForeColor = System.Drawing.Color.DimGray;
-            this.sideButton3.Image = global::TcPCM_Connect.Properties.Resources.master_factor;
-            this.sideButton3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.sideButton3.Location = new System.Drawing.Point(2, 197);
-            this.sideButton3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.sideButton3.Name = "sideButton3";
-            this.sideButton3.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
-            this.sideButton3.Size = new System.Drawing.Size(196, 27);
-            this.sideButton3.TabIndex = 6;
-            this.sideButton3.Text = "   협력사";
-            this.sideButton3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.sideButton3.TextColor = System.Drawing.Color.DimGray;
-            this.sideButton3.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.sideButton3.UseVisualStyleBackColor = false;
-            this.sideButton3.Click += new System.EventHandler(this.sideButton3_Click);
             // 
             // frmMain
             // 

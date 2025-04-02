@@ -36,14 +36,16 @@ namespace TcPCM_Connect_Global
                     foreach(string config in MasterData.Machine.machineDetailList)
                     {
                         if (row.Cells["설비명"].Value == null || string.IsNullOrEmpty(row.Cells["설비명"].Value?.ToString())) continue;
-                        
+
                         if (config.Contains("설비명"))
                         {
                             item.Add("Unique identifier", $"{row.Cells[MasterData.Machine.designation1].Value}");
                             detailitem.Add("Unique identifier", $"{row.Cells[MasterData.Machine.designation1].Value}");
                         }
-                        else if(config.Contains("최대 톤수"))
+                        else if (config == "업체명") continue;
+                        else if (config.Contains("최대 톤수"))
                         {
+                            item.Add("최대톤수", $"{global.ConvertDouble( row.Cells[MasterData.Machine.maxClampingForce].Value)}");
                             if (!string.IsNullOrEmpty(row.Cells[MasterData.Machine.maxClampingForce].Value?.ToString()))
                             {
                                 item["Unique identifier"] += $"_{row.Cells[MasterData.Machine.maxClampingForce].Value}";
@@ -60,7 +62,7 @@ namespace TcPCM_Connect_Global
                         }
                         else if (config.Contains("설비구분"))
                         {
-                            item.Add("설비구분",row.Cells[MasterData.Machine.manufacturer].Value?.ToString());
+                            item.Add("설비구분", row.Cells[MasterData.Machine.manufacturer].Value?.ToString());
                         }
                         else if (config.Contains("전력소비율"))
                         {
@@ -74,7 +76,7 @@ namespace TcPCM_Connect_Global
                         }
                         else
                         {
-                            detailitem.Add(config,row.Cells[config].Value?.ToString());
+                            detailitem.Add(config, row.Cells[config].Value?.ToString());
                         }
                     }
                     item.Add("Designation", $"[DYA]{item["Unique identifier"]}");

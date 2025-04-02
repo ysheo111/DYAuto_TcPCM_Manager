@@ -91,21 +91,23 @@ namespace TcPCM_Connect
             string inputString = "", searchQuery = "", havingQuery = ""; ;
             inputString = searchButton1.text;
 
-            searchQuery = @"select DateValidFrom As 'Valid From', Currencies.IsoCode AS '통화', BDSegments.UniqueKey AS '업종',
+            searchQuery = @"select DateValidFrom As 'Valid From', Currencies.IsoCode AS '통화', BDSegments.UniqueKey AS '업종',[MDAssetHeaderPropertyValues].[DecimalValue] as '최대 톤수',
 	                            MDAssetHeaders.UniqueKey As '설비명', Manufacturers.Name As '설비구분', 
 	                            MAX(CASE WHEN CostElementDefinition.UniqueKey like '%machine%value%' THEN MDAssetDetailInvests.Price END) AS '설비가',
 	                            DepreciationTime AS '기계상각년수', RequiredSpaceGross AS '설치면적', ConnectedLoad /1000 As '전력용량', PowerOnTimeRate * 100 AS '전력소비율',
 	                            MAX(CASE WHEN CostElementDefinition.UniqueKey like '%other%machine%' THEN MDAssetDetailInvests.Price END) AS '기타 비용', OtherFixCostsRate AS '내용년수'
+                                
                             from MDAssetDetails
 	                            join Currencies on CurrencyId = Currencies.Id
 	                            join BDSegments on SegmentId = BDSegments.Id
 	                            join MDAssetHeaders on AssetHeaderId = MDAssetHeaders.Id
+                                left join [MDAssetHeaderPropertyValues] on MDAssetHeaders.Id = [MDAssetHeaderPropertyValues].[AssetHeaderId] and [MDAssetHeaderPropertyValues].[ClassificationPropertyId] = 703
 	                            left Join Manufacturers on Manufacturers.id = MDAssetHeaders.ManufacturerId
 	                            Join MDAssetDetailInvests on MDAssetDetailInvests.AssetDetailId = MDAssetDetails.Id
 	                            join CostElementDefinition on CostElementDefinition.id = MDAssetDetailInvests.CostElementDefinitionId
-                            where AssetHeaderId in (select id from MDAssetHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%')";
+                            where MDAssetDetails.AssetHeaderId in (select id from MDAssetHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%')";
             havingQuery = @" Group BY Manufacturers.Name,MDAssetHeaders.UniqueKey,DateValidFrom, Currencies.IsoCode,
-	                        PowerOnTimeRate,RequiredSpaceGross,ConnectedLoad,BDSegments.UniqueKey,OtherFixCostsRate,DepreciationTime";
+	                        PowerOnTimeRate,RequiredSpaceGross,ConnectedLoad,BDSegments.UniqueKey,OtherFixCostsRate,DepreciationTime,[MDAssetHeaderPropertyValues].[DecimalValue]";
             
             if (!string.IsNullOrEmpty(inputString))
             {
@@ -118,7 +120,7 @@ namespace TcPCM_Connect
 
             DataTable dataTable = global_DB.MutiSelect(searchQuery, (int)global_DB.connDB.PCMDB);
             if (dataTable == null) return;
-
+            double maxPress = 0;
             foreach (DataRow row in dataTable.Rows)
             {
                 dgv_Machine.Rows.Add();
@@ -126,7 +128,11 @@ namespace TcPCM_Connect
                 foreach (DataColumn col in dataTable.Columns)
                 {
                     string result = row[col].ToString();
-
+                    if (col.ColumnName == "최대 톤수")
+                    {
+                        maxPress = global.ConvertDouble(result);
+                        continue;
+                    }
                     int count = dataTable.Columns.Count - (dataTable.Columns.Count - i++);
                     if (col.ColumnName == "설비명")
                     {
@@ -140,12 +146,22 @@ namespace TcPCM_Connect
                         else if (aa.Length == 3)
                         {
                             dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["설비명"].Value = aa[0];
-                            dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["최대 톤수"].Value = aa[1];
-                            dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].Value = aa[2];
+                            if (global.ConvertDouble(aa[1]) != 0)
+                            {
+                                dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["최대 톤수"].Value = aa[1];
+                            }
+                           else dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].Value = aa[1] +"_"+ aa[2];
                         }
                         else if (aa.Length > 3)
                         {
-                            if (int.TryParse(aa[1], out int num))
+                            if(maxPress>0)
+                            {
+                                string[] split = result.Split(maxPress.ToString().ToCharArray());
+                                dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["설비명"].Value = split[0];
+                                dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["최대 톤수"].Value = maxPress;
+                                dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["사양 정보"].Value = split[1].Replace(maxPress.ToString()+"_","");
+                            }
+                            else if (int.TryParse(aa[1], out int num))
                             {
                                 dgv_Machine.Rows[dgv_Machine.Rows.Count - 2].Cells["최대 톤수"].Value = aa[1];
                                 for (int a = 2; a < aa.Length; a++)
@@ -278,7 +294,15 @@ namespace TcPCM_Connect
             dgv_Machine.Columns.Add(MasterData.Machine.designation1, MasterData.Machine.designation1);
             dgv_Machine.Columns.Add(MasterData.Machine.maxClampingForce, MasterData.Machine.maxClampingForce);
             dgv_Machine.Columns.Add(MasterData.Machine.maker, MasterData.Machine.maker);
-            dgv_Machine.Columns.Add(MasterData.Machine.manufacturer, MasterData.Machine.manufacturer);
+
+            DataGridViewComboBoxColumn com = new DataGridViewComboBoxColumn();
+            com.Items.Add("");
+            com.Items.Add("범용");
+            com.Items.Add("전용");
+            com.Items.Add("대여");
+            com.Name = com.HeaderText = MasterData.Machine.manufacturer;
+
+            dgv_Machine.Columns.Add(com);
             dgv_Machine.Columns.Add(MasterData.Machine.acquisition, MasterData.Machine.acquisition);
             dgv_Machine.Columns[MasterData.Machine.acquisition].DefaultCellStyle.Format = "N2";
             dgv_Machine.Columns.Add(MasterData.Machine.imputed, MasterData.Machine.imputed);
