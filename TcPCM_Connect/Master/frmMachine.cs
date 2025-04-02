@@ -94,7 +94,7 @@ namespace TcPCM_Connect
             searchQuery = @"select DateValidFrom As 'Valid From', Currencies.IsoCode AS '통화', BDSegments.UniqueKey AS '업종',
 	                            MDAssetHeaders.UniqueKey As '설비명', Manufacturers.Name As '설비구분', 
 	                            MAX(CASE WHEN CostElementDefinition.UniqueKey like '%machine%value%' THEN MDAssetDetailInvests.Price END) AS '설비가',
-	                            DepreciationTime AS '기계상각년수', RequiredSpaceGross AS '설치면적', ConnectedLoad * 1000 As '전력용량', PowerOnTimeRate * 100 AS '전력소비율',
+	                            DepreciationTime AS '기계상각년수', RequiredSpaceGross AS '설치면적', ConnectedLoad /1000 As '전력용량', PowerOnTimeRate * 100 AS '전력소비율',
 	                            MAX(CASE WHEN CostElementDefinition.UniqueKey like '%other%machine%' THEN MDAssetDetailInvests.Price END) AS '기타 비용', OtherFixCostsRate AS '내용년수'
                             from MDAssetDetails
 	                            join Currencies on CurrencyId = Currencies.Id
