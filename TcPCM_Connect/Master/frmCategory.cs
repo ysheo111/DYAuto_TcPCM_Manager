@@ -176,12 +176,15 @@ namespace TcPCM_Connect
 
             if (columnName == "작업일수")
             {
-                RegionAdd("지역");
                 ValidFromAdd("Valid From");
+                RegionAdd("지역");
                 SegmentAdd("업종");
                 dgv_Category.Columns.Add("연간 작업 일수", "연간 작업 일수");
-                dgv_Category.Columns.Add("Shift", "Shift");
+                dgv_Category.Columns["연간 작업 일수"].Tag = "Siemens.TCPCM.MasterData.CostFactor.Common.ProductionWeeksPerYear";
                 dgv_Category.Columns.Add("Shift 당 작업 시간", "Shift 당 작업 시간");
+                dgv_Category.Columns["Shift 당 작업 시간"].Tag = "Siemens.TCPCM.MasterData.CostFactor.Common.ProductionHoursPerShift";
+                dgv_Category.Columns.Add("Shift", "Shift");
+                dgv_Category.Columns["Shift"].Tag = "Siemens.TCPCM.MasterData.CostFactor.Common.ShiftsPerProductionDay";
             }
             else if (columnName == "공간 생산 비용")
             {

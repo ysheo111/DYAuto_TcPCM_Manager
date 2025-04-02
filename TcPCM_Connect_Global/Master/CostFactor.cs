@@ -62,9 +62,9 @@ namespace TcPCM_Connect_Global
                         break;
                     }
 
-                    if (col.Name.Contains("연간 작업 일수"))
-                        item.Add(col.Name, global.ConvertDouble(row.Cells[col.Name].Value) * global.ConvertDouble(row.Cells["Shift 당 작업 시간"].Value) * global.ConvertDouble(row.Cells["Shift"].Value));
-                    else if (col.Name.Contains("Labor"))
+                    //if (col.Name.Contains("연간 작업 일수"))
+                    //    item.Add(col.Name, global.ConvertDouble(row.Cells[col.Name].Value) * global.ConvertDouble(row.Cells["Shift 당 작업 시간"].Value) * global.ConvertDouble(row.Cells["Shift"].Value));
+                    if (col.Name.Contains("Labor"))
                     {
                         JObject addictionalItem = new JObject(item);
                         string categoryName = $"Siemens.TCPCM.MasterData.CostFactor.Common.LaborBurdenShift{System.Text.RegularExpressions.Regex.Match(col.Name, @"\d+").Value}";
@@ -88,9 +88,20 @@ namespace TcPCM_Connect_Global
                         else
                             item.Add(col.Name, $"[DYA]{row.Cells[col.Name].Value}");
                     }
-                    else if ((name == "공간 생산 비용" || name == "직접임률2") && col.Name.Contains("업종"))
+                    else if ((name == "공간 생산 비용" || name == "직접임률2" || name == "작업일수") && col.Name.Contains("업종"))
                     {
                         item.Add(col.Name, $"{row.Cells["지역"].Value}||{row.Cells[col.Name].Value}");
+                    }
+                    else if (col.Name == "연간 작업 일수" || col.Name == "Shift 당 작업 시간" || col.Name == "Shift")
+                    {
+                        JObject newItem = (JObject)item.DeepClone();
+                        newItem.Add("Cost factor designation", col.Tag?.ToString());
+                        newItem.Add("Value", row.Cells[col.Name].Value?.ToString());
+                        if (col.Name == "Shift 당 작업 시간")
+                            newItem.Add("Unit", "h");
+                        else
+                            newItem.Add("Unit", "1");
+                        if (nullCheck) category.Add(newItem);
                     }
                     else
                         item.Add(col.Name, row.Cells[col.Name].Value?.ToString());
@@ -100,33 +111,39 @@ namespace TcPCM_Connect_Global
                     item.Add("Value", global.ConvertDouble(item["건축비"]) * global.ConvertDouble(item["부대설비비율"]) / 100/ global.ConvertDouble(item["내용년수"]));
                     item.Add("comment", $"{row.Cells["부대설비비율"].Value}_{row.Cells["건축비"].Value}_{row.Cells["내용년수"].Value}");
                 }
-
+                if( name == "작업일수")
+                {
+                    double value = global.ConvertDouble(row.Cells["연간 작업 일수"].Value) * global.ConvertDouble(row.Cells["shift 당 작업 시간"].Value) * global.ConvertDouble(row.Cells["Shift"].Value);
+                    item.Add("Cost factor designation", "Siemens.TCPCM.MasterData.CostFactor.Common.ProductionHoursPerYear");
+                    item.Add("Value", value);
+                    item.Add("Unit", "h");
+                }
                 if (nullCheck) category.Add(item);
             }
             string err = null;
 
 
-            if (name == "작업일수")
-            {
-                err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, new JObject
-                {
-                    { "Data", category },
-                    { "ConfigurationGuid", global_iniLoad.GetConfig(className, "작업일수") }
-                }), err);
+            //if (name == "작업일수")
+            //{
+            //    err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, new JObject
+            //    {
+            //        { "Data", category },
+            //        { "ConfigurationGuid", global_iniLoad.GetConfig(className, "작업일수") }
+            //    }), err);
 
-                err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, new JObject
-                {
-                    { "Data", category },
-                    { "ConfigurationGuid", global_iniLoad.GetConfig(className, "작업시간") }
-                }), err);
+            //    err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, new JObject
+            //    {
+            //        { "Data", category },
+            //        { "ConfigurationGuid", global_iniLoad.GetConfig(className, "작업시간") }
+            //    }), err);
 
-                err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, new JObject
-                {
-                    { "Data", category },
-                    { "ConfigurationGuid", global_iniLoad.GetConfig(className, "Shift") }
-                }), err);
+            //    err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, new JObject
+            //    {
+            //        { "Data", category },
+            //        { "ConfigurationGuid", global_iniLoad.GetConfig(className, "Shift") }
+            //    }), err);
 
-            }
+            //}
             if(className == "ExchangeRate")
             {
                 JObject postData = new JObject
