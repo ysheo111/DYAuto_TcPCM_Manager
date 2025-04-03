@@ -526,7 +526,10 @@ namespace TcPCM_Connect
                                 FROM MDCostFactorDetails
                                     LEFT join BDRegions ON RegionId = BDRegions.Id
                                     LEFT join BDSegments ON SegmentId = BDSegments.Id
-                                where CostFactorHeaderId IN(16,12,13)";
+                                where CostFactorHeaderId IN(16,12,13)
+                                And DateValidFrom is not null
+                                And BDRegions.UniqueKey is not null
+                                And BDSegments.UniqueKey is not null";
                 Bselect = " GROUP BY DateValidFrom, BDRegions.UniqueKey, BDSegments.UniqueKey";
                 searchQuery = Aselect + Bselect;
             }
@@ -728,7 +731,6 @@ namespace TcPCM_Connect
 
         private void CellReadOnly()
         {
-            //string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
             List<string> UniqueColumns = new List<string> { "Valid From", "지역", "Plant", "업종" };
             foreach(DataGridViewRow row in dgv_Category.Rows)
             {
