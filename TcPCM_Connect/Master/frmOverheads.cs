@@ -301,7 +301,7 @@ namespace TcPCM_Connect
             dgv_Overheads.Rows.Clear();
 
             string columnName = cb_Classification.SelectedItem == null ? "사내 재료관리비율" : cb_Classification.SelectedItem.ToString();
-            string inputString = "", searchQuery = "", groupQuery = "", aQuery = "";
+            string inputString = "", searchQuery = "", groupQuery = "", aQuery = "", bQuery = "";
             inputString = searchButton1.text;
 
             if(columnName == "사내 재료관리비율")
@@ -364,7 +364,7 @@ namespace TcPCM_Connect
 		                                LEFT join BDRegions ON RegionId = BDRegions.Id
 		                                LEFT join BDPlants ON D.PlantId = BDPlants.Id
 	                                where IncreaseRateHeaderId IN(3,5,8,9,11)";
-                groupQuery = @" GROUP BY DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey
+                bQuery = @" GROUP BY DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey
                                 ), B AS(
 	                                SELECT DateValidFrom, BDRegions.UniqueKey As Region, BDPlants.UniqueKey As Plant,
 	                                MAX(CASE WHEN OverheadHeaderID = 18 THEN Value END) AS 금융비율,
@@ -373,8 +373,8 @@ namespace TcPCM_Connect
 	                                LEFT join BDRegions ON RegionId = BDRegions.Id
 	                                LEFT join BDPlants ON D.PlantId = BDPlants.Id
 	                                where OverheadHeaderID IN(15,18)
-	                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'
-	                                GROUP BY DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey
+	                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
+                groupQuery = @" GROUP BY DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey
                                 ) Select
                                 COALESCE(A.DateValidFrom,B.DateValidFrom) AS DateValidFrom,
                                 COALESCE(A.Region,B.Region) AS UniqueKey,
@@ -386,7 +386,8 @@ namespace TcPCM_Connect
                                 A.경비율,
                                 B.금융비율,
                                 B.법인세
-                                From A Full Outer Join B on A.DateValidFrom = B.DateValidFrom";
+                                From A Full Outer Join B on A.DateValidFrom = B.DateValidFrom
+                                And A.Region = B.Region And A.Plant = B.Plant";
             }
             else if (columnName == "Overheads")
             {
@@ -423,8 +424,9 @@ namespace TcPCM_Connect
                 }
                 else if (columnName == "년간손익분석")
                 {
-                    searchQuery = $@"{aQuery} AND( BDRegions.UniqueKey like N'%{inputString}%'
-                                    OR BDPlants.UniqueKey like N'%{inputString}%') {groupQuery}";
+                    string searchText = $@"AND( BDRegions.UniqueKey like N'%{inputString}%'
+                                    OR BDPlants.UniqueKey like N'%{inputString}%')";
+                    searchQuery = $@"{aQuery} {searchText} {bQuery} {searchText}  {groupQuery}";
                 }
                 else if (columnName == "Overheads")
                 {
@@ -438,7 +440,7 @@ namespace TcPCM_Connect
                 if (columnName == "경제성 검토" || columnName == "Overheads")
                     searchQuery += groupQuery;
                 else if (columnName == "년간손익분석")
-                    searchQuery = aQuery + groupQuery;
+                    searchQuery = aQuery + bQuery + groupQuery;
             }
 
             if (!string.IsNullOrEmpty(searchQuery))
