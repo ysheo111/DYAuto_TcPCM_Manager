@@ -83,8 +83,6 @@ namespace TcPCM_Connect
 
         private void btn_Save_Click(object sender, EventArgs e)
         {
-            CellReadOnly();
-            return;
             Thread splashthread = new Thread(new ThreadStart(LoadingScreen.ShowSplashScreen));
             splashthread.IsBackground = true;
             splashthread.Start();
