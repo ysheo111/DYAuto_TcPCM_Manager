@@ -517,6 +517,19 @@ namespace TcPCM_Connect
 	                                select Id from MDCostFactorHeaders where UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Common.ProductionSpaceCosts'
                                 )";
             }
+            else if (columnName == "작업일수")
+            {
+                Aselect = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDSegments.UniqueKey,
+                                    MAX(CASE WHEN CostFactorHeaderId = 16 THEN NonPriceValue END) AS '연간 작업 일수',
+                                    MAX(CASE WHEN CostFactorHeaderId = 12 THEN NonPriceValue/3600 END) AS 'Shift 당 작업 시간',
+                                    MAX(CASE WHEN CostFactorHeaderId = 13 THEN NonPriceValue END) AS 'Shift'
+                                FROM MDCostFactorDetails
+                                    LEFT join BDRegions ON RegionId = BDRegions.Id
+                                    LEFT join BDSegments ON SegmentId = BDSegments.Id
+                                where CostFactorHeaderId IN(16,12,13)";
+                Bselect = " GROUP BY DateValidFrom, BDRegions.UniqueKey, BDSegments.UniqueKey";
+                searchQuery = Aselect + Bselect;
+            }
                 //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
@@ -547,6 +560,13 @@ namespace TcPCM_Connect
                                                 or CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
                     if (!string.IsNullOrEmpty(detailQuery))
                         searchQuery += $" AND {detailQuery}";
+                }
+                else if (columnName == "작업일수")
+                {
+                    searchQuery = $@"{Aselect} And (BDRegions.UniqueKey like N'%{inputString}%' or BDSegments.UniqueKey like N'%{inputString}%')";
+                    if(!string.IsNullOrEmpty(detailQuery))
+                        searchQuery += $" And {detailQuery}";
+                    searchQuery += Bselect;
                 }
             }
             else if (!string.IsNullOrEmpty(detailQuery))
