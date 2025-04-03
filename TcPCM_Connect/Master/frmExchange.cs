@@ -33,7 +33,6 @@ namespace TcPCM_Connect
 
             dgv_ExchangeRate.Columns["Valid_From"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
             dgv_ExchangeRate.Columns["Valid_From"].Name = "Valid From";
-            dgv_ExchangeRate.Columns["Valid_From"].SortMode = DataGridViewColumnSortMode.Programmatic;
 
             ((DataGridViewComboBoxColumn)dgv_ExchangeRate.Columns["구분자"]).DataSource = new List<string> { "계획환율", "실적환율" };
             dgv_ExchangeRate.Columns["구분자"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);

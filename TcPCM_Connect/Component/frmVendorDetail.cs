@@ -41,7 +41,9 @@ namespace TcPCM_Connect.Component
         }
         private void LoadMaterial()
         {
-            string query = $@"SELECT * FROM VendorMaterial where VendorInfoId = {infoId}";
+            string query = $@"SELECT id,VendorInfoId,[품번],[품명],[공급기준],[재질],[두께],[가로],[세로],[단위],[원재료단가],[Q'TY]
+                        ,[폐기물처리비],[NET중량],[투입중량],[SCRAP단가],[비고]
+                        FROM VendorMaterial where VendorInfoId = {infoId}";
             DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
 
             if (dataTable == null) return;
@@ -51,7 +53,11 @@ namespace TcPCM_Connect.Component
             dgv_VendorMaterial.Columns["VendorInfoId"].Visible = false;
             dgv_VendorMaterial.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            query = $@"SELECT * FROM VendorManufacturing where VendorInfoId = {infoId}";
+            query = $@"SELECT id,VendorInfoId,[외주가공비],[외주개수],[외주가공명],[공정명],[품번],[업종],[작업자수]
+                        ,[표준작업],[CVT],[Q'TY],[효율],[임율],[건물내용년수],[기계명],[년간가동일],[일일가동시간]
+                        ,[설비취득가],[내용년수],[기계투영면적],[부대설비비율],[건축비],[수선비율],[전력용량],[전력단가]
+                        ,[전력소비율],[기타설비내용년수],[간접경비율],[건물상각비],[투입비용],[비고]
+                    FROM VendorManufacturing where VendorInfoId = {infoId}";
             dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
 
             if (dataTable == null) return;

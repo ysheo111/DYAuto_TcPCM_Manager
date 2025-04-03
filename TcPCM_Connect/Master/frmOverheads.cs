@@ -70,7 +70,11 @@ namespace TcPCM_Connect
                 string err = overheads.Import("Overheads", columnName, dgv_Overheads);
 
                 if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                {
+                    CellReadOnly();
+                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Overheads", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                } 
             }
             catch
             {
@@ -78,6 +82,22 @@ namespace TcPCM_Connect
             }
 
             LoadingScreen.CloseSplashScreen();
+        }
+        private void CellReadOnly()
+        {
+            List<string> UniqueColumns = new List<string> { "Valid From", "지역", "Plant", "업종", "Incoterms" };
+            foreach (DataGridViewRow row in dgv_Overheads.Rows)
+            {
+                if (row.IsNewRow) continue;
+                foreach (DataGridViewColumn col in dgv_Overheads.Columns)
+                {
+                    if (UniqueColumns.Contains(col.Name))
+                    {
+                        dgv_Overheads.Rows[row.Index].Cells[col.Name].ReadOnly = true;
+                        dgv_Overheads.Rows[row.Index].Cells[col.Name].Style.BackColor = Color.LightGray;
+                    }
+                }
+            }
         }
 
         private void btn_Configuration_Click(object sender, EventArgs e)
@@ -219,7 +239,7 @@ namespace TcPCM_Connect
             combo.FlatStyle = FlatStyle.Flat;
             combo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Overheads.Columns.Add(combo);
-            if ((cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString()) == "판매관리비율")
+            if ((cb_Classification.SelectedItem == null ? "사내 재료관리비율" : cb_Classification.SelectedItem.ToString()) == "판매관리비율")
             {
                 ((DataGridViewComboBoxColumn)dgv_Overheads.Columns["Incoterms"]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
                 dgv_Overheads.Columns["Incoterms"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
@@ -264,7 +284,8 @@ namespace TcPCM_Connect
                     if (value >= 0 && value < 1)
                         percentValue = (value * 100).ToString();
                 }
-                dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = $"{percentValue}%";
+                if(!string.IsNullOrEmpty(percentValue))
+                    dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = $"{percentValue}%";
             }
 
             global.MasterDataValiding((DataGridView)sender, e);
@@ -279,48 +300,145 @@ namespace TcPCM_Connect
         {
             dgv_Overheads.Rows.Clear();
 
-            string columnName = cb_Classification.SelectedItem == null ? "재료관리비율" : cb_Classification.SelectedItem.ToString();
-            string inputString = "", searchQuery = "";
+            string columnName = cb_Classification.SelectedItem == null ? "사내 재료관리비율" : cb_Classification.SelectedItem.ToString();
+            string inputString = "", searchQuery = "", groupQuery = "", aQuery = "";
             inputString = searchButton1.text;
 
-            if(columnName == "재료관리비율")
-                searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDSegments.UniqueKey, Value
-                                as name FROM MDOverheadDetails
-                                LEFT join BDRegions ON RegionId = BDRegions.Id
-                                LEFT join BDSegments ON SegmentId = BDSegments.Id
+            if(columnName == "사내 재료관리비율")
+                searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, Value
+                                FROM MDOverheadDetails
+                                    LEFT join BDRegions ON RegionId = BDRegions.Id
+                                    LEFT join BDPlants ON PlantId = BDPlants.Id
                                 where OverheadHeaderID
                                 IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%재료 관리비%')
-                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
+                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'
+                                And SegmentId is null";
+            else if (columnName == "사외 재료관리비율")
+                searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDSegments.UniqueKey, Value
+                                FROM MDOverheadDetails
+                                    LEFT join BDRegions ON RegionId = BDRegions.Id
+                                    LEFT join BDSegments ON SegmentId = BDSegments.Id
+                                where OverheadHeaderID
+                                    IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%재료 관리비%')
+                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'
+                                And SegmentId is not null";
             else if(columnName == "판매관리비율")
                 searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, BDCustomers.UniqueKey, Value
-                                as name FROM MDOverheadDetails
-                                LEFT join BDRegions ON RegionId = BDRegions.Id
-                                LEFT join BDPlants ON MDOverheadDetails.PlantId = BDPlants.Id
-                                LEFT join BDCustomers ON CustomerId = BDCustomers.Id
+                                FROM MDOverheadDetails
+                                    LEFT join BDRegions ON RegionId = BDRegions.Id
+                                    LEFT join BDPlants ON MDOverheadDetails.PlantId = BDPlants.Id
+                                    LEFT join BDCustomers ON CustomerId = BDCustomers.Id
                                 where OverheadHeaderID
-                                IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%판관비율%')
+                                    IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%판관비율%')
                                 And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
             else if (columnName == "재료 Loss율")
                 searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, Value
-                                as name FROM MDOverheadDetails
-                                LEFT join BDRegions ON RegionId = BDRegions.Id
-                                LEFT join BDPlants ON MDOverheadDetails.PlantId = BDPlants.Id
+                                FROM MDOverheadDetails
+                                    LEFT join BDRegions ON RegionId = BDRegions.Id
+                                    LEFT join BDPlants ON MDOverheadDetails.PlantId = BDPlants.Id
                                 where OverheadHeaderID
-                                IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%Loss율%')
+                                    IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%Loss율%')
                                 And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
             else if (columnName == "경제성 검토")
-                searchQuery = @"";
+            {
+                searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey,
+                                    MAX(CASE WHEN OverheadHeaderID = 13 THEN Value END) AS WACC,
+                                    MAX(CASE WHEN OverheadHeaderID = 14 THEN Value END) AS 법인세,
+                                    MAX(CASE WHEN OverheadHeaderID = 17 THEN Value END) AS 운전자금
+                                FROM MDOverheadDetails D
+                                    LEFT join BDRegions ON RegionId = BDRegions.Id
+                                    LEFT join BDPlants ON D.PlantId = BDPlants.Id
+                                where OverheadHeaderID IN(13,14,17)";
+                groupQuery = " GROUP BY DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey";
+            }
             else if (columnName == "년간손익분석")
-                searchQuery = @"";
-            else
-                searchQuery = @"";
+            {
+                aQuery = @"With A AS(
+	                                select DateValidFrom, BDRegions.UniqueKey As Region, BDPlants.UniqueKey As Plant,
+	                                MAX(CASE WHEN IncreaseRateHeaderId = 3 THEN Value END) AS '판가 A/CR율',
+	                                MAX(CASE WHEN IncreaseRateHeaderId = 5 THEN Value END) AS '구매 A/CR율',
+	                                MAX(CASE WHEN IncreaseRateHeaderId = 8 THEN Value END) AS 직접노무비율,
+	                                MAX(CASE WHEN IncreaseRateHeaderId = 9 THEN Value END) AS 간접노무비율,
+	                                MAX(CASE WHEN IncreaseRateHeaderId = 11 THEN Value END) AS 경비율
+	                                from MDIncreaseRateDetails D
+		                                LEFT join BDRegions ON RegionId = BDRegions.Id
+		                                LEFT join BDPlants ON D.PlantId = BDPlants.Id
+	                                where IncreaseRateHeaderId IN(3,5,8,9,11)";
+                groupQuery = @" GROUP BY DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey
+                                ), B AS(
+	                                SELECT DateValidFrom, BDRegions.UniqueKey As Region, BDPlants.UniqueKey As Plant,
+	                                MAX(CASE WHEN OverheadHeaderID = 18 THEN Value END) AS 금융비율,
+	                                MAX(CASE WHEN OverheadHeaderID = 15 THEN Value END) AS 법인세
+	                                FROM MDOverheadDetails D
+	                                LEFT join BDRegions ON RegionId = BDRegions.Id
+	                                LEFT join BDPlants ON D.PlantId = BDPlants.Id
+	                                where OverheadHeaderID IN(15,18)
+	                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'
+	                                GROUP BY DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey
+                                ) Select
+                                COALESCE(A.DateValidFrom,B.DateValidFrom) AS DateValidFrom,
+                                COALESCE(A.Region,B.Region) AS UniqueKey,
+                                COALESCE(A.Plant,B.Plant) AS UniqueKey,
+                                A.[판가 A/CR율],
+                                A.[구매 A/CR율],
+                                A.직접노무비율,
+                                A.간접노무비율,
+                                A.경비율,
+                                B.금융비율,
+                                B.법인세
+                                From A Full Outer Join B on A.DateValidFrom = B.DateValidFrom";
+            }
+            else if (columnName == "Overheads")
+            {
+                searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDSegments.UniqueKey,
+                                    MAX(CASE WHEN OverheadHeaderID = 3 THEN Value END) AS '간접 경비율',
+                                    MAX(CASE WHEN OverheadHeaderID = 4 THEN Value END) AS '일반 관리비율',
+                                    MAX(CASE WHEN OverheadHeaderID = 8 THEN Value END) AS 이윤율
+                                FROM MDOverheadDetails D
+                                    LEFT join BDRegions ON RegionId = BDRegions.Id
+                                    LEFT join BDSegments ON D.SegmentId = BDSegments.Id
+                                where OverheadHeaderID IN(3,4,8)
+                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
+                groupQuery = " GROUP BY DateValidFrom, BDRegions.UniqueKey, BDSegments.UniqueKey";
+            }
 
             //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
-                searchQuery = searchQuery + $@" AND( CAST(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
-                                                OR CAST(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
-                                                OR CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
+                if (columnName == "사내 재료관리비율" || columnName == "재료 Loss율")
+                    searchQuery += $@" AND( CAST(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                    OR CAST(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
+                else if (columnName == "사외 재료관리비율")
+                    searchQuery += $@" AND( CAST(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                    OR CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
+                else if (columnName == "판매관리비율")
+                    searchQuery += $@" AND( CAST(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                    OR CAST(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                    OR CAST(BDCustomers.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
+                else if(columnName == "경제성 검토")
+                {
+                    searchQuery += $@" AND( CAST(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                    OR CAST(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')
+                                    {groupQuery}";
+                }
+                else if (columnName == "년간손익분석")
+                {
+                    searchQuery = $@"{aQuery} AND( BDRegions.UniqueKey like N'%{inputString}%'
+                                    OR BDPlants.UniqueKey like N'%{inputString}%') {groupQuery}";
+                }
+                else if (columnName == "Overheads")
+                {
+                    searchQuery += $@" AND( CAST(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%'
+                                    OR CAST(BDSegments.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')
+                                    {groupQuery}";
+                }
+            }
+            else
+            {
+                if (columnName == "경제성 검토" || columnName == "Overheads")
+                    searchQuery += groupQuery;
+                else if (columnName == "년간손익분석")
+                    searchQuery = aQuery + groupQuery;
             }
 
             if (!string.IsNullOrEmpty(searchQuery))
