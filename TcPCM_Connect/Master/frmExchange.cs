@@ -137,7 +137,7 @@ namespace TcPCM_Connect
         private void SearchMethod(string detailQuery)
         {
             dgv_ExchangeRate.Rows.Clear();
-            string inputString = "", searchQuery = "";
+            string inputString = "", searchQuery = "", status = "";
             inputString = searchButton1.text;
 
             //전체 검색
@@ -150,14 +150,31 @@ namespace TcPCM_Connect
 
             if (!string.IsNullOrEmpty(inputString) && !string.IsNullOrEmpty(detailQuery))//검색 값 있고 상세 검색O
             {
-                searchQuery += $@" And {detailQuery}
+                if ("실적환율".Contains(inputString) && !"계획환율".Contains(inputString))
+                    searchQuery += $@" And {detailQuery} And BDState.UniqueKey = N'%M%'";
+                else if ("계획환율".Contains(inputString) && !"실적환율".Contains(inputString))
+                    searchQuery += $@" And {detailQuery} And BDState.UniqueKey = N'%T%'";
+                else if ("계획환율".Contains(inputString) && "실적환율".Contains(inputString))
+                    searchQuery += $@" And {detailQuery} And BDState.UniqueKey like N'%%'";
+                else
+                    searchQuery += $@" And {detailQuery}
                             And ( CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                            or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%' )";
+                            or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%')";
             }
             else if (!string.IsNullOrEmpty(inputString) && string.IsNullOrEmpty(detailQuery))//검색 값 있고 상세 검색X
             {
-                searchQuery += $@" And ( CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
-                             or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%' ) ";
+                if ("실적환율".Contains(inputString) && !"계획환율".Contains(inputString))
+                    searchQuery += $@" And BDState.UniqueKey = N'M'";
+                else if ("계획환율".Contains(inputString) && !"실적환율".Contains(inputString))
+                    searchQuery += $@" And BDState.UniqueKey = N'T'";
+                else if ("계획환율".Contains(inputString) && "실적환율".Contains(inputString))
+                    searchQuery += $@" And BDState.UniqueKey like N'%%'";
+                else
+                    searchQuery += $@" And ( CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                            or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%')";
+                //searchQuery += $@" And ( CAST(MDExchangeRateHeaders.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%'
+                //            or Cast(Currencies.IsoCode AS NVARCHAR(MAX)) like N'%{inputString}%'
+                //            or Cast(BDState.UniqueKey AS NVARCHAR(MAX)) like N'%{status}%') ";
             }
             else if (string.IsNullOrEmpty(inputString) && !string.IsNullOrEmpty(detailQuery))//검색 값 없고 상세 검색O
             {

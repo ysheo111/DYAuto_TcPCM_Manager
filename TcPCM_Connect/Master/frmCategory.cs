@@ -429,6 +429,7 @@ namespace TcPCM_Connect
                 Bselect = $@"), B AS( SELECT top 1 d.Value * 3600 * 1000 as name, d.*
                               FROM[TcPCM2312_Patch3].[dbo].[MDCostFactorHeaders] as h
                           join[TcPCM2312_Patch3].[dbo].[MDCostFactorDetails] as d on h.ID = d.CostFactorHeaderId
+                          JOIN BDRegions ON RegionId = BDRegions.Id
                           where h.UniqueKey = 'Siemens.TCPCM.MasterData.CostFactor.Carbon.RateForEnergy.Electricity'
                                 and RegionId = (select Id from BDRegions where UniqueKey = 'Siemens.TCPCM.Region.Common.SouthKorea')";
 
@@ -522,7 +523,7 @@ namespace TcPCM_Connect
                 if (columnName == "지역")
                     searchQuery = searchQuery + $" And(Cast(Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%' or Cast(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
                 else if(columnName == "Plant")
-                    searchQuery = searchQuery + $" And(Cast(BDPlants.Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%' or Cast(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
+                    searchQuery = searchQuery + $" And(Cast(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%' or Cast(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
                 else if (columnName == "업종")
                     searchQuery = searchQuery + $" And UniqueKey LIKE N'%{inputString}%'";
                 else if (columnName == "단위")

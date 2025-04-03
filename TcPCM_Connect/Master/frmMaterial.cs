@@ -446,8 +446,10 @@ namespace TcPCM_Connect
             dgv_Material.DataSource = null;
             dgv_Material.Rows.Clear();
             btn_DBLoad.Visible = false;
+            searchButton1.Visible = true;
             if (combo.SelectedItem?.ToString() == "Sprue")
             {
+                searchButton1.Visible = false;
                 //string query = $@"SELECT DISTINCT UniqueKey as '업종' FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
                 string query = $@"SELECT 업종,반영율*100 as 반영율 FROM [PCI].[dbo].[Sprue]";
 
@@ -810,7 +812,8 @@ namespace TcPCM_Connect
                     {
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].Value = result;
                     }
-                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey") || col.ColumnName.Contains("Region") || col.ColumnName.Contains("소재명"))
+                    if (col.ColumnName.Contains("Valid") || col.ColumnName.Contains("UniqueKey") || col.ColumnName.Contains("Region") || col.ColumnName.Contains("소재명") ||
+                        col.ColumnName.Contains("지역") || col.ColumnName.Contains("품번") || col.ColumnName.Contains("두께") || col.ColumnName.Contains("type") || columnName.Contains("SAP 구매단가"))
                     {
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].ReadOnly = true;
                         dgv_Material.Rows[dgv_Material.Rows.Count - 2].Cells[count].Style.BackColor = Color.LightGray;
