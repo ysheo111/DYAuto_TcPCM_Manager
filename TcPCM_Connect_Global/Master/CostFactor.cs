@@ -122,28 +122,6 @@ namespace TcPCM_Connect_Global
             }
             string err = null;
 
-
-            //if (name == "작업일수")
-            //{
-            //    err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, new JObject
-            //    {
-            //        { "Data", category },
-            //        { "ConfigurationGuid", global_iniLoad.GetConfig(className, "작업일수") }
-            //    }), err);
-
-            //    err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, new JObject
-            //    {
-            //        { "Data", category },
-            //        { "ConfigurationGuid", global_iniLoad.GetConfig(className, "작업시간") }
-            //    }), err);
-
-            //    err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, new JObject
-            //    {
-            //        { "Data", category },
-            //        { "ConfigurationGuid", global_iniLoad.GetConfig(className, "Shift") }
-            //    }), err);
-
-            //}
             if(className == "ExchangeRate")
             {
                 JObject postData = new JObject
