@@ -268,7 +268,11 @@ namespace TcPCM_Connect
                     }
                 }
                 if (!string.IsNullOrEmpty(err)) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "마그넷 와이어", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "마그넷 와이어", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                {
+                    CellReadOnly();
+                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "마그넷 와이어", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                } 
             }
             catch
             {
@@ -299,7 +303,11 @@ namespace TcPCM_Connect
                 string err = material.Import(type, dgv_Material);
 
                 if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "Material", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Material", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                {
+                    CellReadOnly();
+                    CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "Material", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                } 
             }
             catch
             {
@@ -307,6 +315,23 @@ namespace TcPCM_Connect
             }
             dgv_Material.AllowUserToAddRows = true;
             LoadingScreen.CloseSplashScreen();
+        }
+        private void CellReadOnly()
+        {
+            List<string> UniqueColumns = new List<string> { "Valid From", "재질명", "GRADE", "지역", "Plant", "업종", "소재명", "품번", "두께", "type" };
+
+            foreach (DataGridViewRow row in dgv_Material.Rows)
+            {
+                if (row.IsNewRow) continue;
+                foreach (DataGridViewColumn col in dgv_Material.Columns)
+                {
+                    if (UniqueColumns.Contains(col.Name))
+                    {
+                        dgv_Material.Rows[row.Index].Cells[col.Name].ReadOnly = true;
+                        dgv_Material.Rows[row.Index].Cells[col.Name].Style.BackColor = Color.LightGray;
+                    }
+                }
+            }
         }
         private void isSubstance()
         {
