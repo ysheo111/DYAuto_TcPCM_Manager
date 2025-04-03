@@ -473,7 +473,7 @@ namespace TcPCM_Connect
                             join BDPlants ON COALESCE(A.PlantId, B.PlantId) = BDPlants.Id
                             join Currencies ON COALESCE(A.CurrencyId, B.CurrencyId) = Currencies.Id
                             join BDSegments ON COALESCE(A.SegmentId, B.SegmentId) = BDSegments.Id
-                            where BDPlants.UniqueKey = BDRegions.UniqueKey ";
+                            where BDPlants.UniqueKey = BDRegions.UniqueKey  and (BDRegions.UniqueKey like N'%{inputString}%' or BDSegments.UniqueKey like N'%{inputString}%')";
             }
             else if (columnName == "사내 임률")
             {
@@ -501,7 +501,7 @@ namespace TcPCM_Connect
                             join BDRegions ON COALESCE(A.RegionId, B.RegionId) = BDRegions.Id
                             join BDPlants ON COALESCE(A.PlantId, B.PlantId) = BDPlants.Id
                             join Currencies ON COALESCE(A.CurrencyId, B.CurrencyId) = Currencies.Id
-                            where BDPlants.UniqueKey <> BDRegions.UniqueKey";
+                            where BDPlants.UniqueKey <> BDRegions.UniqueKey and (BDRegions.UniqueKey like N'%{inputString}%' or BDPlants.UniqueKey like N'%{inputString}%')";
             }
             else if (columnName == "공간 생산 비용")
             {
