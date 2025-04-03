@@ -119,13 +119,18 @@ namespace TcPCM_Connect_Global
                 worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.rnd);
                 worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.packageTransport);
                 worksheet.Cells[row, excelCol++].Value = global.ZeroToNull(part.summary.etc);
-
+                int minus = 0;
                 //원/부재료           
                 for (int i = 0; i < part.material.Count; i++)
                 {
-                    row = 25 + i;
+                    if (part.material[i].qunantityUnit == null || part.material[i].qunantityUnit?.ToString().Length <= 0)
+                    {
+                        minus++;
+                        continue;
+                    }
+                    row = 25 + i- minus;
                     excelCol = 2;
-                    if(i > 25)
+                    if(i - minus > 25)
                     {
                         ((Excel.Range)worksheet.Rows[row]).Insert(Missing.Value, worksheet.Rows[row - 1]);
 
@@ -161,15 +166,15 @@ namespace TcPCM_Connect_Global
                 //가공비        
                 for (int i = 0; i < part.manufacturing.Count; i++)
                 {
-                    row = 57 +(part.material.Count > 26 ? part.material.Count - 26 : 0)+ i;
+                    row = 57 +(part.material.Count-minus > 26 ? part.material.Count - minus - 26 : 0)+ i;
                     int row2 = 8 + i;
                     excelCol = 2;
-                    if (i > 32)
+                    if (i > 31)
                     {
-                        ((Excel.Range)worksheet.Rows[row]).Insert(Missing.Value, worksheet.Rows[row - 1]);
+                        ((Excel.Range)worksheet.Rows[row]).Insert(Missing.Value, worksheet.Rows[row - 2]);
 
-                        worksheet.Range[worksheet.Cells[row - 1, excelCol], worksheet.Cells[row - 1, 23]].Copy();
-                        worksheet.Range[worksheet.Cells[row, excelCol], worksheet.Cells[row, 23]].PasteSpecial(Excel.XlPasteType.xlPasteFormats);
+                        worksheet.Range[worksheet.Cells[row - 2, excelCol], worksheet.Cells[row - 2, 23]].Copy();
+                        worksheet.Range[worksheet.Cells[row-1, excelCol], worksheet.Cells[row-1, 23]].PasteSpecial(Excel.XlPasteType.xlPasteFormats);
                         worksheet.Application.CutCopyMode = 0;
                     }
 
