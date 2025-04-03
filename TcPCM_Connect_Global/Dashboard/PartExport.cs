@@ -143,7 +143,14 @@ namespace TcPCM_Connect_Global
 
                         MemberInfo[] memberInfos = typeof(Report.Material).GetMembers(BindingFlags.Static | BindingFlags.Public);
                         SetMembers(memberInfos, values, typeof(Part.Material), material);
-                        if (values[Report.LineType.method]?.ToString().Contains("rough") == true)
+                        if (values[Report.LineType.source]?.ToString().Contains("Calculation") != true && values[Report.Material.unit]?.ToString().Contains("g") == false)
+                        {
+                            material.unitCost = global.ConvertDouble(values[Report.Material.rawMaterial]);
+                            material.grossWeight = 1;
+                            material.qunantityUnit = material.priceUnit = values[Report.Material.unit]?.ToString();
+                            material.netWeight = null;
+                        }
+                        else if (values[Report.LineType.method]?.ToString().Contains("rough") == true)
                         {
                             material.unitCost = global.ConvertDouble(values[Report.Material.rawMaterial]);
                             material.grossWeight = null;
@@ -175,6 +182,7 @@ namespace TcPCM_Connect_Global
                         MemberInfo[] manufacturingMember = typeof(Report.Manufacturing).GetMembers(BindingFlags.Static | BindingFlags.Public);
                         SetMembers(manufacturingMember, values, typeof(Part.Manufacturing), manufacturing);
                         manufacturing.quantity = global.ConvertDouble(values["Q'TY 공정[1]"]);
+                        manufacturing.cycletime = global.ConvertDouble(values["표준작업"]);
                         //manufacturing.manufacturingName = 
                         part.manufacturing.Add(manufacturing);
                     }
