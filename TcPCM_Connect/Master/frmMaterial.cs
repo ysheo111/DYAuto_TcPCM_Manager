@@ -691,7 +691,7 @@ namespace TcPCM_Connect
             }
             else if (columnName == "마그넷 와이어")
             {
-                searchQuery = "select ValidFrom,가공비,두께,type from [PCI].[dbo].[MD_MagnetWire]";
+                searchQuery = "select ValidFrom,type,두께,가공비 from [PCI].[dbo].[MD_MagnetWire]";
             }
             else if(columnName == "단가 관리")
             {
