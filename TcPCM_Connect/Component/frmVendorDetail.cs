@@ -16,6 +16,8 @@ namespace TcPCM_Connect.Component
     public partial class frmVendorDetail : Form
     {
         public string infoId = "";
+        private DataTable MaterialDT;
+        private DataTable ManufacturingDT;
         public frmVendorDetail()
         {
             InitializeComponent();
@@ -28,27 +30,41 @@ namespace TcPCM_Connect.Component
         private void btn_Create_Click(object sender, EventArgs e)
         {
             string query = "";
-
+            List<string> valueList = new List<string>();
             foreach (DataGridViewRow row in dgv_VendorMaterial.Rows)
             {
-                if (row.Cells[""].Value == null) continue;
+                if (row.IsNewRow) continue;
+                if (row.Cells["Id"].Value == null) continue;
+
                 query += $@"";
             }
-            global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
-            LoadMaterial();
-            CustomMessageBox.RJMessageBox.Show("수정이 완료 되었습니다.", "VendorPart"
-                , MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if(valueList.Count > 0)
+            {
+                global_DB.ScalarExecute(query, (int)global_DB.connDB.selfDB);
+                LoadMaterial();
+                CustomMessageBox.RJMessageBox.Show("수정이 완료 되었습니다.", "VendorPart" , MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        private void Update()
+        {
+            DataTable modifyRows = MaterialDT.GetChanges(DataRowState.Modified);
+            if (modifyRows == null || modifyRows.Rows.Count == 0) return;
+            foreach(DataRow row in modifyRows.Rows)
+            {
+
+            }
         }
         private void LoadMaterial()
         {
             string query = $@"SELECT id,VendorInfoId,[품번],[품명],[공급기준],[재질],[두께],[가로],[세로],[단위],[원재료단가],[Q'TY]
                         ,[폐기물처리비],[NET중량],[투입중량],[SCRAP단가],[비고]
                         FROM VendorMaterial where VendorInfoId = {infoId}";
-            DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
+            //DataTable dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
+            MaterialDT = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
 
-            if (dataTable == null) return;
+            if (MaterialDT == null) return;
             dgv_VendorMaterial.Columns.Clear();
-            dgv_VendorMaterial.DataSource = dataTable;
+            dgv_VendorMaterial.DataSource = MaterialDT;
             dgv_VendorMaterial.Columns["Id"].Visible = false;
             dgv_VendorMaterial.Columns["VendorInfoId"].Visible = false;
             dgv_VendorMaterial.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -59,11 +75,11 @@ namespace TcPCM_Connect.Component
                         ,[전력소비율],[기타설비내용년수],[간접경비율],[건물상각비],[투입비용],[비고]
                     FROM VendorManufacturing where VendorInfoId = {infoId}";
             //,[외주가공비],[외주개수],[외주가공명]
-            dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
+            ManufacturingDT = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
 
-            if (dataTable == null) return;
+            if (ManufacturingDT == null) return;
             dgv_VendorManufacturing.Columns.Clear();
-            dgv_VendorManufacturing.DataSource = dataTable;
+            dgv_VendorManufacturing.DataSource = ManufacturingDT;
             dgv_VendorManufacturing.Columns["Id"].Visible = false;
             dgv_VendorManufacturing.Columns["VendorInfoId"].Visible = false;
             dgv_VendorManufacturing.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;

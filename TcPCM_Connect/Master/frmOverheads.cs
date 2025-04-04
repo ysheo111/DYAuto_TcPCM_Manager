@@ -86,7 +86,7 @@ namespace TcPCM_Connect
         }
         private void CellReadOnly()
         {
-            List<string> UniqueColumns = new List<string> { "Valid From", "지역", "Plant", "업종", "Incoterms" };
+            List<string> UniqueColumns = new List<string> { "Valid From", "지역", "Plant", "업종", "Customer" };
             foreach (DataGridViewRow row in dgv_Overheads.Rows)
             {
                 if (row.IsNewRow) continue;
@@ -141,9 +141,9 @@ namespace TcPCM_Connect
                 ValidFromAdd("Valid From");
                 RegionAdd("지역");
                 PlantAdd("Plant");
-                SegmentAdd("Incoterms");
+                SegmentAdd("Customer");
                 dgv_Overheads.Columns.Add("판매관리비율", "판매관리비율");
-                dgv_Overheads.Columns["판매관리비율"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts03";
+                dgv_Overheads.Columns["판매관리비율"].Tag = "3535D7C2-C797-4203-9160-E007E14BF5FE";
                 //dgv_Overheads.Columns["판매관리비율"].DefaultCellStyle.Format = "N2";
             }
             else if (columnName == "재료 Loss율")
@@ -244,8 +244,8 @@ namespace TcPCM_Connect
             dgv_Overheads.Columns.Add(combo);
             if ((cb_Classification.SelectedItem == null ? "사내 재료관리비율" : cb_Classification.SelectedItem.ToString()) == "판매관리비율")
             {
-                ((DataGridViewComboBoxColumn)dgv_Overheads.Columns["Incoterms"]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
-                dgv_Overheads.Columns["Incoterms"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
+                ((DataGridViewComboBoxColumn)dgv_Overheads.Columns["Customer"]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDCustomers where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+                dgv_Overheads.Columns["Customer"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
             }
             else
             {
@@ -346,12 +346,12 @@ namespace TcPCM_Connect
                                 And SegmentId is not null";
             else if(columnName == "판매관리비율")
                 searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, BDCustomers.UniqueKey, Value
-                                FROM MDOverheadDetails
+                                FROM MDIncreaseRateDetails
                                     LEFT join BDRegions ON RegionId = BDRegions.Id
-                                    LEFT join BDPlants ON MDOverheadDetails.PlantId = BDPlants.Id
+                                    LEFT join BDPlants ON MDIncreaseRateDetails.PlantId = BDPlants.Id
                                     LEFT join BDCustomers ON CustomerId = BDCustomers.Id
-                                where OverheadHeaderID
-                                    IN(select id from MDOverheadHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%판관비율%')
+                                where IncreaseRateHeaderId
+                                    IN(select id from MDIncreaseRateHeaders where CAST(Name_LOC AS NVARCHAR(MAX)) like N'%판관비율%')
                                 And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
             else if (columnName == "재료 Loss율")
                 searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey, Value
