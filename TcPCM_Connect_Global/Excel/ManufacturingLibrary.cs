@@ -14,7 +14,7 @@ namespace TcPCM_Connect_Global
         JArray AllCategory = new JArray();
 
         string[] dArray = { "설비명", "공정 형태", "Cycle time", "Cavity", "Set-up time", "Utilization ratio" };
-        string[] rArray = { "설비명", "Number of workers" };
+        string[] rArray = { "설비명", "Number of workers", "  Column1" };
         string[] aArray = { "설비명", "기계명", "Number of Machine", "설비가", "설치면적", "전력량", "전력소비율", "설비내용년수", "수선/개조비", "설비구분" };
 
         public string ExcelOpen()
@@ -238,7 +238,9 @@ namespace TcPCM_Connect_Global
                     }
                     else
                         category.Add(MakeJArray(values[i], item, allArray, aArray, "A"));
-
+                    item.Add("Column1", "직접노무비");
+                    category.Add(MakeJArray(values[i], item, allArray, rArray, "R"));
+                    item["Column1"] = "경비";
                     category.Add(MakeJArray(values[i], item, allArray, rArray, "R"));
                 }
             }

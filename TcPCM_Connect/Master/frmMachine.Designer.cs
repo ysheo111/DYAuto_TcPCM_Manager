@@ -249,6 +249,7 @@
             this.dgv_Machine.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Machine_CellValueChanged);
             this.dgv_Machine.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_Machine_ColumnHeaderMouseClick);
             this.dgv_Machine.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Machine_DataError);
+            this.dgv_Machine.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_Machine_RowPostPaint);
             // 
             // btn_Create
             // 

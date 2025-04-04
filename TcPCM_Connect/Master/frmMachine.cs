@@ -270,6 +270,7 @@ namespace TcPCM_Connect
         private void dgv_Machine_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            if (dgv_Machine.Columns[e.ColumnIndex].Name == "내용년수") return;
 
             global.MasterDataValiding((DataGridView)sender, e);
         }
@@ -332,6 +333,23 @@ namespace TcPCM_Connect
                 ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
 
             dgv_Machine.Tag = Tuple.Create(columnName, ascending);
+        }
+
+        private void dgv_Machine_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            string rowNumber = (e.RowIndex + 1).ToString();
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                dgv_Machine.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(rowNumber,
+                dgv_Machine.Font,
+                SystemBrushes.ControlText,
+                headerBounds,
+                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
         }
     }
 }

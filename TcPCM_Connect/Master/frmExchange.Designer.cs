@@ -38,17 +38,17 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dgv_ExchangeRate = new System.Windows.Forms.DataGridView();
+            this.Valid_From = new TcPCM_Connect.CalendarColumn();
+            this.구분자 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.이름 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.통화 = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.환율 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.roundBorderPanel2 = new TcPCM_Connect.RoundBorderPanel();
             this.btn_ExcelCreate = new CustomControls.RJControls.RJButton();
             this.searchButton1 = new TcPCM_Connect.Controller.SearchButton();
             this.btn_Configuration = new CustomControls.RJControls.RJButton();
             this.btn_Save = new CustomControls.RJControls.RJButton();
             this.btn_Create = new CustomControls.RJControls.RJButton();
-            this.Valid_From = new TcPCM_Connect.CalendarColumn();
-            this.구분자 = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.이름 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.통화 = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.환율 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ExchangeRate)).BeginInit();
             this.roundBorderPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -122,6 +122,59 @@
             this.dgv_ExchangeRate.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_ExchangeRate_CellValueChanged);
             this.dgv_ExchangeRate.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_ExchangeRate_ColumnHeaderMouseClick);
             this.dgv_ExchangeRate.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_ExchangeRate_DataError);
+            this.dgv_ExchangeRate.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_ExchangeRate_RowPostPaint);
+            // 
+            // Valid_From
+            // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Valid_From.DefaultCellStyle = dataGridViewCellStyle3;
+            this.Valid_From.HeaderText = "Valid From";
+            this.Valid_From.MinimumWidth = 6;
+            this.Valid_From.Name = "Valid_From";
+            this.Valid_From.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Valid_From.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.Valid_From.ToolTipText = "유효 날짜에 입력한 다음날 부터 해당 데이터가 적용됩니다.";
+            this.Valid_From.Width = 200;
+            // 
+            // 구분자
+            // 
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.구분자.DefaultCellStyle = dataGridViewCellStyle4;
+            this.구분자.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.구분자.HeaderText = "구분자";
+            this.구분자.MinimumWidth = 6;
+            this.구분자.Name = "구분자";
+            this.구분자.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.구분자.Width = 120;
+            // 
+            // 이름
+            // 
+            this.이름.HeaderText = "이름";
+            this.이름.MinimumWidth = 6;
+            this.이름.Name = "이름";
+            this.이름.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.이름.Width = 260;
+            // 
+            // 통화
+            // 
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.통화.DefaultCellStyle = dataGridViewCellStyle5;
+            this.통화.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.통화.HeaderText = "통화";
+            this.통화.MinimumWidth = 6;
+            this.통화.Name = "통화";
+            this.통화.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.통화.Width = 200;
+            // 
+            // 환율
+            // 
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.환율.DefaultCellStyle = dataGridViewCellStyle6;
+            this.환율.HeaderText = "환율";
+            this.환율.MinimumWidth = 6;
+            this.환율.Name = "환율";
+            this.환율.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.환율.Width = 200;
             // 
             // roundBorderPanel2
             // 
@@ -250,58 +303,6 @@
             this.btn_Create.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(116)))), ((int)(((byte)(71)))));
             this.btn_Create.UseVisualStyleBackColor = false;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
-            // 
-            // Valid_From
-            // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Valid_From.DefaultCellStyle = dataGridViewCellStyle3;
-            this.Valid_From.HeaderText = "Valid From";
-            this.Valid_From.MinimumWidth = 6;
-            this.Valid_From.Name = "Valid_From";
-            this.Valid_From.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Valid_From.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.Valid_From.ToolTipText = "유효 날짜에 입력한 다음날 부터 해당 데이터가 적용됩니다.";
-            this.Valid_From.Width = 200;
-            // 
-            // 구분자
-            // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.구분자.DefaultCellStyle = dataGridViewCellStyle4;
-            this.구분자.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.구분자.HeaderText = "구분자";
-            this.구분자.MinimumWidth = 6;
-            this.구분자.Name = "구분자";
-            this.구분자.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.구분자.Width = 120;
-            // 
-            // 이름
-            // 
-            this.이름.HeaderText = "이름";
-            this.이름.MinimumWidth = 6;
-            this.이름.Name = "이름";
-            this.이름.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.이름.Width = 260;
-            // 
-            // 통화
-            // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.통화.DefaultCellStyle = dataGridViewCellStyle5;
-            this.통화.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.통화.HeaderText = "통화";
-            this.통화.MinimumWidth = 6;
-            this.통화.Name = "통화";
-            this.통화.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.통화.Width = 200;
-            // 
-            // 환율
-            // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.환율.DefaultCellStyle = dataGridViewCellStyle6;
-            this.환율.HeaderText = "환율";
-            this.환율.MinimumWidth = 6;
-            this.환율.Name = "환율";
-            this.환율.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.환율.Width = 200;
             // 
             // frmExchange
             // 

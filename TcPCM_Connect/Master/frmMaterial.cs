@@ -691,7 +691,7 @@ namespace TcPCM_Connect
             }
             else if (columnName == "마그넷 와이어")
             {
-                searchQuery = "select ValidFrom,가공비,두께,type from [PCI].[dbo].[MD_MagnetWire]";
+                searchQuery = "select ValidFrom,type,두께,가공비 from [PCI].[dbo].[MD_MagnetWire]";
             }
             else if(columnName == "단가 관리")
             {
@@ -936,6 +936,23 @@ namespace TcPCM_Connect
                 ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
 
             dgv_Material.Tag = Tuple.Create(columnName, ascending);
+        }
+
+        private void dgv_Material_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            string rowNumber = (e.RowIndex + 1).ToString();
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                dgv_Material.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(rowNumber,
+                dgv_Material.Font,
+                SystemBrushes.ControlText,
+                headerBounds,
+                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
         }
     }
 }

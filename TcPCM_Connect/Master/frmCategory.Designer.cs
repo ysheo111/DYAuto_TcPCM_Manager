@@ -137,7 +137,8 @@
             "공간 생산 비용",
             "전력단가",
             "사내 임률",
-            "사외 임률"});
+            "사외 임률",
+            "경비"});
             this.cb_Classification.ListBackColor = System.Drawing.Color.White;
             this.cb_Classification.ListTextColor = System.Drawing.Color.DimGray;
             this.cb_Classification.Location = new System.Drawing.Point(87, 24);
@@ -260,7 +261,9 @@
             this.dgv_Category.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_Category_CellFormatting);
             this.dgv_Category.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Category_CellValueChanged);
             this.dgv_Category.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_Category_ColumnHeaderMouseClick);
+            this.dgv_Category.CurrentCellDirtyStateChanged += new System.EventHandler(this.dgv_Category_CurrentCellDirtyStateChanged);
             this.dgv_Category.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Category_DataError);
+            this.dgv_Category.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_Category_RowPostPaint);
             this.dgv_Category.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dgv_Category_RowsAdded);
             // 
             // btn_Create
