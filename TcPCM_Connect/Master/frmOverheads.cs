@@ -161,8 +161,8 @@ namespace TcPCM_Connect
                 PlantAdd("Plant");
                 dgv_Overheads.Columns.Add("WACC", "WACC");
                 dgv_Overheads.Columns["WACC"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts09";
-                dgv_Overheads.Columns.Add("법인세", "법인세");
-                dgv_Overheads.Columns["법인세"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts05";
+                //dgv_Overheads.Columns.Add("법인세", "법인세");
+                //dgv_Overheads.Columns["법인세"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts05";
                 dgv_Overheads.Columns.Add("운전 자금", "운전 자금");
                 dgv_Overheads.Columns["운전 자금"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts12";
             }
@@ -183,6 +183,8 @@ namespace TcPCM_Connect
                 dgv_Overheads.Columns["경비율"].Tag = "A3AB6096-159C-419A-89A3-C821818D5226";//Siemens.TCPCM.CostType.Machinecosts";
                 dgv_Overheads.Columns.Add("금융비율", "금융비율");
                 dgv_Overheads.Columns["금융비율"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts02";
+                dgv_Overheads.Columns.Add("로열티", "로열티");
+                dgv_Overheads.Columns["로열티"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts04";
                 dgv_Overheads.Columns.Add("법인세", "법인세");
                 dgv_Overheads.Columns["법인세"].Tag = "Siemens.TCPCM.CostType.OtherOverheadCosts10";
             }
@@ -363,12 +365,12 @@ namespace TcPCM_Connect
             {
                 searchQuery = @"SELECT DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey,
                                     MAX(CASE WHEN OverheadHeaderID = 13 THEN Value END) AS WACC,
-                                    MAX(CASE WHEN OverheadHeaderID = 14 THEN Value END) AS 법인세,
                                     MAX(CASE WHEN OverheadHeaderID = 17 THEN Value END) AS 운전자금
                                 FROM MDOverheadDetails D
                                     LEFT join BDRegions ON RegionId = BDRegions.Id
                                     LEFT join BDPlants ON D.PlantId = BDPlants.Id
-                                where OverheadHeaderID IN(13,14,17)";
+                                where OverheadHeaderID IN(13,17)";
+                                    //MAX(CASE WHEN OverheadHeaderID = 14 THEN Value END) AS 법인세,
                 groupQuery = " GROUP BY DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey";
             }
             else if (columnName == "년간손익분석")
@@ -388,11 +390,12 @@ namespace TcPCM_Connect
                                 ), B AS(
 	                                SELECT DateValidFrom, BDRegions.UniqueKey As Region, BDPlants.UniqueKey As Plant,
 	                                MAX(CASE WHEN OverheadHeaderID = 18 THEN Value END) AS 금융비율,
+	                                MAX(CASE WHEN OverheadHeaderID = 22 THEN Value END) AS 로열티,
 	                                MAX(CASE WHEN OverheadHeaderID = 15 THEN Value END) AS 법인세
 	                                FROM MDOverheadDetails D
 	                                LEFT join BDRegions ON RegionId = BDRegions.Id
 	                                LEFT join BDPlants ON D.PlantId = BDPlants.Id
-	                                where OverheadHeaderID IN(15,18)
+	                                where OverheadHeaderID IN(15,18,22)
 	                                And CAST(BDRegions.Name_LOC AS NVARCHAR(MAX)) like N'%[[DYA]]%'";
                 groupQuery = @" GROUP BY DateValidFrom, BDRegions.UniqueKey, BDPlants.UniqueKey
                                 ) Select
@@ -516,6 +519,23 @@ namespace TcPCM_Connect
         {
             if (dgv_Overheads.IsCurrentCellDirty)
                 dgv_Overheads.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
+
+        private void dgv_Overheads_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            string rowNumber = (e.RowIndex + 1).ToString();
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                dgv_Overheads.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(rowNumber,
+                dgv_Overheads.Font,
+                SystemBrushes.ControlText,
+                headerBounds,
+                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
         }
     }
 }

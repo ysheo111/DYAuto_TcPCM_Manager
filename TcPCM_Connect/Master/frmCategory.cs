@@ -227,6 +227,14 @@ namespace TcPCM_Connect
                 dgv_Category.Columns.Add("직접임률", "직접임률");
                 dgv_Category.Columns["직접임률"].DefaultCellStyle.Format = "N2";
             }
+            else if(columnName == "경비")
+            {
+                ValidFromAdd("Valid From");
+                RegionAdd("지역");
+                PlantAdd("Plant");
+                CurrencyAdd("통화");
+                dgv_Category.Columns.Add("경비", "경비");
+            }
             else if (columnName == "업종")
             {
                 dgv_Category.Columns.Add("업종", "업종");
@@ -379,7 +387,7 @@ namespace TcPCM_Connect
 
                 if(value.Count != 0) dgv_Category.Rows[e.RowIndex].Cells["탄소배출량"].Value = value[0];
             }
-            else if(dgv_Category.Columns[e.ColumnIndex].Name == "지역" && columnName == "사내 임률")
+            else if(dgv_Category.Columns[e.ColumnIndex].Name == "지역" && (columnName == "사내 임률" || columnName == "경비"))
             {
                 string selectedItem = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
                 if (string.IsNullOrEmpty(selectedItem)) return;
@@ -550,12 +558,20 @@ namespace TcPCM_Connect
                 Bselect = " GROUP BY DateValidFrom, BDRegions.UniqueKey, BDSegments.UniqueKey";
                 searchQuery = Aselect + Bselect;
             }
+            else if (columnName == "경비")
+            {
+                searchQuery = @"select DateValidFrom,BDRegions.UniqueKey as Region,BDPlants.UniqueKey as Plant,Currencies.IsoCode,Value * 3600 as Value from MDCostFactorDetails
+                                left JOIN BDRegions ON RegionId = BDRegions.Id
+                                left JOIN BDPlants ON PlantId = BDPlants.Id
+                                left JOIN Currencies ON CurrencyId = Currencies.Id
+                                where CostFactorHeaderId = 52";
+            }
                 //입력값 검색
             if (!string.IsNullOrEmpty(inputString))
             {
                 if (columnName == "지역")
                     searchQuery = searchQuery + $" And(Cast(Name_LOC AS NVARCHAR(MAX)) like N'%{inputString}%' or Cast(UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
-                else if(columnName == "Plant")
+                else if(columnName == "Plant" || columnName == "경비")
                     searchQuery = searchQuery + $" And(Cast(BDRegions.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%' or Cast(BDPlants.UniqueKey AS NVARCHAR(MAX)) like N'%{inputString}%')";
                 else if (columnName == "업종")
                     searchQuery = searchQuery + $" And UniqueKey LIKE N'%{inputString}%'";
@@ -784,6 +800,23 @@ namespace TcPCM_Connect
         {
             if (dgv_Category.IsCurrentCellDirty)
                 dgv_Category.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
+
+        private void dgv_Category_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            string rowNumber = (e.RowIndex + 1).ToString();
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                dgv_Category.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(rowNumber,
+                dgv_Category.Font,
+                SystemBrushes.ControlText,
+                headerBounds,
+                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
         }
     }
 }

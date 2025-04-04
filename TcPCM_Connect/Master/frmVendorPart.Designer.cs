@@ -185,6 +185,7 @@
             this.dgv_Vendor.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_Category_CellFormatting);
             this.dgv_Vendor.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Category_CellValueChanged);
             this.dgv_Vendor.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Category_DataError);
+            this.dgv_Vendor.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_Vendor_RowPostPaint);
             this.dgv_Vendor.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dgv_Vendor_MouseDown);
             // 
             // btn_Create

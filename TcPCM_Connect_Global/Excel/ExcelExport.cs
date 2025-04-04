@@ -118,7 +118,7 @@ namespace TcPCM_Connect_Global
         {
             try
             {
-                Excel.Worksheet worksheet = workBook.Sheets.Add();
+                Excel.Worksheet worksheet = workBook.Sheets.Add(After: workBook.Sheets[workBook.Sheets.Count]);
                 worksheet.Name = sheetName;
                 worksheet.Visible = Excel.XlSheetVisibility.xlSheetVisible;
 
@@ -132,6 +132,7 @@ namespace TcPCM_Connect_Global
                 {
                     worksheet.Cells[2, i + 2] = dgv.Columns[i].Name;
                     worksheet.Cells[2, i + 2].Interior.Color = Excel.XlRgbColor.rgbLightGray;
+                    worksheet.Cells[2, i + 2].NumberFormat = "@";
 
                     for (int row = 1; row < dgv.RowCount; row++)
                     {

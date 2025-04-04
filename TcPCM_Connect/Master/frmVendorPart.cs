@@ -58,23 +58,22 @@ namespace TcPCM_Connect
                             FROM VendorInfo";
             dgv_Info = DTtoDGV(query, "Id");
 
-            query = $@"SELECT [품번],[품명],[공급기준],[재질],[두께],[가로],[세로],[단위],[원재료단가],[Q'TY]
-                        ,[폐기물처리비],[NET중량],[투입중량],[SCRAP단가],[비고]
-                    FROM VendorMaterial";
+            query = $@"SELECT VendorInfo.품번 As 'Info품번',a.[품번],a.[품명],[공급기준],[재질],[두께],[가로],[세로],[단위],
+                        [원재료단가],[Q'TY],[폐기물처리비],[NET중량],[투입중량],[SCRAP단가],a.[비고] FROM VendorMaterial a
+                    join VendorInfo on a.VendorInfoId = VendorInfo.Id";
             dgv_Material = DTtoDGV(query, "VendorInfoId");
 
-            query = $@"SELECT VendorInfo.품번,[외주가공비],[외주개수],[외주가공명],[공정명],a.[품번],a.[업종],[작업자수]
-                        ,[표준작업],[CVT],[Q'TY],[효율],[임율],[건물내용년수],[기계명],[년간가동일],[일일가동시간]
-                        ,[설비취득가],[내용년수],[기계투영면적],[부대설비비율],[건축비],[수선비율],[전력용량],[전력단가]
-                        ,[전력소비율],[기타설비내용년수],[간접경비율],[건물상각비],[투입비용],a.[비고]
+            query = $@"SELECT VendorInfo.품번 As 'Info품번',[외주가공비],[외주개수],[외주가공명],a.[비고],[공정명],a.[품번],a.[업종],[작업자수],[표준작업],[CVT],[Q'TY],[효율],[임율],
+                    [건물내용년수],[기계명],[년간가동일],[일일가동시간],[설비취득가],[내용년수],[기계투영면적],[부대설비비율],
+                    [건축비],[수선비율],[전력용량],[전력단가],[전력소비율],[기타설비내용년수],[간접경비율],[건물상각비],[투입비용]
                     FROM VendorManufacturing a
                     join VendorInfo on a.VendorInfoId = VendorInfo.Id";
             dgv_Manufacturing = DTtoDGV(query, "VendorInfoId");
 
             ExcelExport excel = new ExcelExport();
             err = excel.ExportLocationGrid(dgv_Info, "Vendor_Info");
-            excel.ExportWorkSheet(excel.WorkBook, dgv_Manufacturing, "Vendor_Manufacturing");
             excel.ExportWorkSheet(excel.WorkBook, dgv_Material, "Vendor_Material");
+            excel.ExportWorkSheet(excel.WorkBook, dgv_Manufacturing, "Vendor_Manufacturing");
 
             if (err != null) CustomMessageBox.RJMessageBox.Show($"저장을 실패하였습니다\n{err}", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else CustomMessageBox.RJMessageBox.Show("저장이 완료 되었습니다.", "부품원가계산서", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -102,7 +101,21 @@ namespace TcPCM_Connect
                     int rowIndex = dgv.Rows.Add();
                     for (int colIndex = 0; colIndex < dt.Columns.Count; colIndex++)
                     {
-                        dgv.Rows[rowIndex].Cells[colIndex].Value = dataRow[colIndex];
+                        if ((bool)dataRow[colIndex]?.ToString().Contains("||"))
+                        {
+                            string[] split = dataRow[colIndex].ToString().Split('|');
+                            dgv.Rows[rowIndex].Cells[colIndex].Value = split[split.Length - 1];
+                        }
+                        else if(dgv.Columns[colIndex].Name == "작성일")
+                        {
+                            DateTime dateTime = DateTime.Parse(dataRow[colIndex]?.ToString());
+                            string date = dateTime.ToString("yyyy-MM-dd");
+                            dgv.Rows[rowIndex].Cells[colIndex].Value = date;
+                        }
+                        else if (dataRow[colIndex]?.ToString() == "0")
+                            dgv.Rows[rowIndex].Cells[colIndex].Value = null;
+                        else
+                            dgv.Rows[rowIndex].Cells[colIndex].Value = dataRow[colIndex];
                     }
                 }
             }
@@ -285,6 +298,23 @@ namespace TcPCM_Connect
                 SearchMethod(null);
                 CustomMessageBox.RJMessageBox.Show($"삭제를 완료하였습니다", "VendorPart", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void dgv_Vendor_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            string rowNumber = (e.RowIndex + 1).ToString();
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                dgv_Vendor.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(rowNumber,
+                dgv_Vendor.Font,
+                SystemBrushes.ControlText,
+                headerBounds,
+                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
         }
     }
 }

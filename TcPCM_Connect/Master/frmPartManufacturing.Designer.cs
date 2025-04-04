@@ -135,6 +135,7 @@
             this.dgv_PartManufacturing.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_PartManufacturing_CellValueChanged);
             this.dgv_PartManufacturing.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_PartManufacturing_ColumnHeaderMouseClick);
             this.dgv_PartManufacturing.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_PartManufacturing_DataError);
+            this.dgv_PartManufacturing.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_PartManufacturing_RowPostPaint);
             this.dgv_PartManufacturing.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dgv_PartManufacturing_MouseDown);
             // 
             // btn_ExcelCreate

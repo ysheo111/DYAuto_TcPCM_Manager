@@ -287,6 +287,7 @@
             this.dgv_Material.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Material_CellValueChanged);
             this.dgv_Material.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_Material_ColumnHeaderMouseClick);
             this.dgv_Material.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Material_DataError);
+            this.dgv_Material.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_Material_RowPostPaint);
             // 
             // btn_Create
             // 

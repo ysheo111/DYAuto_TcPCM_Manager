@@ -260,6 +260,7 @@
             this.dgv_Overheads.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_Overheads_ColumnHeaderMouseClick);
             this.dgv_Overheads.CurrentCellDirtyStateChanged += new System.EventHandler(this.dgv_Overheads_CurrentCellDirtyStateChanged);
             this.dgv_Overheads.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Overheads_DataError);
+            this.dgv_Overheads.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_Overheads_RowPostPaint);
             // 
             // btn_Create
             // 

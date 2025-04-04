@@ -334,5 +334,22 @@ namespace TcPCM_Connect
 
             dgv_Machine.Tag = Tuple.Create(columnName, ascending);
         }
+
+        private void dgv_Machine_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            string rowNumber = (e.RowIndex + 1).ToString();
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                dgv_Machine.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(rowNumber,
+                dgv_Machine.Font,
+                SystemBrushes.ControlText,
+                headerBounds,
+                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+        }
     }
 }

@@ -53,11 +53,12 @@ namespace TcPCM_Connect.Component
             dgv_VendorMaterial.Columns["VendorInfoId"].Visible = false;
             dgv_VendorMaterial.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            query = $@"SELECT id,VendorInfoId,[외주가공비],[외주개수],[외주가공명],[공정명],[품번],[업종],[작업자수]
+            query = $@"SELECT id,VendorInfoId,[공정명],[품번],[업종],[작업자수]
                         ,[표준작업],[CVT],[Q'TY],[효율],[임율],[건물내용년수],[기계명],[년간가동일],[일일가동시간]
                         ,[설비취득가],[내용년수],[기계투영면적],[부대설비비율],[건축비],[수선비율],[전력용량],[전력단가]
                         ,[전력소비율],[기타설비내용년수],[간접경비율],[건물상각비],[투입비용],[비고]
                     FROM VendorManufacturing where VendorInfoId = {infoId}";
+            //,[외주가공비],[외주개수],[외주가공명]
             dataTable = global_DB.MutiSelect(query, (int)global_DB.connDB.selfDB);
 
             if (dataTable == null) return;
@@ -154,6 +155,40 @@ namespace TcPCM_Connect.Component
                 ContextMenuStrip menu = contextMenuStrip1;
                 menu.Show(MousePosition.X, MousePosition.Y);
             }
+        }
+
+        private void dgv_VendorMaterial_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            string rowNumber = (e.RowIndex + 1).ToString();
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                dgv_VendorMaterial.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(rowNumber,
+                dgv_VendorMaterial.Font,
+                SystemBrushes.ControlText,
+                headerBounds,
+                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+        }
+
+        private void dgv_VendorManufacturing_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            string rowNumber = (e.RowIndex + 1).ToString();
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                dgv_VendorManufacturing.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(rowNumber,
+                dgv_VendorManufacturing.Font,
+                SystemBrushes.ControlText,
+                headerBounds,
+                new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
         }
     }
 }
