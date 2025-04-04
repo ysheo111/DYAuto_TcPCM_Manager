@@ -21,6 +21,7 @@ namespace TcPCM_Connect
     public partial class frmOverheads : Form
     {
         public string className = "";
+        private Dictionary<string, List<string>> Plants = new Dictionary<string, List<string>>();
         public frmOverheads()
         {
             InitializeComponent();
@@ -274,7 +275,7 @@ namespace TcPCM_Connect
         private void dgv_Overheads_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
-
+            string columnName = cb_Classification.SelectedItem == null ? "사내 재료관리비율" : cb_Classification.SelectedItem.ToString();
             if (new List<string>() { "율", "WACC", "법인세", "운전 자금" }.Any(key => dgv_Overheads.Columns[e.ColumnIndex].Name.Contains(key))
                 && !dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().Contains("%"))
             {
@@ -286,6 +287,25 @@ namespace TcPCM_Connect
                 }
                 if(!string.IsNullOrEmpty(percentValue))
                     dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = $"{percentValue}%";
+            }
+            else if (dgv_Overheads.Columns[e.ColumnIndex].Name == "지역" &&
+            new List<string>(){"사내 재료관리비율","판매관리비율","재료 Loss율","경제성 검토","년간손익분석"}.Any(key => columnName.Contains(key)))
+            {
+                string selectedItem = dgv_Overheads.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
+                if (string.IsNullOrEmpty(selectedItem)) return;
+                DataGridViewComboBoxCell itemCell = dgv_Overheads.Rows[e.RowIndex].Cells["Plant"] as DataGridViewComboBoxCell;
+                if (!Plants.ContainsKey(selectedItem))
+                {
+                    string query = $"select Id from BDRegions where BDRegions.UniqueKey = N'{selectedItem}'";
+                    string id = global_DB.ScalarExecute(query, 0);
+                    query = $@"Select UniqueKey as name from BDPlants where RegionId = {id}";
+                    List<string> plantList = global_DB.ListSelect(query, 0);
+                    Plants.Add(selectedItem, plantList);
+
+                    itemCell.DataSource = Plants[selectedItem];
+                }
+                else
+                    itemCell.DataSource = Plants[selectedItem];
             }
 
             global.MasterDataValiding((DataGridView)sender, e);
@@ -490,6 +510,12 @@ namespace TcPCM_Connect
                 ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
 
             dgv_Overheads.Tag = Tuple.Create(columnName, ascending);
+        }
+
+        private void dgv_Overheads_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dgv_Overheads.IsCurrentCellDirty)
+                dgv_Overheads.CommitEdit(DataGridViewDataErrorContexts.Commit);
         }
     }
 }

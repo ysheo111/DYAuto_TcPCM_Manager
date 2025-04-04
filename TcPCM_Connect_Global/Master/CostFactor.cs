@@ -35,10 +35,13 @@ namespace TcPCM_Connect_Global
                     if(name == "Plant")
                     {
                         item.Add("지역", row.Cells["지역"].Value?.ToString());
-                        item.Add("Designation", $"[DYA]{row.Cells["Plant"].Value}");
-                        item.Add("Number", row.Cells["Plant"].Value?.ToString());
-                        item.Add("지역 영문명", $"[DYA]{row.Cells["Plant"].Value}");
+                        item.Add("Designation", row.Cells["Plant"].Value.ToString());
 
+                        if(string.IsNullOrEmpty(row.Cells["영문명"].Value?.ToString().Replace("[DYA]","")))
+                            item.Add("영문명", "");
+                        else
+                            item.Add("영문명", row.Cells["영문명"].Value.ToString());
+                        item.Add("Number", row.Cells["Plant"].Value?.ToString());
                         break;
                     }
                     if (name == "Plant2")
@@ -46,17 +49,15 @@ namespace TcPCM_Connect_Global
                         item.Add("지역", row.Cells["지역"].Value?.ToString());
                         item.Add("Designation", row.Cells["Designation"].Value?.ToString());
 
-                        if (!string.IsNullOrEmpty(row.Cells["지역 영문명"].Value?.ToString()))
+                        if (!string.IsNullOrEmpty(row.Cells["영문명"].Value?.ToString()))
                         {
-                            if (row.Cells["지역 영문명"].Value.ToString().StartsWith("[DYA]"))
-                                item.Add("지역 영문명", row.Cells["지역 영문명"].Value.ToString());
+                            if (row.Cells["영문명"].Value.ToString().StartsWith("[DYA]"))
+                                item.Add("영문명", row.Cells["영문명"].Value.ToString());
                             else
-                                item.Add("지역 영문명", $"[DYA]{row.Cells["지역 영문명"].Value}");
+                                item.Add("영문명", $"[DYA]{row.Cells["영문명"].Value}");
                         }
-                        else if(!string.IsNullOrEmpty(USDesignName) )
-                            item.Add("지역 영문명", USDesignName);
                         else
-                            item.Add("지역 영문명", null);
+                            item.Add("영문명", null);
 
                         item.Add("Number", row.Cells["지역"].Value?.ToString());
                         break;
@@ -72,7 +73,7 @@ namespace TcPCM_Connect_Global
                         addictionalItem.Add("구분", categoryName);
                         if (nullCheck) categoryLabor.Add(addictionalItem);
                     }
-                    else if (col.Name.Contains("지역 영문명") && !string.IsNullOrEmpty(item["지역"]?.ToString()) )
+                    else if (col.Name.Contains("영문명") && !string.IsNullOrEmpty(item["지역"]?.ToString()) )
                     {
                         if(row.Cells[col.Name].Value == null)
                         {
@@ -83,7 +84,7 @@ namespace TcPCM_Connect_Global
                             USDesignName = NameSplit(result);
                             item.Add(col.Name, USDesignName);
                         }
-                        else if (row.Cells["지역 영문명"].Value.ToString().StartsWith("[DYA]"))
+                        else if (row.Cells["영문명"].Value.ToString().StartsWith("[DYA]"))
                             item.Add(col.Name, row.Cells[col.Name].Value?.ToString());
                         else
                             item.Add(col.Name, $"[DYA]{row.Cells[col.Name].Value}");
@@ -180,9 +181,12 @@ namespace TcPCM_Connect_Global
 
                     if (row.Cells["지역"].Value != null) nullCheck = true;
 
-                    item.Add(name, segmant);
+                    item.Add("업종", segmant);
                     item.Add("Designation", "[DYA]" + segmant);
-                    item.Add("Plant", row.Cells["지역"].Value?.ToString());
+                    if(name == "지역")
+                        item.Add("Plant", row.Cells["지역"].Value?.ToString());
+                    else
+                        item.Add("Plant", row.Cells["Plant"].Value?.ToString());
                     if (nullCheck) category.Add(item);
                     else break;
                 }
@@ -192,7 +196,7 @@ namespace TcPCM_Connect_Global
             JObject postData = new JObject
             {
                 { "Data", category },
-                { "ConfigurationGuid", global_iniLoad.GetConfig(className, name.Replace(" ","")) }
+                { "ConfigurationGuid", global_iniLoad.GetConfig(className, "업종") }
             };
             err = WebAPI.ErrorCheck(WebAPI.POST(callUrl, postData), err);
 

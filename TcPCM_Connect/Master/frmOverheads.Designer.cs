@@ -258,6 +258,7 @@
             this.dgv_Overheads.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_Overheads_CellFormatting);
             this.dgv_Overheads.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Overheads_CellValueChanged);
             this.dgv_Overheads.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_Overheads_ColumnHeaderMouseClick);
+            this.dgv_Overheads.CurrentCellDirtyStateChanged += new System.EventHandler(this.dgv_Overheads_CurrentCellDirtyStateChanged);
             this.dgv_Overheads.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgv_Overheads_DataError);
             // 
             // btn_Create

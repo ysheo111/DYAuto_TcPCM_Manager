@@ -270,6 +270,7 @@ namespace TcPCM_Connect
         private void dgv_Machine_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            if (dgv_Machine.Columns[e.ColumnIndex].Name == "내용년수") return;
 
             global.MasterDataValiding((DataGridView)sender, e);
         }

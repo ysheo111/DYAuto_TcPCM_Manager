@@ -22,6 +22,8 @@ namespace TcPCM_Connect
     public partial class frmCategory : Form
     {
         public string className = "";
+        private Dictionary<string, List<string>> Plants = new Dictionary<string, List<string>>();
+
         public frmCategory()
         {
             InitializeComponent();
@@ -82,18 +84,18 @@ namespace TcPCM_Connect
                         {
                             string searchQuery = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
                             List<string> segmantList = global_DB.ListSelect(searchQuery, (int)global_DB.connDB.PCMDB);
-                            err = costFactor.SegmantImport("Category", "업종", dgv_Category, segmantList);
+                            err = costFactor.SegmantImport("Category", "지역", dgv_Category, segmantList);
                         }
                     }
                 }
-                if(columnName == "Plant")
+                else if(columnName == "Plant")
                 {
                     err = costFactor.Import("Category", "Plant", dgv_Category);
                     if (err == null)
                     {
                         string searchQuery = "SELECT DISTINCT UniqueKey as name FROM BDSegments WHERE UniqueKey LIKE '%[^0-9]%'";
                         List<string> segmantList = global_DB.ListSelect(searchQuery, (int)global_DB.connDB.PCMDB);
-                        err = costFactor.SegmantImport("Category", "업종", dgv_Category, segmantList);
+                        err = costFactor.SegmantImport("Category", "Plant", dgv_Category, segmantList);
                     }
                 }
                 else if (columnName == "업종")
@@ -116,12 +118,6 @@ namespace TcPCM_Connect
                             return;
                         }
                     }
-                }
-                else if(columnName == "전력단가")
-                {
-                    err = costFactor.Import("Category", columnName.Replace("4", ""), dgv_Category);
-                    //if (err == null)
-                    //    err = costFactor.Import("Category", "탄소배출량", dgv_Category);
                 }
                 else if (columnName == "사외 임률")
                 {
@@ -250,7 +246,7 @@ namespace TcPCM_Connect
             {
                 dgv_Category.Columns.Add("지역", "지역");
                 //dgv_Category.Columns.Add("Designation-US", "지역 영문명");
-                dgv_Category.Columns.Add("지역 영문명", "지역 영문명");
+                dgv_Category.Columns.Add("영문명", "지역 영문명");
                 dgv_Category.Columns.Add("Designation", "Designation");
                 dgv_Category.Columns["Designation"].Visible = false;
             }
@@ -258,6 +254,9 @@ namespace TcPCM_Connect
             {
                 RegionAdd("지역");
                 dgv_Category.Columns.Add("Plant", "Plant");
+                dgv_Category.Columns.Add("영문명", "Plant 영문명");
+                dgv_Category.Columns.Add("Designation", "Designation");
+                dgv_Category.Columns["Designation"].Visible = false;
             }
             else
                 dgv_Category.Columns.Add(columnName, columnName);
@@ -295,7 +294,8 @@ namespace TcPCM_Connect
             combo.FlatStyle = FlatStyle.Flat;
             combo.SortMode = DataGridViewColumnSortMode.Programmatic;
             dgv_Category.Columns.Add(combo);
-            ((DataGridViewComboBoxColumn)dgv_Category.Columns["Plant"]).DataSource = global_DB.ListSelect("Select UniqueKey as name From BDPlants where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'", 0);
+            string query = "Select UniqueKey as name From BDPlants where CAST(Name_LOC AS NVARCHAR(MAX)) like '%[[DYA]]%'";
+            ((DataGridViewComboBoxColumn)dgv_Category.Columns["Plant"]).DataSource = global_DB.ListSelect(query, 0);
             dgv_Category.Columns["Plant"].DefaultCellStyle.Padding = new Padding(0, 4, 0, 0);
         }
         private void SegmentAdd(string columnName)
@@ -340,12 +340,11 @@ namespace TcPCM_Connect
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
             string columnName = cb_Classification.SelectedItem == null ? "지역" : cb_Classification.SelectedItem.ToString();
             if (dgv_Category.Columns.Contains("Designation") && dgv_Category.Columns[e.ColumnIndex].Name != "Designation")
-            {
-                //if(dgv_Category.Columns[e.ColumnIndex].Name != "Designation-US")               
+            {  
                 if (columnName == "업종")
-                {
                     dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells["업종"].Value}";
-                }
+                else if (columnName == "Plant")
+                    dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells["Plant"].Value}";
                 else
                     dgv_Category.Rows[e.RowIndex].Cells["Designation"].Value = $"[DYA]{dgv_Category.Rows[e.RowIndex].Cells["지역"].Value}";
             }
@@ -379,6 +378,24 @@ namespace TcPCM_Connect
                 List<string> value = global_DB.ListSelect(query, (int)global_DB.connDB.PCMDB);
 
                 if(value.Count != 0) dgv_Category.Rows[e.RowIndex].Cells["탄소배출량"].Value = value[0];
+            }
+            else if(dgv_Category.Columns[e.ColumnIndex].Name == "지역" && columnName == "사내 임률")
+            {
+                string selectedItem = dgv_Category.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
+                if (string.IsNullOrEmpty(selectedItem)) return;
+                DataGridViewComboBoxCell itemCell = dgv_Category.Rows[e.RowIndex].Cells["Plant"] as DataGridViewComboBoxCell;
+                if (!Plants.ContainsKey(selectedItem))
+                {
+                    string query = $"select Id from BDRegions where BDRegions.UniqueKey = N'{selectedItem}'";
+                    string id = global_DB.ScalarExecute(query, 0);
+                    query = $@"Select UniqueKey as name from BDPlants where RegionId = {id}";
+                    List<string> plantList = global_DB.ListSelect(query, 0);
+                    Plants.Add(selectedItem, plantList);
+
+                    itemCell.DataSource = Plants[selectedItem];
+                }
+                else
+                    itemCell.DataSource = Plants[selectedItem];
             }
             global.MasterDataValiding((DataGridView)sender, e);
         }
@@ -761,6 +778,12 @@ namespace TcPCM_Connect
                 ascending ? ListSortDirection.Ascending : ListSortDirection.Descending);
 
             dgv_Category.Tag = Tuple.Create(columnName, ascending);
+        }
+
+        private void dgv_Category_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dgv_Category.IsCurrentCellDirty)
+                dgv_Category.CommitEdit(DataGridViewDataErrorContexts.Commit);
         }
     }
 }
