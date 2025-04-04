@@ -287,6 +287,8 @@ namespace TcPCM_Connect_Global
                 {
                     int rowIdx = 0;
                     int idx = int.Parse(row["CostElementDefinitionId"].ToString());
+                    int colIdx = ((DateTime)row["DateValidFrom"]).Year - sop;
+                    if (colIdx < 0 || colIdx >= after) continue;
 
                     if (idx == 161) rowIdx = 9;
                     else if (idx == 154) rowIdx = 12;
@@ -296,12 +298,12 @@ namespace TcPCM_Connect_Global
                     {
                         if (!profitAndLoss.ContainsKey(idx)) profitAndLoss.Add(idx, new List<double>());
                         if (global.ConvertDouble(row["ManualRate"]) != 0) profitAndLoss[idx].Add(global.ConvertDouble(row["ManualRate"]));
+
+                        if(idx == 159) increaseDataTable.Rows[12 - 4][$"Col_{colIdx}"] = row["ManualRate"];
                         continue;
                     }
-                    else continue;
+                    else continue;                   
 
-                    int colIdx = ((DateTime)row["DateValidFrom"]).Year - sop;
-                    if (colIdx < 0 || colIdx >= after) continue;
 
                     if (!profitAndLoss.ContainsKey(idx)) profitAndLoss.Add(idx, new List<double>());
                     if (global.ConvertDouble(row["ManualRate"]) != 0) profitAndLoss[idx].Add(global.ConvertDouble(row["ManualRate"]));
@@ -333,6 +335,7 @@ namespace TcPCM_Connect_Global
                     else if (idx == 421) rowIdx = 5;
                     else if (idx == 443) rowIdx = 7;
                     else if (idx == 410) rowIdx = 8;
+                    else if(idx == 161) rowIdx = 9;
                     else continue;
 
                     for (int i = 0; i < after; i++)
@@ -350,7 +353,7 @@ namespace TcPCM_Connect_Global
                 int startRow = 4;
                 int startCol = 5; // **🔥 5번째 열부터 데이터 시작**
 
-                if (increase.Rows.Count != 0)  WriteDataToExcel(increaseDataTable, worksheet2, startRow, startCol);
+                if (increaseDataTable.Rows.Count != 0 )  WriteDataToExcel(increaseDataTable, worksheet2, startRow, startCol);
 
                 // ** 🚀 한 번에 Excel에 쓰기 (DataTable → Excel) **
                 startRow = 16 + 22 * partName.Count;
@@ -394,7 +397,7 @@ namespace TcPCM_Connect_Global
                     (worksheet.Cells[24 + addRowIndex, 7], FindMostFrequents(profitAndLoss, 161)),
                     (worksheet.Cells[24 + addRowIndex, 8], FindMostFrequents(profitAndLoss, 156)),
                     (worksheet.Cells[24 + addRowIndex, 9], FindMostFrequents(profitAndLoss, 157)),
-                    (worksheet.Cells[24 + addRowIndex, 10], FindMostFrequents(profitAndLoss, 154)),
+                    (worksheet.Cells[24 + addRowIndex, 10], FindMostFrequents(profitAndLoss, 159)),
                     (worksheet.Cells[24 + addRowIndex, 11], FindMostFrequents(profitAndLoss, 152))
              };
 
@@ -426,7 +429,7 @@ namespace TcPCM_Connect_Global
             List<int> multiplierRows = Enumerable.Range(17, 21).ToList();
 
             // 1. 첫 번째 수식 (SUM)
-            string sumFormula = string.Join("+", baseRows.Select(row => $"E${row}"));
+            string sumFormula = string.Join("+", baseRows.Select(row => $"{global.NumberToLetter(5+i)}${row}"));
             //dataToFormula.Add((worksheet2.Cells[target++, i + 5], $"={sumFormula}"));
            
             formulaDataTable.Rows[target++][$"Col_{i}"] = $"={sumFormula}";
@@ -434,12 +437,12 @@ namespace TcPCM_Connect_Global
             // 2. 나머지 수식 (곱셈 및 덧셈)
             foreach (int multiplierRow in multiplierRows)
             {
-                string formulaParts = string.Join("+", baseRows.Select(row => $"E${row}*E${multiplierRow + ((row - 16) / 22) * 22}"));
+                string formulaParts = string.Join("+", baseRows.Select(row => $"{global.NumberToLetter(5 + i)}${row}*{global.NumberToLetter(5 + i)}${multiplierRow + ((row - 16) / 22) * 22}"));
 
                 if (multiplierRow == 32)
-                    formulaDataTable.Rows[target++][$"Col_{i}"] = $"=E{baseRows.Last() + 37}/E{baseRows.Last() + 23}"; 
+                    formulaDataTable.Rows[target++][$"Col_{i}"] = $"={global.NumberToLetter(5 + i)}{baseRows.Last() + 37}/{global.NumberToLetter(5 + i)}{baseRows.Last() + 23}"; 
                 else if (multiplierRow == 37)
-                    formulaDataTable.Rows[target++][$"Col_{i}"] = $"=E{baseRows.Last() + 42}/E{baseRows.Last() + 23}";
+                    formulaDataTable.Rows[target++][$"Col_{i}"] = $"={global.NumberToLetter(5 + i)}{baseRows.Last() + 42}/{global.NumberToLetter(5 + i)}{baseRows.Last() + 23}";
                 else
                     formulaDataTable.Rows[target++][$"Col_{i}"] = $"={formulaParts}";
             }
@@ -477,7 +480,9 @@ namespace TcPCM_Connect_Global
 		                                    When  ManualCycleTime = 0 or m.RequiredNumberOfMachinesInManufacturingStep = 0 then null
 		                                    WHEN UseManualMachineHourlyRate = 0 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime / m.RequiredNumberOfMachinesInManufacturingStep + [SetUpLaborCostsPerPart]+[SetUpMachineCostsPerPart] +[SetUpDirectCostsPerPart]
 		                                    WHEN UseManualMachineHourlyRate = 1 THEN MachineSystemCostsPerPart * 3600 / ManualCycleTime * ManualUtilizationRate / m.RequiredNumberOfMachinesInManufacturingStep + [SetUpLaborCostsPerPart]+[SetUpMachineCostsPerPart] +[SetUpDirectCostsPerPart]
-	                                    END ) AS MachineData
+	                                    END ) AS MachineData,
+                                        AVG(InvestMachine) as InvestMachine,
+                                        AVG(ManualDepreciationTime) as ManualDepreciationTime
 	                                    FROM  [ManufacturingSteps] as a
 	                                    left JOIN Machines AS m ON a.Id = m.ManufacturingStepId
 	                                    group by a.Id
@@ -493,6 +498,8 @@ namespace TcPCM_Connect_Global
 	                                    t.ManualInvestPerTool,
 	                                    t.CachedInvestPerTool,
 	                                    t.ToolUsageFraction*100 as new,
+                                        InvestMachine,
+                                        ManualDepreciationTime,
 	                                    t.id,
                                         p.PartNo,
                                         p.Name_LOC_Extracted,
@@ -514,7 +521,13 @@ namespace TcPCM_Connect_Global
 		                                    When  ManualCycleTime = 0 or a.ShiftsPerDay = 0 then null
 		                                    when a.ShiftModelMode=2 then (a.ShiftModelProductionTimePerYearCostFactorValue/3600/a.ShiftsPerDay)*(3600/ManualCycleTime*ManualUtilizationRate)*2
 		                                    else c.WeeksPerYear*c.TimePerShift/3600*(3600/ManualCycleTime*ManualUtilizationRate)*2
-	                                    END as '2Shift'
+	                                    END as '2Shift',
+
+										 case
+		                                    When a.ShiftsPerDay = 0 then null
+		                                    when a.ShiftModelMode=2 then (a.ShiftModelProductionTimePerYearCostFactorValue/a.ShiftsPerDay/3600)
+		                                    else  c.ShiftModelProductionTimePerYearCostFactorValue / c.ShiftsPerDay / 3600
+	                                    END as 'Shift'
 
                                     FROM  [ManufacturingSteps] as a  
                                     left Join (SELECT 
@@ -522,7 +535,9 @@ namespace TcPCM_Connect_Global
                                         MAX(CASE WHEN ld.UniqueKey = N'직접노무비' THEN ld.AvgPerson END) AS DirectPerson,
                                         MAX(CASE WHEN ld.UniqueKey = N'직접노무비' THEN ld.AvgCost END) AS DirectCost,
                                         MAX(CASE WHEN ld.UniqueKey = N'간접노무비' THEN ld.AvgPerson END) AS IndirectPerson,
-                                        MAX(CASE WHEN ld.UniqueKey = N'간접노무비' THEN ld.AvgCost END) AS IndirectCost
+                                        MAX(CASE WHEN ld.UniqueKey = N'간접노무비' THEN ld.AvgCost END) AS IndirectCost,
+                                       MAX(CASE WHEN ld.UniqueKey = N'경비' THEN ld.AvgPerson END) AS EtcPerson,
+                                        MAX(CASE WHEN ld.UniqueKey = N'경비' THEN ld.AvgCost END) AS EtcCost
                                     FROM LaborData ld
                                     GROUP BY ld.Mid) as L on L.Mid = a.Id
                                     left JOIN Machine AS m ON a.Id = m.ManufacturingStepId
@@ -545,9 +560,9 @@ namespace TcPCM_Connect_Global
                 }
                 try
                 {
-                    worksheet4.Rows[5].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 4].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("DirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("DirectCost")));
-                    worksheet4.Rows[6].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 5].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("IndirectPerson")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("IndirectCost")));
-                    worksheet4.Rows[7].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 6].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("RequiredNumberOfMachinesInManufacturingStep")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("Machine")));
+                    worksheet4.Rows[5].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 4].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("DirectCost")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("DirectCost")));
+                    worksheet4.Rows[6].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 5].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("IndirectCost")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("IndirectCost")));
+                    worksheet4.Rows[7].Cells[5].Value = worksheet.Cells[24 + addRowIndex, 6].Value = table.AsEnumerable().Where(row => global.ConvertDouble(row.Field<double?>("EtcCost")) != 0).Average(row => global.ConvertDouble(row.Field<double?>("EtcCost")));
                     worksheet.Cells[22 + addRowIndex, 9].Value = table.AsEnumerable().Average(row => global.ConvertDouble(row.Field<double?>("ManualUtilizationRate")));
 
                 }
@@ -638,7 +653,7 @@ namespace TcPCM_Connect_Global
 
                     calc = global.ConvertDouble(row["CalculationId"]);
 
-                    if (manufacturingId != global.ConvertDouble(row["ManufacturingId"]) && (row["DirectPerson"] != DBNull.Value || row["IndirectPerson"] != DBNull.Value || row["RequiredNumberOfMachinesInManufacturingStep"] != DBNull.Value))
+                    if (manufacturingId != global.ConvertDouble(row["ManufacturingId"]) && (row["DirectPerson"] != DBNull.Value || row["IndirectPerson"] != DBNull.Value || row["EtcPerson"] != DBNull.Value))
                     {
                         if (global.ConvertDouble(row["CalculationId"]) == calc && rowCount != 0)
                         {
@@ -671,38 +686,39 @@ namespace TcPCM_Connect_Global
 
                         DataRow row4 = dt.NewRow();
                         row4[-5 + 5] = row["name"];
-                        row4[-5 + 6] = row["RequiredNumberOfMachinesInManufacturingStep"];
+                        row4[-5 + 6] = row["EtcPerson"];                        
                         row4[-5 + 7] = row["ManualCycleTime"];
                         row4[-5 + 8] = row["ManualUtilizationRate"];
                         row4[-5 + 9] = $"=IF(ISERROR(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())),\"\",(3600/INDIRECT(\"G\"&ROW())*INDIRECT(\"H\"&ROW())))";
                         row4[-5 + 10] = $"=IF(ISERROR(INDIRECT(\"F\"&ROW())/ INDIRECT(\"I\"&ROW())),\"\",(INDIRECT(\"F\"&ROW())/INDIRECT(\"I\"&ROW())))";
-                        row4[-5 + 11] = row["MachineData"];
+
+                        row4[-5 + 11] = row["EtcCost"];
                         row4[-5 + 12] = $"=IF(ISERROR(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())),\"\",(INDIRECT(\"J\"&ROW())*INDIRECT(\"K\"&ROW())))";
                         dt.Rows.InsertAt(row4, 4 + rowCount * 3);
 
                         rowCount++;
                     }
                     manufacturingId = global.ConvertDouble(row["ManufacturingId"]);
-                    if (global.ConvertDouble(row["MasterToolId"]) == 5)
+                    if (global.ConvertDouble(row["RequiredNumberOfMachinesInManufacturingStep"]) != 0)
                     {
                         int add = part + (rowCount - 1) * 3 + (calcList.Count - partCnt - 1) * 7 + machine.Rows.Count + 21;
                         ((Excel.Range)worksheet4.Rows[add]).Insert(Missing.Value, worksheet4.Rows[add]);
                         DataRow row5 = machine.Rows.Add();
                         int cnt = 0;
-                        row5[cnt++] = $"{partName[partCnt - 1]}_{row["name"]}";
-                        row5[cnt++] = row["ManualInvestPerTool"];
-                        row5[cnt++] = row["new"];
+                        row5[cnt++] = $"{row["name"]}({partName[partCnt - 1]})";
+                        row5[cnt++] =  row["InvestMachine"];
+                        row5[cnt++] = "";
                         row5[cnt++] = $"=SUM(INDIRECT(\"D\"&ROW()):INDIRECT(\"E\"&ROW()))";
-                        row5[cnt++] = row["toolYear"];
-                        row5[cnt++] = row["1Shift"];
-                        row5[cnt++] = row["2Shift"];
+                        row5[cnt++] = row["ManualDepreciationTime"];
+                        row5[cnt++] = $"=IFERROR(3600 / {row["ManualCycleTime"]}*{row["ManualUtilizationRate"]} * {row["Shift"]},0)";
+                        row5[cnt++] = $"=IFERROR(3600 / {row["ManualCycleTime"]}*{row["ManualUtilizationRate"]} * {row["Shift"]} * 2,0)";
                         row5[cnt++] = $"=INDIRECT(\"I\"&ROW())";
                         row5[cnt++] = $"='{worksheet.Name}'!{ worksheet.Cells[10 + partCnt, 5 + after].Address[false]}";
                         row5[cnt++] = $"=IFERROR(INDIRECT(\"F\"&ROW())/INDIRECT(\"G\"&ROW())/INDIRECT(\"H\"&ROW()), 0)";
                         row5[cnt++] = $"=IFERROR(INDIRECT(\"F\"&ROW())/INDIRECT(\"G\"&ROW())/INDIRECT(\"I\"&ROW()), 0)";
                         row5[cnt++] = $"=IFERROR(INDIRECT(\"D\"&ROW())/INDIRECT(\"G\"&ROW())/INDIRECT(\"J\"&ROW()) + INDIRECT(\"E\"&ROW())/INDIRECT(\"K\"&ROW()), 0)";
                     }
-                    else if (global.ConvertDouble(row["MasterToolId"]) == 9 || global.ConvertDouble(row["MasterToolId"]) == 10)
+                    if (global.ConvertDouble(row["MasterToolId"]) == 9 || global.ConvertDouble(row["MasterToolId"]) == 10)
                     {
 
                         string name = $"{row["Name_LOC_Extracted"]}_{row["name"]}";
@@ -795,7 +811,7 @@ namespace TcPCM_Connect_Global
                 worksheet4.Cells[part + dt.Rows.Count + 5 + machine.Rows.Count, 13].Formula = $"=SUM(M{part + dt.Rows.Count + 4}:M{part + dt.Rows.Count + 4 + machine.Rows.Count})";
                 worksheet4.Cells[part + dt.Rows.Count + 5 + machine.Rows.Count, 14].Formula = $"=SUM(N{part + dt.Rows.Count + 4}:N{part + dt.Rows.Count + 4 + machine.Rows.Count})";
                 worksheet4.Range[worksheet4.Cells[part + dt.Rows.Count + 4, 4], worksheet4.Cells[part + dt.Rows.Count + 4 + machine.Rows.Count, 6]].NumberFormat = "#,##0,,";
-                worksheet4.Range[worksheet4.Cells[part + dt.Rows.Count + 4, 8], worksheet4.Cells[part + dt.Rows.Count + 4 + machine.Rows.Count, 11]].NumberFormat = "#,##0,,";
+                //worksheet4.Range[worksheet4.Cells[part + dt.Rows.Count + 4, 8], worksheet4.Cells[part + dt.Rows.Count + 4 + machine.Rows.Count, 11]].NumberFormat = "#,##0,,";
 
 
                 worksheet4.Range[worksheet4.Cells[15, 6], worksheet4.Cells[part + dt.Rows.Count, 7]].NumberFormat = "#,##0";
@@ -809,7 +825,7 @@ namespace TcPCM_Connect_Global
                 worksheet6.Cells[startRow + rowCount, 16].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},P6:P{5 + tool.Rows.Count})";
                 worksheet6.Cells[startRow + rowCount, 17].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},Q6:Q{5 + tool.Rows.Count})";
                 worksheet6.Cells[startRow + rowCount, 18].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},R6:R{5 + tool.Rows.Count})";
-                worksheet6.Cells[startRow + rowCount, 19].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},S6:S{5 + tool.Rows.Count})";
+                worksheet6.Cells[startRow + rowCount, 19].Formula = $"=SUMIF($E$6:$E${5+tool.Rows.Count},$E{6 + tool.Rows.Count},S6:S{5 + tool.Rows.Count})";               
 
                 worksheet6.Cells[startRow + rowCount+1, 10].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},J6:J{5 + tool.Rows.Count})";
                 worksheet6.Cells[startRow + rowCount+1, 11].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},K6:K{5 + tool.Rows.Count})";
@@ -817,6 +833,14 @@ namespace TcPCM_Connect_Global
                 worksheet6.Cells[startRow + rowCount+1, 17].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},Q6:Q{5 + tool.Rows.Count})";
                 worksheet6.Cells[startRow + rowCount+1, 18].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},R6:R{5 + tool.Rows.Count})";
                 worksheet6.Cells[startRow + rowCount+1, 19].Formula = $"=SUMIF($E$6:$E${5 + tool.Rows.Count},$E{7 + tool.Rows.Count},S6:S{5 + tool.Rows.Count})";
+
+
+                worksheet6.Cells[startRow + rowCount + 2, 10].Formula = $"=SUM(J{startRow + rowCount+1}:J{startRow + rowCount})";
+                worksheet6.Cells[startRow + rowCount + 2, 11].Formula = $"=SUM(K{startRow + rowCount+1}:K{startRow + rowCount})";
+                worksheet6.Cells[startRow + rowCount + 2, 16].Formula = $"=SUM(P{startRow + rowCount+1}:P{startRow + rowCount})";
+                worksheet6.Cells[startRow + rowCount + 2, 17].Formula = $"=SUM(Q{startRow + rowCount+1}:Q{startRow + rowCount})";
+                worksheet6.Cells[startRow + rowCount + 2, 18].Formula = $"=SUM(R{startRow + rowCount+1}:R{startRow + rowCount})";
+                worksheet6.Cells[startRow + rowCount + 2, 19].Formula = $"=SUM(S{startRow + rowCount + 1}:S{startRow + rowCount})";
             }
             catch (Exception e)
             {
@@ -1181,7 +1205,7 @@ namespace TcPCM_Connect_Global
 
         private double? FindMostFrequents(Dictionary<int, List<double>> dict, int idx)
         {
-            if (!dict.ContainsKey(idx) || dict[425].Count==0) return 0;
+            if (!dict.ContainsKey(idx) || dict[idx].Count==0) return 0;
 
             return dict[idx].GroupBy(x => x).OrderByDescending(g => g.Count()).First().Key;
         }
