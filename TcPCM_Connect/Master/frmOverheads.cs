@@ -408,6 +408,7 @@ namespace TcPCM_Connect
                                 A.간접노무비율,
                                 A.경비율,
                                 B.금융비율,
+                                B.로열티,
                                 B.법인세
                                 From A Full Outer Join B on A.DateValidFrom = B.DateValidFrom
                                 And A.Region = B.Region And A.Plant = B.Plant";
