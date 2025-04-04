@@ -28,10 +28,13 @@ namespace TcPCM_Connect_Global
                         {
                             cellValue = cellValue.Replace("%","");
                             detailInfo.Add("관리비율", cellValue);
-                            detailInfo.Add("Overhead rate unique identifier (Overhead rate detail)", $"{col.Tag}||Siemens.TCPCM.Classification.Overhead.Rate");
+                            if(name == "판매관리비율")
+                                detailInfo.Add("Overhead rate unique identifier (Overhead rate detail)", $"{col.Tag}");
+                            else
+                                detailInfo.Add("Overhead rate unique identifier (Overhead rate detail)", $"{col.Tag}||Siemens.TCPCM.Classification.Overhead.Rate");
                             category.Add(detailInfo);
                         }
-                        else if (col.Name.Contains("Incoterms"))
+                        else if (col.Name.Contains("Customer"))
                             detailInfo.Add("업종", cellValue);
                         else if (col.Name.Contains("업종"))
                         {
